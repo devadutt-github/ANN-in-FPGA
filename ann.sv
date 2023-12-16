@@ -20,7874 +20,15727 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module ann(
-    input wire [19:0] img [0:783],
-  //  input clk,
-    //input reset,
-    output wire [9:0]out[0:9]
+module ANN(
+    input reg [19:0]img_inp,
+    input wire w_en,
+    input [9:0] w_addr,
+    input wire clk,
+    input wire rst,
+    output reg out[9:0] = '{10{0}}
     );
-   
-reg signed [20:0] ann_bias [0:9]; // 32-bit wide signed array with 10 elements
+ 
+reg [19:0]img[0:783];
 
+always_ff @(posedge clk) begin
+    if (rst) begin
+        for (int s = 0; s < 784; s++) begin
+            img[s] <= 0;
+        end
+    end else begin
+        img[w_addr] <= img_inp;
+    end
+end
+
+reg signed [20:0] ann_bias [0:9]; 
   initial begin
     // Assign values to array elements
-    ann_bias[0] = 1048954 ;
-    ann_bias[1] = 477 ;
-    ann_bias[2] = 93 ;
-    ann_bias[3] = 1048863 ;
-    ann_bias[4] = 106 ;
-    ann_bias[5] = 935 ;
-    ann_bias[6] = 1048659 ;
-    ann_bias[7] = 501 ;
-    ann_bias[8] = 1049625 ;
-    ann_bias[9] = 1048774 ;
+   ann_bias[0] = 21'b100000000000101111010;
+	ann_bias[1] = 21'b000000000000111011101;
+	ann_bias[2] = 21'b000000000000001011101;
+	ann_bias[3] = 21'b100000000000100011111;
+	ann_bias[4] = 21'b000000000000001101010;
+	ann_bias[5] = 21'b000000000001110100111;
+	ann_bias[6] = 21'b100000000000001010011;
+	ann_bias[7] = 21'b000000000000111110101;
+	ann_bias[8] = 21'b100000000010000011001;
+	ann_bias[9] = 21'b100000000000011000110;
+
 
    end
  
  reg signed [20:0] ann_weights [0:7839]; // 32-bit wide signed array with 10 elements
  initial begin
    // [Running] python -u "c:\Users\rxv220012\Documents\Reconfig_sys\ANN proj\ann_w_qlist.py"
-ann_weights[0] = 39 ;
-ann_weights[1] = 71 ;
-ann_weights[2] = 54 ;
-ann_weights[3] = 53 ;
-ann_weights[4] = 1048622 ;
-ann_weights[5] = 9 ;
-ann_weights[6] = 88 ;
-ann_weights[7] = 64 ;
-ann_weights[8] = 1048618 ;
-ann_weights[9] = 1048576 ;
-ann_weights[10] = 1048577 ;
-ann_weights[11] = 1048605 ;
-ann_weights[12] = 1048635 ;
-ann_weights[13] = 70 ;
-ann_weights[14] = 1048588 ;
-ann_weights[15] = 32 ;
-ann_weights[16] = 1048598 ;
-ann_weights[17] = 59 ;
-ann_weights[18] = 46 ;
-ann_weights[19] = 1048588 ;
-ann_weights[20] = 1048584 ;
-ann_weights[21] = 1048622 ;
-ann_weights[22] = 29 ;
-ann_weights[23] = 58 ;
-ann_weights[24] = 1048647 ;
-ann_weights[25] = 1048595 ;
-ann_weights[26] = 1048596 ;
-ann_weights[27] = 1048593 ;
-ann_weights[28] = 1048595 ;
-ann_weights[29] = 52 ;
-ann_weights[30] = 1048659 ;
-ann_weights[31] = 70 ;
-ann_weights[32] = 78 ;
-ann_weights[33] = 60 ;
-ann_weights[34] = 1048657 ;
-ann_weights[35] = 1048599 ;
-ann_weights[36] = 1048583 ;
-ann_weights[37] = 83 ;
-ann_weights[38] = 1048640 ;
-ann_weights[39] = 1048604 ;
-ann_weights[40] = 1048598 ;
-ann_weights[41] = 81 ;
-ann_weights[42] = 1048587 ;
-ann_weights[43] = 4 ;
-ann_weights[44] = 1048588 ;
-ann_weights[45] = 1048622 ;
-ann_weights[46] = 1048598 ;
-ann_weights[47] = 50 ;
-ann_weights[48] = 1048625 ;
-ann_weights[49] = 1048586 ;
-ann_weights[50] = 28 ;
-ann_weights[51] = 59 ;
-ann_weights[52] = 1048607 ;
-ann_weights[53] = 29 ;
-ann_weights[54] = 1048593 ;
-ann_weights[55] = 1048641 ;
-ann_weights[56] = 1048583 ;
-ann_weights[57] = 1048584 ;
-ann_weights[58] = 43 ;
-ann_weights[59] = 1048659 ;
-ann_weights[60] = 1048577 ;
-ann_weights[61] = 79 ;
-ann_weights[62] = 1048609 ;
-ann_weights[63] = 56 ;
-ann_weights[64] = 10 ;
-ann_weights[65] = 18 ;
-ann_weights[66] = 1048648 ;
-ann_weights[67] = 31 ;
-ann_weights[68] = 35 ;
-ann_weights[69] = 29 ;
-ann_weights[70] = 1048596 ;
-ann_weights[71] = 2 ;
-ann_weights[72] = 1048644 ;
-ann_weights[73] = 61 ;
-ann_weights[74] = 1048633 ;
-ann_weights[75] = 8 ;
-ann_weights[76] = 74 ;
-ann_weights[77] = 21 ;
-ann_weights[78] = 3 ;
-ann_weights[79] = 25 ;
-ann_weights[80] = 19 ;
-ann_weights[81] = 1048638 ;
-ann_weights[82] = 1048661 ;
-ann_weights[83] = 60 ;
-ann_weights[84] = 1048652 ;
-ann_weights[85] = 1048643 ;
-ann_weights[86] = 17 ;
-ann_weights[87] = 70 ;
-ann_weights[88] = 1048642 ;
-ann_weights[89] = 1048617 ;
-ann_weights[90] = 21 ;
-ann_weights[91] = 1048640 ;
-ann_weights[92] = 1048631 ;
-ann_weights[93] = 1048653 ;
-ann_weights[94] = 34 ;
-ann_weights[95] = 26 ;
-ann_weights[96] = 1048628 ;
-ann_weights[97] = 1048630 ;
-ann_weights[98] = 41 ;
-ann_weights[99] = 1048623 ;
-ann_weights[100] = 16 ;
-ann_weights[101] = 1048646 ;
-ann_weights[102] = 1048611 ;
-ann_weights[103] = 1048608 ;
-ann_weights[104] = 8 ;
-ann_weights[105] = 1048642 ;
-ann_weights[106] = 24 ;
-ann_weights[107] = 72 ;
-ann_weights[108] = 1048605 ;
-ann_weights[109] = 78 ;
-ann_weights[110] = 18 ;
-ann_weights[111] = 1048585 ;
-ann_weights[112] = 77 ;
-ann_weights[113] = 1048584 ;
-ann_weights[114] = 1048623 ;
-ann_weights[115] = 23 ;
-ann_weights[116] = 42 ;
-ann_weights[117] = 1048657 ;
-ann_weights[118] = 1048580 ;
-ann_weights[119] = 1048654 ;
-ann_weights[120] = 1048594 ;
-ann_weights[121] = 1048669 ;
-ann_weights[122] = 1048746 ;
-ann_weights[123] = 1048713 ;
-ann_weights[124] = 1048649 ;
-ann_weights[125] = 1048600 ;
-ann_weights[126] = 108 ;
-ann_weights[127] = 51 ;
-ann_weights[128] = 1048578 ;
-ann_weights[129] = 1048691 ;
-ann_weights[130] = 1048628 ;
-ann_weights[131] = 1048599 ;
-ann_weights[132] = 1048627 ;
-ann_weights[133] = 1048581 ;
-ann_weights[134] = 1048693 ;
-ann_weights[135] = 1048754 ;
-ann_weights[136] = 113 ;
-ann_weights[137] = 1048625 ;
-ann_weights[138] = 1048705 ;
-ann_weights[139] = 1048636 ;
-ann_weights[140] = 1048619 ;
-ann_weights[141] = 1048663 ;
-ann_weights[142] = 1048590 ;
-ann_weights[143] = 1048733 ;
-ann_weights[144] = 38 ;
-ann_weights[145] = 1048621 ;
-ann_weights[146] = 1048647 ;
-ann_weights[147] = 53 ;
-ann_weights[148] = 1048644 ;
-ann_weights[149] = 30 ;
-ann_weights[150] = 1048651 ;
-ann_weights[151] = 55 ;
-ann_weights[152] = 1048610 ;
-ann_weights[153] = 52 ;
-ann_weights[154] = 1048628 ;
-ann_weights[155] = 1048610 ;
-ann_weights[156] = 1048617 ;
-ann_weights[157] = 1048613 ;
-ann_weights[158] = 59 ;
-ann_weights[159] = 7 ;
-ann_weights[160] = 74 ;
-ann_weights[161] = 1048658 ;
-ann_weights[162] = 1048600 ;
-ann_weights[163] = 29 ;
-ann_weights[164] = 1048658 ;
-ann_weights[165] = 81 ;
-ann_weights[166] = 1048646 ;
-ann_weights[167] = 1048618 ;
-ann_weights[168] = 23 ;
-ann_weights[169] = 1048614 ;
-ann_weights[170] = 1048623 ;
-ann_weights[171] = 63 ;
-ann_weights[172] = 1048646 ;
-ann_weights[173] = 39 ;
-ann_weights[174] = 60 ;
-ann_weights[175] = 67 ;
-ann_weights[176] = 1048605 ;
-ann_weights[177] = 41 ;
-ann_weights[178] = 1048584 ;
-ann_weights[179] = 67 ;
-ann_weights[180] = 22 ;
-ann_weights[181] = 23 ;
-ann_weights[182] = 36 ;
-ann_weights[183] = 26 ;
-ann_weights[184] = 1048640 ;
-ann_weights[185] = 1048610 ;
-ann_weights[186] = 1048624 ;
-ann_weights[187] = 1048626 ;
-ann_weights[188] = 47 ;
-ann_weights[189] = 1048595 ;
-ann_weights[190] = 0 ;
-ann_weights[191] = 1048641 ;
-ann_weights[192] = 1048648 ;
-ann_weights[193] = 1048611 ;
-ann_weights[194] = 43 ;
-ann_weights[195] = 57 ;
-ann_weights[196] = 34 ;
-ann_weights[197] = 1048610 ;
-ann_weights[198] = 1048606 ;
-ann_weights[199] = 1048630 ;
-ann_weights[200] = 1048636 ;
-ann_weights[201] = 24 ;
-ann_weights[202] = 1048624 ;
-ann_weights[203] = 49 ;
-ann_weights[204] = 1048614 ;
-ann_weights[205] = 1048626 ;
-ann_weights[206] = 28 ;
-ann_weights[207] = 1048594 ;
-ann_weights[208] = 27 ;
-ann_weights[209] = 36 ;
-ann_weights[210] = 1048582 ;
-ann_weights[211] = 1048580 ;
-ann_weights[212] = 31 ;
-ann_weights[213] = 33 ;
-ann_weights[214] = 58 ;
-ann_weights[215] = 18 ;
-ann_weights[216] = 37 ;
-ann_weights[217] = 37 ;
-ann_weights[218] = 1048578 ;
-ann_weights[219] = 1048620 ;
-ann_weights[220] = 19 ;
-ann_weights[221] = 1048593 ;
-ann_weights[222] = 3 ;
-ann_weights[223] = 7 ;
-ann_weights[224] = 1048610 ;
-ann_weights[225] = 1048604 ;
-ann_weights[226] = 84 ;
-ann_weights[227] = 1048650 ;
-ann_weights[228] = 1048576 ;
-ann_weights[229] = 1048648 ;
-ann_weights[230] = 1048592 ;
-ann_weights[231] = 75 ;
-ann_weights[232] = 57 ;
-ann_weights[233] = 1 ;
-ann_weights[234] = 1048613 ;
-ann_weights[235] = 1048578 ;
-ann_weights[236] = 2 ;
-ann_weights[237] = 81 ;
-ann_weights[238] = 1048584 ;
-ann_weights[239] = 1 ;
-ann_weights[240] = 21 ;
-ann_weights[241] = 84 ;
-ann_weights[242] = 7 ;
-ann_weights[243] = 53 ;
-ann_weights[244] = 1048626 ;
-ann_weights[245] = 1048622 ;
-ann_weights[246] = 18 ;
-ann_weights[247] = 1048650 ;
-ann_weights[248] = 53 ;
-ann_weights[249] = 82 ;
-ann_weights[250] = 1048617 ;
-ann_weights[251] = 71 ;
-ann_weights[252] = 1048619 ;
-ann_weights[253] = 64 ;
-ann_weights[254] = 1048629 ;
-ann_weights[255] = 1048629 ;
-ann_weights[256] = 1048654 ;
-ann_weights[257] = 1048609 ;
-ann_weights[258] = 1048640 ;
-ann_weights[259] = 1048577 ;
-ann_weights[260] = 48 ;
-ann_weights[261] = 75 ;
-ann_weights[262] = 83 ;
-ann_weights[263] = 1048626 ;
-ann_weights[264] = 84 ;
-ann_weights[265] = 61 ;
-ann_weights[266] = 47 ;
-ann_weights[267] = 85 ;
-ann_weights[268] = 14 ;
-ann_weights[269] = 1048644 ;
-ann_weights[270] = 1048613 ;
-ann_weights[271] = 46 ;
-ann_weights[272] = 1048662 ;
-ann_weights[273] = 1048604 ;
-ann_weights[274] = 1048608 ;
-ann_weights[275] = 1048610 ;
-ann_weights[276] = 1048649 ;
-ann_weights[277] = 1048615 ;
-ann_weights[278] = 88 ;
-ann_weights[279] = 0 ;
-ann_weights[280] = 1048581 ;
-ann_weights[281] = 72 ;
-ann_weights[282] = 1048617 ;
-ann_weights[283] = 1048650 ;
-ann_weights[284] = 1048597 ;
-ann_weights[285] = 1048623 ;
-ann_weights[286] = 64 ;
-ann_weights[287] = 37 ;
-ann_weights[288] = 41 ;
-ann_weights[289] = 75 ;
-ann_weights[290] = 27 ;
-ann_weights[291] = 1048596 ;
-ann_weights[292] = 1048633 ;
-ann_weights[293] = 71 ;
-ann_weights[294] = 36 ;
-ann_weights[295] = 62 ;
-ann_weights[296] = 1048662 ;
-ann_weights[297] = 38 ;
-ann_weights[298] = 35 ;
-ann_weights[299] = 14 ;
-ann_weights[300] = 1048585 ;
-ann_weights[301] = 53 ;
-ann_weights[302] = 16 ;
-ann_weights[303] = 22 ;
-ann_weights[304] = 1048629 ;
-ann_weights[305] = 1048583 ;
-ann_weights[306] = 46 ;
-ann_weights[307] = 26 ;
-ann_weights[308] = 5 ;
-ann_weights[309] = 1048649 ;
-ann_weights[310] = 25 ;
-ann_weights[311] = 1048583 ;
-ann_weights[312] = 57 ;
-ann_weights[313] = 1048651 ;
-ann_weights[314] = 68 ;
-ann_weights[315] = 1048653 ;
-ann_weights[316] = 53 ;
-ann_weights[317] = 1048640 ;
-ann_weights[318] = 1048639 ;
-ann_weights[319] = 1048609 ;
-ann_weights[320] = 1048619 ;
-ann_weights[321] = 44 ;
-ann_weights[322] = 1048682 ;
-ann_weights[323] = 1048590 ;
-ann_weights[324] = 0 ;
-ann_weights[325] = 1048658 ;
-ann_weights[326] = 121 ;
-ann_weights[327] = 1048604 ;
-ann_weights[328] = 28 ;
-ann_weights[329] = 1048661 ;
-ann_weights[330] = 63 ;
-ann_weights[331] = 1048594 ;
-ann_weights[332] = 1048741 ;
-ann_weights[333] = 1048632 ;
-ann_weights[334] = 1048801 ;
-ann_weights[335] = 1048616 ;
-ann_weights[336] = 126 ;
-ann_weights[337] = 64 ;
-ann_weights[338] = 60 ;
-ann_weights[339] = 1048645 ;
-ann_weights[340] = 1048588 ;
-ann_weights[341] = 16 ;
-ann_weights[342] = 1048789 ;
-ann_weights[343] = 1048616 ;
-ann_weights[344] = 1048830 ;
-ann_weights[345] = 1048648 ;
-ann_weights[346] = 365 ;
-ann_weights[347] = 1048782 ;
-ann_weights[348] = 1048653 ;
-ann_weights[349] = 1048701 ;
-ann_weights[350] = 1048723 ;
-ann_weights[351] = 1048642 ;
-ann_weights[352] = 1048714 ;
-ann_weights[353] = 1048681 ;
-ann_weights[354] = 1048892 ;
-ann_weights[355] = 1048619 ;
-ann_weights[356] = 403 ;
-ann_weights[357] = 1048746 ;
-ann_weights[358] = 1048734 ;
-ann_weights[359] = 1048716 ;
-ann_weights[360] = 1048681 ;
-ann_weights[361] = 1048721 ;
-ann_weights[362] = 1048634 ;
-ann_weights[363] = 1048689 ;
-ann_weights[364] = 1048964 ;
-ann_weights[365] = 1048612 ;
-ann_weights[366] = 294 ;
-ann_weights[367] = 1048735 ;
-ann_weights[368] = 1048712 ;
-ann_weights[369] = 1048741 ;
-ann_weights[370] = 1048696 ;
-ann_weights[371] = 1048640 ;
-ann_weights[372] = 1048663 ;
-ann_weights[373] = 1048590 ;
-ann_weights[374] = 1049031 ;
-ann_weights[375] = 1048649 ;
-ann_weights[376] = 354 ;
-ann_weights[377] = 1048807 ;
-ann_weights[378] = 1048824 ;
-ann_weights[379] = 1048709 ;
-ann_weights[380] = 1048799 ;
-ann_weights[381] = 1048699 ;
-ann_weights[382] = 1048693 ;
-ann_weights[383] = 1048647 ;
-ann_weights[384] = 1048984 ;
-ann_weights[385] = 1048725 ;
-ann_weights[386] = 295 ;
-ann_weights[387] = 1048710 ;
-ann_weights[388] = 1048787 ;
-ann_weights[389] = 1048704 ;
-ann_weights[390] = 118 ;
-ann_weights[391] = 1048711 ;
-ann_weights[392] = 1048943 ;
-ann_weights[393] = 1048720 ;
-ann_weights[394] = 1049043 ;
-ann_weights[395] = 1048684 ;
-ann_weights[396] = 321 ;
-ann_weights[397] = 1048764 ;
-ann_weights[398] = 1048826 ;
-ann_weights[399] = 1048862 ;
-ann_weights[400] = 121 ;
-ann_weights[401] = 1048797 ;
-ann_weights[402] = 1048945 ;
-ann_weights[403] = 1048745 ;
-ann_weights[404] = 1049071 ;
-ann_weights[405] = 1048797 ;
-ann_weights[406] = 449 ;
-ann_weights[407] = 1048791 ;
-ann_weights[408] = 1048719 ;
-ann_weights[409] = 1048938 ;
-ann_weights[410] = 11 ;
-ann_weights[411] = 1048670 ;
-ann_weights[412] = 1048917 ;
-ann_weights[413] = 1048711 ;
-ann_weights[414] = 1049118 ;
-ann_weights[415] = 1048862 ;
-ann_weights[416] = 271 ;
-ann_weights[417] = 1048676 ;
-ann_weights[418] = 1048828 ;
-ann_weights[419] = 1048928 ;
-ann_weights[420] = 1048733 ;
-ann_weights[421] = 188 ;
-ann_weights[422] = 1 ;
-ann_weights[423] = 1048784 ;
-ann_weights[424] = 1048624 ;
-ann_weights[425] = 1048878 ;
-ann_weights[426] = 77 ;
-ann_weights[427] = 6 ;
-ann_weights[428] = 1048820 ;
-ann_weights[429] = 1048807 ;
-ann_weights[430] = 12 ;
-ann_weights[431] = 65 ;
-ann_weights[432] = 137 ;
-ann_weights[433] = 1048814 ;
-ann_weights[434] = 1048895 ;
-ann_weights[435] = 1048905 ;
-ann_weights[436] = 246 ;
-ann_weights[437] = 1048743 ;
-ann_weights[438] = 1048741 ;
-ann_weights[439] = 1048799 ;
-ann_weights[440] = 127 ;
-ann_weights[441] = 1048823 ;
-ann_weights[442] = 348 ;
-ann_weights[443] = 1048809 ;
-ann_weights[444] = 1049001 ;
-ann_weights[445] = 1049035 ;
-ann_weights[446] = 4 ;
-ann_weights[447] = 1048818 ;
-ann_weights[448] = 1048875 ;
-ann_weights[449] = 1048889 ;
-ann_weights[450] = 51 ;
-ann_weights[451] = 1048869 ;
-ann_weights[452] = 69 ;
-ann_weights[453] = 1048787 ;
-ann_weights[454] = 1049110 ;
-ann_weights[455] = 1048913 ;
-ann_weights[456] = 292 ;
-ann_weights[457] = 1048686 ;
-ann_weights[458] = 1048849 ;
-ann_weights[459] = 1048931 ;
-ann_weights[460] = 1048716 ;
-ann_weights[461] = 1048786 ;
-ann_weights[462] = 1048868 ;
-ann_weights[463] = 1048821 ;
-ann_weights[464] = 1049178 ;
-ann_weights[465] = 1048860 ;
-ann_weights[466] = 519 ;
-ann_weights[467] = 1048831 ;
-ann_weights[468] = 1048906 ;
-ann_weights[469] = 1049027 ;
-ann_weights[470] = 1048748 ;
-ann_weights[471] = 1048592 ;
-ann_weights[472] = 1048994 ;
-ann_weights[473] = 1048658 ;
-ann_weights[474] = 1048762 ;
-ann_weights[475] = 1048809 ;
-ann_weights[476] = 278 ;
-ann_weights[477] = 1048659 ;
-ann_weights[478] = 1048878 ;
-ann_weights[479] = 1048721 ;
-ann_weights[480] = 1048657 ;
-ann_weights[481] = 1048617 ;
-ann_weights[482] = 1048810 ;
-ann_weights[483] = 1048671 ;
-ann_weights[484] = 1048904 ;
-ann_weights[485] = 1048851 ;
-ann_weights[486] = 270 ;
-ann_weights[487] = 1048597 ;
-ann_weights[488] = 1048791 ;
-ann_weights[489] = 1048826 ;
-ann_weights[490] = 2 ;
-ann_weights[491] = 1048673 ;
-ann_weights[492] = 1048713 ;
-ann_weights[493] = 1048651 ;
-ann_weights[494] = 1048865 ;
-ann_weights[495] = 1048720 ;
-ann_weights[496] = 149 ;
-ann_weights[497] = 1048605 ;
-ann_weights[498] = 1048670 ;
-ann_weights[499] = 1048753 ;
-ann_weights[500] = 23 ;
-ann_weights[501] = 1048617 ;
-ann_weights[502] = 1048618 ;
-ann_weights[503] = 1048676 ;
-ann_weights[504] = 1048699 ;
-ann_weights[505] = 1048634 ;
-ann_weights[506] = 225 ;
-ann_weights[507] = 29 ;
-ann_weights[508] = 1048721 ;
-ann_weights[509] = 1048740 ;
-ann_weights[510] = 1048577 ;
-ann_weights[511] = 67 ;
-ann_weights[512] = 1048612 ;
-ann_weights[513] = 24 ;
-ann_weights[514] = 1048808 ;
-ann_weights[515] = 1048578 ;
-ann_weights[516] = 235 ;
-ann_weights[517] = 1048612 ;
-ann_weights[518] = 1048690 ;
-ann_weights[519] = 1048630 ;
-ann_weights[520] = 1048586 ;
-ann_weights[521] = 4 ;
-ann_weights[522] = 28 ;
-ann_weights[523] = 1048587 ;
-ann_weights[524] = 41 ;
-ann_weights[525] = 84 ;
-ann_weights[526] = 87 ;
-ann_weights[527] = 1048652 ;
-ann_weights[528] = 1048621 ;
-ann_weights[529] = 11 ;
-ann_weights[530] = 1048616 ;
-ann_weights[531] = 1048646 ;
-ann_weights[532] = 43 ;
-ann_weights[533] = 83 ;
-ann_weights[534] = 11 ;
-ann_weights[535] = 1048619 ;
-ann_weights[536] = 77 ;
-ann_weights[537] = 57 ;
-ann_weights[538] = 44 ;
-ann_weights[539] = 64 ;
-ann_weights[540] = 46 ;
-ann_weights[541] = 1048577 ;
-ann_weights[542] = 79 ;
-ann_weights[543] = 1048589 ;
-ann_weights[544] = 1048614 ;
-ann_weights[545] = 21 ;
-ann_weights[546] = 1048619 ;
-ann_weights[547] = 64 ;
-ann_weights[548] = 1048579 ;
-ann_weights[549] = 64 ;
-ann_weights[550] = 6 ;
-ann_weights[551] = 1048602 ;
-ann_weights[552] = 1048589 ;
-ann_weights[553] = 41 ;
-ann_weights[554] = 1048583 ;
-ann_weights[555] = 1048643 ;
-ann_weights[556] = 1048626 ;
-ann_weights[557] = 1048589 ;
-ann_weights[558] = 1048605 ;
-ann_weights[559] = 1048648 ;
-ann_weights[560] = 79 ;
-ann_weights[561] = 55 ;
-ann_weights[562] = 1048589 ;
-ann_weights[563] = 15 ;
-ann_weights[564] = 1048638 ;
-ann_weights[565] = 1048635 ;
-ann_weights[566] = 64 ;
-ann_weights[567] = 1 ;
-ann_weights[568] = 27 ;
-ann_weights[569] = 1048633 ;
-ann_weights[570] = 1048600 ;
-ann_weights[571] = 1048622 ;
-ann_weights[572] = 39 ;
-ann_weights[573] = 74 ;
-ann_weights[574] = 20 ;
-ann_weights[575] = 1048579 ;
-ann_weights[576] = 1048591 ;
-ann_weights[577] = 1048593 ;
-ann_weights[578] = 2 ;
-ann_weights[579] = 26 ;
-ann_weights[580] = 48 ;
-ann_weights[581] = 5 ;
-ann_weights[582] = 1048596 ;
-ann_weights[583] = 1048576 ;
-ann_weights[584] = 1048619 ;
-ann_weights[585] = 16 ;
-ann_weights[586] = 1048647 ;
-ann_weights[587] = 43 ;
-ann_weights[588] = 1048651 ;
-ann_weights[589] = 1048642 ;
-ann_weights[590] = 59 ;
-ann_weights[591] = 1048605 ;
-ann_weights[592] = 1048594 ;
-ann_weights[593] = 1048685 ;
-ann_weights[594] = 1048687 ;
-ann_weights[595] = 1048687 ;
-ann_weights[596] = 144 ;
-ann_weights[597] = 1048689 ;
-ann_weights[598] = 1048591 ;
-ann_weights[599] = 1048704 ;
-ann_weights[600] = 42 ;
-ann_weights[601] = 18 ;
-ann_weights[602] = 1048654 ;
-ann_weights[603] = 1048673 ;
-ann_weights[604] = 1048897 ;
-ann_weights[605] = 1048617 ;
-ann_weights[606] = 151 ;
-ann_weights[607] = 1048703 ;
-ann_weights[608] = 1048699 ;
-ann_weights[609] = 1048642 ;
-ann_weights[610] = 1048732 ;
-ann_weights[611] = 1048650 ;
-ann_weights[612] = 1048611 ;
-ann_weights[613] = 1048747 ;
-ann_weights[614] = 1048765 ;
-ann_weights[615] = 0 ;
-ann_weights[616] = 236 ;
-ann_weights[617] = 1048587 ;
-ann_weights[618] = 1048624 ;
-ann_weights[619] = 1048669 ;
-ann_weights[620] = 1048710 ;
-ann_weights[621] = 5 ;
-ann_weights[622] = 1048638 ;
-ann_weights[623] = 1048749 ;
-ann_weights[624] = 1048912 ;
-ann_weights[625] = 28 ;
-ann_weights[626] = 342 ;
-ann_weights[627] = 1048638 ;
-ann_weights[628] = 1048692 ;
-ann_weights[629] = 1048659 ;
-ann_weights[630] = 1048749 ;
-ann_weights[631] = 1048755 ;
-ann_weights[632] = 1048731 ;
-ann_weights[633] = 1048870 ;
-ann_weights[634] = 1048953 ;
-ann_weights[635] = 1048791 ;
-ann_weights[636] = 532 ;
-ann_weights[637] = 1048718 ;
-ann_weights[638] = 1048791 ;
-ann_weights[639] = 1048824 ;
-ann_weights[640] = 1048926 ;
-ann_weights[641] = 1048873 ;
-ann_weights[642] = 1048637 ;
-ann_weights[643] = 1048917 ;
-ann_weights[644] = 1049157 ;
-ann_weights[645] = 1048893 ;
-ann_weights[646] = 531 ;
-ann_weights[647] = 1048795 ;
-ann_weights[648] = 1048883 ;
-ann_weights[649] = 1048854 ;
-ann_weights[650] = 1049104 ;
-ann_weights[651] = 1048767 ;
-ann_weights[652] = 105 ;
-ann_weights[653] = 1049038 ;
-ann_weights[654] = 1049225 ;
-ann_weights[655] = 1048973 ;
-ann_weights[656] = 290 ;
-ann_weights[657] = 1048951 ;
-ann_weights[658] = 1049038 ;
-ann_weights[659] = 1048936 ;
-ann_weights[660] = 1049249 ;
-ann_weights[661] = 1049066 ;
-ann_weights[662] = 133 ;
-ann_weights[663] = 1048688 ;
-ann_weights[664] = 1049316 ;
-ann_weights[665] = 1048892 ;
-ann_weights[666] = 480 ;
-ann_weights[667] = 1049014 ;
-ann_weights[668] = 1049246 ;
-ann_weights[669] = 1048996 ;
-ann_weights[670] = 1048868 ;
-ann_weights[671] = 1048920 ;
-ann_weights[672] = 86 ;
-ann_weights[673] = 1048582 ;
-ann_weights[674] = 1049547 ;
-ann_weights[675] = 1048995 ;
-ann_weights[676] = 574 ;
-ann_weights[677] = 1049097 ;
-ann_weights[678] = 1049284 ;
-ann_weights[679] = 1049222 ;
-ann_weights[680] = 1048788 ;
-ann_weights[681] = 1048712 ;
-ann_weights[682] = 149 ;
-ann_weights[683] = 1048719 ;
-ann_weights[684] = 1049437 ;
-ann_weights[685] = 1049126 ;
-ann_weights[686] = 415 ;
-ann_weights[687] = 1048987 ;
-ann_weights[688] = 1049371 ;
-ann_weights[689] = 1049038 ;
-ann_weights[690] = 1048912 ;
-ann_weights[691] = 146 ;
-ann_weights[692] = 1048582 ;
-ann_weights[693] = 1048697 ;
-ann_weights[694] = 1049112 ;
-ann_weights[695] = 1049348 ;
-ann_weights[696] = 292 ;
-ann_weights[697] = 1049009 ;
-ann_weights[698] = 1049374 ;
-ann_weights[699] = 1049325 ;
-ann_weights[700] = 1049152 ;
-ann_weights[701] = 125 ;
-ann_weights[702] = 85 ;
-ann_weights[703] = 1048692 ;
-ann_weights[704] = 1048950 ;
-ann_weights[705] = 1049586 ;
-ann_weights[706] = 274 ;
-ann_weights[707] = 1048917 ;
-ann_weights[708] = 1049635 ;
-ann_weights[709] = 1049357 ;
-ann_weights[710] = 1049465 ;
-ann_weights[711] = 292 ;
-ann_weights[712] = 101 ;
-ann_weights[713] = 1048824 ;
-ann_weights[714] = 1049126 ;
-ann_weights[715] = 1048977 ;
-ann_weights[716] = 269 ;
-ann_weights[717] = 1048905 ;
-ann_weights[718] = 1049738 ;
-ann_weights[719] = 1049288 ;
-ann_weights[720] = 1049061 ;
-ann_weights[721] = 211 ;
-ann_weights[722] = 162 ;
-ann_weights[723] = 1048695 ;
-ann_weights[724] = 1049105 ;
-ann_weights[725] = 1048642 ;
-ann_weights[726] = 217 ;
-ann_weights[727] = 1048997 ;
-ann_weights[728] = 1049659 ;
-ann_weights[729] = 1049178 ;
-ann_weights[730] = 1049222 ;
-ann_weights[731] = 1048578 ;
-ann_weights[732] = 12 ;
-ann_weights[733] = 1048690 ;
-ann_weights[734] = 1049045 ;
-ann_weights[735] = 25 ;
-ann_weights[736] = 164 ;
-ann_weights[737] = 1048782 ;
-ann_weights[738] = 1049125 ;
-ann_weights[739] = 1049156 ;
-ann_weights[740] = 1049324 ;
-ann_weights[741] = 1048629 ;
-ann_weights[742] = 1048713 ;
-ann_weights[743] = 1048857 ;
-ann_weights[744] = 1049437 ;
-ann_weights[745] = 1048633 ;
-ann_weights[746] = 310 ;
-ann_weights[747] = 1048760 ;
-ann_weights[748] = 1048812 ;
-ann_weights[749] = 1048975 ;
-ann_weights[750] = 1049140 ;
-ann_weights[751] = 1048635 ;
-ann_weights[752] = 1048846 ;
-ann_weights[753] = 1048941 ;
-ann_weights[754] = 1049147 ;
-ann_weights[755] = 1048637 ;
-ann_weights[756] = 300 ;
-ann_weights[757] = 1048734 ;
-ann_weights[758] = 1049324 ;
-ann_weights[759] = 1048900 ;
-ann_weights[760] = 1049250 ;
-ann_weights[761] = 1048728 ;
-ann_weights[762] = 1048800 ;
-ann_weights[763] = 1048871 ;
-ann_weights[764] = 1049115 ;
-ann_weights[765] = 1048766 ;
-ann_weights[766] = 395 ;
-ann_weights[767] = 1048594 ;
-ann_weights[768] = 1049142 ;
-ann_weights[769] = 1048749 ;
-ann_weights[770] = 1049103 ;
-ann_weights[771] = 1048877 ;
-ann_weights[772] = 1048789 ;
-ann_weights[773] = 1048944 ;
-ann_weights[774] = 1049007 ;
-ann_weights[775] = 1048777 ;
-ann_weights[776] = 459 ;
-ann_weights[777] = 1048633 ;
-ann_weights[778] = 1049107 ;
-ann_weights[779] = 1048859 ;
-ann_weights[780] = 1048893 ;
-ann_weights[781] = 1048770 ;
-ann_weights[782] = 1048896 ;
-ann_weights[783] = 1048893 ;
-ann_weights[784] = 1048822 ;
-ann_weights[785] = 1048708 ;
-ann_weights[786] = 429 ;
-ann_weights[787] = 1048739 ;
-ann_weights[788] = 1048810 ;
-ann_weights[789] = 1048826 ;
-ann_weights[790] = 1048894 ;
-ann_weights[791] = 1048812 ;
-ann_weights[792] = 1048603 ;
-ann_weights[793] = 1048807 ;
-ann_weights[794] = 1049004 ;
-ann_weights[795] = 1048791 ;
-ann_weights[796] = 365 ;
-ann_weights[797] = 1048657 ;
-ann_weights[798] = 1048866 ;
-ann_weights[799] = 1048660 ;
-ann_weights[800] = 1048740 ;
-ann_weights[801] = 1048726 ;
-ann_weights[802] = 39 ;
-ann_weights[803] = 1048683 ;
-ann_weights[804] = 1048788 ;
-ann_weights[805] = 1048810 ;
-ann_weights[806] = 53 ;
-ann_weights[807] = 67 ;
-ann_weights[808] = 1048919 ;
-ann_weights[809] = 1048577 ;
-ann_weights[810] = 1048643 ;
-ann_weights[811] = 1048662 ;
-ann_weights[812] = 56 ;
-ann_weights[813] = 20 ;
-ann_weights[814] = 1048612 ;
-ann_weights[815] = 1048716 ;
-ann_weights[816] = 1048694 ;
-ann_weights[817] = 26 ;
-ann_weights[818] = 1048655 ;
-ann_weights[819] = 1048597 ;
-ann_weights[820] = 1048654 ;
-ann_weights[821] = 1048614 ;
-ann_weights[822] = 1048579 ;
-ann_weights[823] = 1048653 ;
-ann_weights[824] = 28 ;
-ann_weights[825] = 1048652 ;
-ann_weights[826] = 60 ;
-ann_weights[827] = 1048603 ;
-ann_weights[828] = 1048614 ;
-ann_weights[829] = 1048624 ;
-ann_weights[830] = 87 ;
-ann_weights[831] = 51 ;
-ann_weights[832] = 1048654 ;
-ann_weights[833] = 63 ;
-ann_weights[834] = 1048659 ;
-ann_weights[835] = 81 ;
-ann_weights[836] = 1048578 ;
-ann_weights[837] = 1048592 ;
-ann_weights[838] = 54 ;
-ann_weights[839] = 1048633 ;
-ann_weights[840] = 1048602 ;
-ann_weights[841] = 18 ;
-ann_weights[842] = 1048625 ;
-ann_weights[843] = 80 ;
-ann_weights[844] = 1048650 ;
-ann_weights[845] = 1048650 ;
-ann_weights[846] = 1048627 ;
-ann_weights[847] = 1048577 ;
-ann_weights[848] = 1048651 ;
-ann_weights[849] = 48 ;
-ann_weights[850] = 1048662 ;
-ann_weights[851] = 55 ;
-ann_weights[852] = 1048621 ;
-ann_weights[853] = 1048653 ;
-ann_weights[854] = 18 ;
-ann_weights[855] = 1048599 ;
-ann_weights[856] = 1048657 ;
-ann_weights[857] = 1048644 ;
-ann_weights[858] = 15 ;
-ann_weights[859] = 53 ;
-ann_weights[860] = 33 ;
-ann_weights[861] = 142 ;
-ann_weights[862] = 1048629 ;
-ann_weights[863] = 6 ;
-ann_weights[864] = 40 ;
-ann_weights[865] = 1048657 ;
-ann_weights[866] = 1048677 ;
-ann_weights[867] = 78 ;
-ann_weights[868] = 1048682 ;
-ann_weights[869] = 80 ;
-ann_weights[870] = 42 ;
-ann_weights[871] = 98 ;
-ann_weights[872] = 1048759 ;
-ann_weights[873] = 1048649 ;
-ann_weights[874] = 1048878 ;
-ann_weights[875] = 34 ;
-ann_weights[876] = 99 ;
-ann_weights[877] = 1048788 ;
-ann_weights[878] = 1048819 ;
-ann_weights[879] = 1048769 ;
-ann_weights[880] = 1048702 ;
-ann_weights[881] = 1048679 ;
-ann_weights[882] = 1048856 ;
-ann_weights[883] = 1048699 ;
-ann_weights[884] = 1048965 ;
-ann_weights[885] = 1048608 ;
-ann_weights[886] = 61 ;
-ann_weights[887] = 1048685 ;
-ann_weights[888] = 1048713 ;
-ann_weights[889] = 1048793 ;
-ann_weights[890] = 1048802 ;
-ann_weights[891] = 1048815 ;
-ann_weights[892] = 1048721 ;
-ann_weights[893] = 214 ;
-ann_weights[894] = 1048847 ;
-ann_weights[895] = 1048808 ;
-ann_weights[896] = 225 ;
-ann_weights[897] = 1048686 ;
-ann_weights[898] = 1048834 ;
-ann_weights[899] = 1048787 ;
-ann_weights[900] = 1048927 ;
-ann_weights[901] = 1048846 ;
-ann_weights[902] = 1048648 ;
-ann_weights[903] = 102 ;
-ann_weights[904] = 1048925 ;
-ann_weights[905] = 1048782 ;
-ann_weights[906] = 281 ;
-ann_weights[907] = 1048843 ;
-ann_weights[908] = 1048832 ;
-ann_weights[909] = 1048773 ;
-ann_weights[910] = 1048818 ;
-ann_weights[911] = 1049000 ;
-ann_weights[912] = 129 ;
-ann_weights[913] = 191 ;
-ann_weights[914] = 1048920 ;
-ann_weights[915] = 1049048 ;
-ann_weights[916] = 234 ;
-ann_weights[917] = 1049000 ;
-ann_weights[918] = 1049032 ;
-ann_weights[919] = 1048800 ;
-ann_weights[920] = 1048758 ;
-ann_weights[921] = 1049044 ;
-ann_weights[922] = 83 ;
-ann_weights[923] = 188 ;
-ann_weights[924] = 1049106 ;
-ann_weights[925] = 1048762 ;
-ann_weights[926] = 296 ;
-ann_weights[927] = 1049002 ;
-ann_weights[928] = 1048901 ;
-ann_weights[929] = 1049046 ;
-ann_weights[930] = 1048817 ;
-ann_weights[931] = 1048874 ;
-ann_weights[932] = 317 ;
-ann_weights[933] = 25 ;
-ann_weights[934] = 1049231 ;
-ann_weights[935] = 1048728 ;
-ann_weights[936] = 200 ;
-ann_weights[937] = 1049242 ;
-ann_weights[938] = 1048895 ;
-ann_weights[939] = 1049111 ;
-ann_weights[940] = 1048727 ;
-ann_weights[941] = 1049134 ;
-ann_weights[942] = 253 ;
-ann_weights[943] = 96 ;
-ann_weights[944] = 1049335 ;
-ann_weights[945] = 1048728 ;
-ann_weights[946] = 167 ;
-ann_weights[947] = 1049169 ;
-ann_weights[948] = 1048838 ;
-ann_weights[949] = 1049421 ;
-ann_weights[950] = 1048703 ;
-ann_weights[951] = 1049244 ;
-ann_weights[952] = 277 ;
-ann_weights[953] = 293 ;
-ann_weights[954] = 1049346 ;
-ann_weights[955] = 1048873 ;
-ann_weights[956] = 202 ;
-ann_weights[957] = 1049224 ;
-ann_weights[958] = 1048929 ;
-ann_weights[959] = 1049591 ;
-ann_weights[960] = 1048778 ;
-ann_weights[961] = 1048873 ;
-ann_weights[962] = 360 ;
-ann_weights[963] = 284 ;
-ann_weights[964] = 1049497 ;
-ann_weights[965] = 1048684 ;
-ann_weights[966] = 150 ;
-ann_weights[967] = 1049155 ;
-ann_weights[968] = 1048971 ;
-ann_weights[969] = 1049751 ;
-ann_weights[970] = 42 ;
-ann_weights[971] = 1048776 ;
-ann_weights[972] = 337 ;
-ann_weights[973] = 231 ;
-ann_weights[974] = 1049533 ;
-ann_weights[975] = 1048684 ;
-ann_weights[976] = 183 ;
-ann_weights[977] = 1049170 ;
-ann_weights[978] = 1048860 ;
-ann_weights[979] = 1049714 ;
-ann_weights[980] = 1048694 ;
-ann_weights[981] = 1048707 ;
-ann_weights[982] = 170 ;
-ann_weights[983] = 240 ;
-ann_weights[984] = 1049336 ;
-ann_weights[985] = 1048642 ;
-ann_weights[986] = 190 ;
-ann_weights[987] = 1049166 ;
-ann_weights[988] = 1048978 ;
-ann_weights[989] = 1049888 ;
-ann_weights[990] = 1048676 ;
-ann_weights[991] = 1048618 ;
-ann_weights[992] = 123 ;
-ann_weights[993] = 281 ;
-ann_weights[994] = 1049212 ;
-ann_weights[995] = 1048578 ;
-ann_weights[996] = 147 ;
-ann_weights[997] = 1049232 ;
-ann_weights[998] = 1048843 ;
-ann_weights[999] = 1049841 ;
-ann_weights[1000] = 1048583 ;
-ann_weights[1001] = 1048659 ;
-ann_weights[1002] = 117 ;
-ann_weights[1003] = 97 ;
-ann_weights[1004] = 1049048 ;
-ann_weights[1005] = 1048625 ;
-ann_weights[1006] = 36 ;
-ann_weights[1007] = 1049097 ;
-ann_weights[1008] = 1048873 ;
-ann_weights[1009] = 1049761 ;
-ann_weights[1010] = 1048714 ;
-ann_weights[1011] = 1048724 ;
-ann_weights[1012] = 45 ;
-ann_weights[1013] = 162 ;
-ann_weights[1014] = 1049002 ;
-ann_weights[1015] = 89 ;
-ann_weights[1016] = 69 ;
-ann_weights[1017] = 1049137 ;
-ann_weights[1018] = 1048833 ;
-ann_weights[1019] = 1049434 ;
-ann_weights[1020] = 1048942 ;
-ann_weights[1021] = 1048977 ;
-ann_weights[1022] = 1048788 ;
-ann_weights[1023] = 235 ;
-ann_weights[1024] = 1049004 ;
-ann_weights[1025] = 88 ;
-ann_weights[1026] = 170 ;
-ann_weights[1027] = 1048988 ;
-ann_weights[1028] = 1048722 ;
-ann_weights[1029] = 1048847 ;
-ann_weights[1030] = 1048850 ;
-ann_weights[1031] = 1048839 ;
-ann_weights[1032] = 1048750 ;
-ann_weights[1033] = 78 ;
-ann_weights[1034] = 1048782 ;
-ann_weights[1035] = 157 ;
-ann_weights[1036] = 177 ;
-ann_weights[1037] = 1048831 ;
-ann_weights[1038] = 1048933 ;
-ann_weights[1039] = 1049235 ;
-ann_weights[1040] = 1048906 ;
-ann_weights[1041] = 1048967 ;
-ann_weights[1042] = 1048850 ;
-ann_weights[1043] = 175 ;
-ann_weights[1044] = 1048652 ;
-ann_weights[1045] = 153 ;
-ann_weights[1046] = 57 ;
-ann_weights[1047] = 1048881 ;
-ann_weights[1048] = 1048836 ;
-ann_weights[1049] = 1049194 ;
-ann_weights[1050] = 1048864 ;
-ann_weights[1051] = 1048834 ;
-ann_weights[1052] = 1048829 ;
-ann_weights[1053] = 1048773 ;
-ann_weights[1054] = 1048670 ;
-ann_weights[1055] = 256 ;
-ann_weights[1056] = 207 ;
-ann_weights[1057] = 1048822 ;
-ann_weights[1058] = 1048763 ;
-ann_weights[1059] = 1049095 ;
-ann_weights[1060] = 1048924 ;
-ann_weights[1061] = 1048970 ;
-ann_weights[1062] = 1048948 ;
-ann_weights[1063] = 1049011 ;
-ann_weights[1064] = 1048632 ;
-ann_weights[1065] = 74 ;
-ann_weights[1066] = 186 ;
-ann_weights[1067] = 1048796 ;
-ann_weights[1068] = 1048578 ;
-ann_weights[1069] = 1048961 ;
-ann_weights[1070] = 1048900 ;
-ann_weights[1071] = 1049093 ;
-ann_weights[1072] = 1049282 ;
-ann_weights[1073] = 1049098 ;
-ann_weights[1074] = 20 ;
-ann_weights[1075] = 1048600 ;
-ann_weights[1076] = 353 ;
-ann_weights[1077] = 1048659 ;
-ann_weights[1078] = 128 ;
-ann_weights[1079] = 1048722 ;
-ann_weights[1080] = 1048764 ;
-ann_weights[1081] = 1049076 ;
-ann_weights[1082] = 1048614 ;
-ann_weights[1083] = 1048913 ;
-ann_weights[1084] = 1048706 ;
-ann_weights[1085] = 54 ;
-ann_weights[1086] = 199 ;
-ann_weights[1087] = 23 ;
-ann_weights[1088] = 1048606 ;
-ann_weights[1089] = 7 ;
-ann_weights[1090] = 1048690 ;
-ann_weights[1091] = 1048810 ;
-ann_weights[1092] = 148 ;
-ann_weights[1093] = 1048702 ;
-ann_weights[1094] = 1048792 ;
-ann_weights[1095] = 13 ;
-ann_weights[1096] = 1048763 ;
-ann_weights[1097] = 46 ;
-ann_weights[1098] = 1048662 ;
-ann_weights[1099] = 13 ;
-ann_weights[1100] = 1048668 ;
-ann_weights[1101] = 1048671 ;
-ann_weights[1102] = 1048622 ;
-ann_weights[1103] = 1048639 ;
-ann_weights[1104] = 1048771 ;
-ann_weights[1105] = 31 ;
-ann_weights[1106] = 17 ;
-ann_weights[1107] = 7 ;
-ann_weights[1108] = 1048713 ;
-ann_weights[1109] = 1048699 ;
-ann_weights[1110] = 1048625 ;
-ann_weights[1111] = 1048651 ;
-ann_weights[1112] = 58 ;
-ann_weights[1113] = 1048642 ;
-ann_weights[1114] = 70 ;
-ann_weights[1115] = 58 ;
-ann_weights[1116] = 1048638 ;
-ann_weights[1117] = 7 ;
-ann_weights[1118] = 1048662 ;
-ann_weights[1119] = 1048576 ;
-ann_weights[1120] = 3 ;
-ann_weights[1121] = 77 ;
-ann_weights[1122] = 68 ;
-ann_weights[1123] = 1048663 ;
-ann_weights[1124] = 1048660 ;
-ann_weights[1125] = 1048629 ;
-ann_weights[1126] = 1048635 ;
-ann_weights[1127] = 24 ;
-ann_weights[1128] = 58 ;
-ann_weights[1129] = 48 ;
-ann_weights[1130] = 37 ;
-ann_weights[1131] = 31 ;
-ann_weights[1132] = 1048732 ;
-ann_weights[1133] = 110 ;
-ann_weights[1134] = 1048598 ;
-ann_weights[1135] = 1048614 ;
-ann_weights[1136] = 62 ;
-ann_weights[1137] = 26 ;
-ann_weights[1138] = 41 ;
-ann_weights[1139] = 1048655 ;
-ann_weights[1140] = 1048692 ;
-ann_weights[1141] = 107 ;
-ann_weights[1142] = 1048743 ;
-ann_weights[1143] = 34 ;
-ann_weights[1144] = 18 ;
-ann_weights[1145] = 1048804 ;
-ann_weights[1146] = 1048666 ;
-ann_weights[1147] = 64 ;
-ann_weights[1148] = 90 ;
-ann_weights[1149] = 1048709 ;
-ann_weights[1150] = 1048590 ;
-ann_weights[1151] = 0 ;
-ann_weights[1152] = 1048655 ;
-ann_weights[1153] = 189 ;
-ann_weights[1154] = 1048767 ;
-ann_weights[1155] = 1048746 ;
-ann_weights[1156] = 1048578 ;
-ann_weights[1157] = 69 ;
-ann_weights[1158] = 1048850 ;
-ann_weights[1159] = 1048830 ;
-ann_weights[1160] = 1048814 ;
-ann_weights[1161] = 25 ;
-ann_weights[1162] = 1048833 ;
-ann_weights[1163] = 259 ;
-ann_weights[1164] = 74 ;
-ann_weights[1165] = 1048965 ;
-ann_weights[1166] = 122 ;
-ann_weights[1167] = 1048848 ;
-ann_weights[1168] = 1049017 ;
-ann_weights[1169] = 1048894 ;
-ann_weights[1170] = 1048881 ;
-ann_weights[1171] = 55 ;
-ann_weights[1172] = 1048642 ;
-ann_weights[1173] = 341 ;
-ann_weights[1174] = 1048599 ;
-ann_weights[1175] = 1049014 ;
-ann_weights[1176] = 13 ;
-ann_weights[1177] = 1048922 ;
-ann_weights[1178] = 1049186 ;
-ann_weights[1179] = 1048809 ;
-ann_weights[1180] = 1048845 ;
-ann_weights[1181] = 1048681 ;
-ann_weights[1182] = 296 ;
-ann_weights[1183] = 351 ;
-ann_weights[1184] = 1048866 ;
-ann_weights[1185] = 1048935 ;
-ann_weights[1186] = 9 ;
-ann_weights[1187] = 1049081 ;
-ann_weights[1188] = 1049017 ;
-ann_weights[1189] = 1048903 ;
-ann_weights[1190] = 1048700 ;
-ann_weights[1191] = 1048703 ;
-ann_weights[1192] = 102 ;
-ann_weights[1193] = 230 ;
-ann_weights[1194] = 1048714 ;
-ann_weights[1195] = 1048831 ;
-ann_weights[1196] = 1048644 ;
-ann_weights[1197] = 1049234 ;
-ann_weights[1198] = 1048743 ;
-ann_weights[1199] = 1049085 ;
-ann_weights[1200] = 1048630 ;
-ann_weights[1201] = 1048612 ;
-ann_weights[1202] = 140 ;
-ann_weights[1203] = 232 ;
-ann_weights[1204] = 1048860 ;
-ann_weights[1205] = 1049036 ;
-ann_weights[1206] = 49 ;
-ann_weights[1207] = 1049297 ;
-ann_weights[1208] = 0 ;
-ann_weights[1209] = 1049206 ;
-ann_weights[1210] = 39 ;
-ann_weights[1211] = 1048701 ;
-ann_weights[1212] = 268 ;
-ann_weights[1213] = 235 ;
-ann_weights[1214] = 1048951 ;
-ann_weights[1215] = 1048841 ;
-ann_weights[1216] = 1048635 ;
-ann_weights[1217] = 1049385 ;
-ann_weights[1218] = 1048660 ;
-ann_weights[1219] = 1049685 ;
-ann_weights[1220] = 1048659 ;
-ann_weights[1221] = 1048755 ;
-ann_weights[1222] = 161 ;
-ann_weights[1223] = 216 ;
-ann_weights[1224] = 1049067 ;
-ann_weights[1225] = 1048684 ;
-ann_weights[1226] = 111 ;
-ann_weights[1227] = 1049459 ;
-ann_weights[1228] = 14 ;
-ann_weights[1229] = 1049083 ;
-ann_weights[1230] = 29 ;
-ann_weights[1231] = 1048793 ;
-ann_weights[1232] = 229 ;
-ann_weights[1233] = 302 ;
-ann_weights[1234] = 1049014 ;
-ann_weights[1235] = 1048631 ;
-ann_weights[1236] = 1048762 ;
-ann_weights[1237] = 1049218 ;
-ann_weights[1238] = 33 ;
-ann_weights[1239] = 1049051 ;
-ann_weights[1240] = 1048743 ;
-ann_weights[1241] = 1048636 ;
-ann_weights[1242] = 262 ;
-ann_weights[1243] = 270 ;
-ann_weights[1244] = 1048877 ;
-ann_weights[1245] = 1048603 ;
-ann_weights[1246] = 1048780 ;
-ann_weights[1247] = 1049213 ;
-ann_weights[1248] = 104 ;
-ann_weights[1249] = 1049034 ;
-ann_weights[1250] = 35 ;
-ann_weights[1251] = 59 ;
-ann_weights[1252] = 165 ;
-ann_weights[1253] = 252 ;
-ann_weights[1254] = 1048784 ;
-ann_weights[1255] = 1048795 ;
-ann_weights[1256] = 1048677 ;
-ann_weights[1257] = 1049083 ;
-ann_weights[1258] = 76 ;
-ann_weights[1259] = 1048930 ;
-ann_weights[1260] = 1048659 ;
-ann_weights[1261] = 20 ;
-ann_weights[1262] = 122 ;
-ann_weights[1263] = 154 ;
-ann_weights[1264] = 1048989 ;
-ann_weights[1265] = 1048754 ;
-ann_weights[1266] = 1048724 ;
-ann_weights[1267] = 1049191 ;
-ann_weights[1268] = 132 ;
-ann_weights[1269] = 1049060 ;
-ann_weights[1270] = 77 ;
-ann_weights[1271] = 47 ;
-ann_weights[1272] = 67 ;
-ann_weights[1273] = 66 ;
-ann_weights[1274] = 1048984 ;
-ann_weights[1275] = 83 ;
-ann_weights[1276] = 1048740 ;
-ann_weights[1277] = 1049231 ;
-ann_weights[1278] = 177 ;
-ann_weights[1279] = 1049083 ;
-ann_weights[1280] = 1048702 ;
-ann_weights[1281] = 1048582 ;
-ann_weights[1282] = 31 ;
-ann_weights[1283] = 145 ;
-ann_weights[1284] = 1048828 ;
-ann_weights[1285] = 94 ;
-ann_weights[1286] = 6 ;
-ann_weights[1287] = 1049483 ;
-ann_weights[1288] = 65 ;
-ann_weights[1289] = 1049238 ;
-ann_weights[1290] = 91 ;
-ann_weights[1291] = 1048700 ;
-ann_weights[1292] = 66 ;
-ann_weights[1293] = 118 ;
-ann_weights[1294] = 1048697 ;
-ann_weights[1295] = 96 ;
-ann_weights[1296] = 28 ;
-ann_weights[1297] = 1049628 ;
-ann_weights[1298] = 51 ;
-ann_weights[1299] = 1049111 ;
-ann_weights[1300] = 1048589 ;
-ann_weights[1301] = 1048709 ;
-ann_weights[1302] = 1048625 ;
-ann_weights[1303] = 104 ;
-ann_weights[1304] = 1048774 ;
-ann_weights[1305] = 126 ;
-ann_weights[1306] = 18 ;
-ann_weights[1307] = 1049538 ;
-ann_weights[1308] = 1048586 ;
-ann_weights[1309] = 1049112 ;
-ann_weights[1310] = 1048683 ;
-ann_weights[1311] = 52 ;
-ann_weights[1312] = 1048763 ;
-ann_weights[1313] = 42 ;
-ann_weights[1314] = 96 ;
-ann_weights[1315] = 132 ;
-ann_weights[1316] = 164 ;
-ann_weights[1317] = 1049363 ;
-ann_weights[1318] = 37 ;
-ann_weights[1319] = 1049233 ;
-ann_weights[1320] = 1048665 ;
-ann_weights[1321] = 76 ;
-ann_weights[1322] = 1048693 ;
-ann_weights[1323] = 1048702 ;
-ann_weights[1324] = 320 ;
-ann_weights[1325] = 1048699 ;
-ann_weights[1326] = 226 ;
-ann_weights[1327] = 1049239 ;
-ann_weights[1328] = 18 ;
-ann_weights[1329] = 1049122 ;
-ann_weights[1330] = 1048717 ;
-ann_weights[1331] = 30 ;
-ann_weights[1332] = 1048908 ;
-ann_weights[1333] = 1048855 ;
-ann_weights[1334] = 278 ;
-ann_weights[1335] = 122 ;
-ann_weights[1336] = 260 ;
-ann_weights[1337] = 1048800 ;
-ann_weights[1338] = 54 ;
-ann_weights[1339] = 1049689 ;
-ann_weights[1340] = 1048702 ;
-ann_weights[1341] = 1048724 ;
-ann_weights[1342] = 1049044 ;
-ann_weights[1343] = 1048781 ;
-ann_weights[1344] = 330 ;
-ann_weights[1345] = 118 ;
-ann_weights[1346] = 244 ;
-ann_weights[1347] = 1048903 ;
-ann_weights[1348] = 1048748 ;
-ann_weights[1349] = 1049485 ;
-ann_weights[1350] = 1048687 ;
-ann_weights[1351] = 1048757 ;
-ann_weights[1352] = 1049242 ;
-ann_weights[1353] = 1049322 ;
-ann_weights[1354] = 299 ;
-ann_weights[1355] = 211 ;
-ann_weights[1356] = 290 ;
-ann_weights[1357] = 1048863 ;
-ann_weights[1358] = 1048728 ;
-ann_weights[1359] = 1049277 ;
-ann_weights[1360] = 1048829 ;
-ann_weights[1361] = 1049034 ;
-ann_weights[1362] = 1049082 ;
-ann_weights[1363] = 1049243 ;
-ann_weights[1364] = 255 ;
-ann_weights[1365] = 284 ;
-ann_weights[1366] = 1048594 ;
-ann_weights[1367] = 1048958 ;
-ann_weights[1368] = 44 ;
-ann_weights[1369] = 1048905 ;
-ann_weights[1370] = 1048820 ;
-ann_weights[1371] = 1049103 ;
-ann_weights[1372] = 1048672 ;
-ann_weights[1373] = 1048775 ;
-ann_weights[1374] = 1048616 ;
-ann_weights[1375] = 300 ;
-ann_weights[1376] = 1048668 ;
-ann_weights[1377] = 1048800 ;
-ann_weights[1378] = 140 ;
-ann_weights[1379] = 1048858 ;
-ann_weights[1380] = 1048713 ;
-ann_weights[1381] = 1048822 ;
-ann_weights[1382] = 1048673 ;
-ann_weights[1383] = 1048687 ;
-ann_weights[1384] = 1048681 ;
-ann_weights[1385] = 66 ;
-ann_weights[1386] = 1048683 ;
-ann_weights[1387] = 1048636 ;
-ann_weights[1388] = 92 ;
-ann_weights[1389] = 1048606 ;
-ann_weights[1390] = 1048678 ;
-ann_weights[1391] = 1048759 ;
-ann_weights[1392] = 1048780 ;
-ann_weights[1393] = 1048663 ;
-ann_weights[1394] = 1048690 ;
-ann_weights[1395] = 1048787 ;
-ann_weights[1396] = 73 ;
-ann_weights[1397] = 1048624 ;
-ann_weights[1398] = 49 ;
-ann_weights[1399] = 1048729 ;
-ann_weights[1400] = 19 ;
-ann_weights[1401] = 1048601 ;
-ann_weights[1402] = 28 ;
-ann_weights[1403] = 65 ;
-ann_weights[1404] = 80 ;
-ann_weights[1405] = 1048577 ;
-ann_weights[1406] = 1048643 ;
-ann_weights[1407] = 58 ;
-ann_weights[1408] = 13 ;
-ann_weights[1409] = 1048652 ;
-ann_weights[1410] = 35 ;
-ann_weights[1411] = 84 ;
-ann_weights[1412] = 1048594 ;
-ann_weights[1413] = 1048646 ;
-ann_weights[1414] = 1048658 ;
-ann_weights[1415] = 46 ;
-ann_weights[1416] = 1048584 ;
-ann_weights[1417] = 35 ;
-ann_weights[1418] = 71 ;
-ann_weights[1419] = 1048607 ;
-ann_weights[1420] = 1048784 ;
-ann_weights[1421] = 114 ;
-ann_weights[1422] = 1048601 ;
-ann_weights[1423] = 35 ;
-ann_weights[1424] = 1048809 ;
-ann_weights[1425] = 1048836 ;
-ann_weights[1426] = 119 ;
-ann_weights[1427] = 1048750 ;
-ann_weights[1428] = 1048866 ;
-ann_weights[1429] = 1048769 ;
-ann_weights[1430] = 1048784 ;
-ann_weights[1431] = 111 ;
-ann_weights[1432] = 1048612 ;
-ann_weights[1433] = 128 ;
-ann_weights[1434] = 1048587 ;
-ann_weights[1435] = 1048773 ;
-ann_weights[1436] = 1048786 ;
-ann_weights[1437] = 1048693 ;
-ann_weights[1438] = 1048929 ;
-ann_weights[1439] = 1048833 ;
-ann_weights[1440] = 1048907 ;
-ann_weights[1441] = 193 ;
-ann_weights[1442] = 1048598 ;
-ann_weights[1443] = 286 ;
-ann_weights[1444] = 124 ;
-ann_weights[1445] = 1049163 ;
-ann_weights[1446] = 67 ;
-ann_weights[1447] = 1048796 ;
-ann_weights[1448] = 1049056 ;
-ann_weights[1449] = 1048894 ;
-ann_weights[1450] = 1048987 ;
-ann_weights[1451] = 90 ;
-ann_weights[1452] = 55 ;
-ann_weights[1453] = 398 ;
-ann_weights[1454] = 135 ;
-ann_weights[1455] = 1049022 ;
-ann_weights[1456] = 1048784 ;
-ann_weights[1457] = 119 ;
-ann_weights[1458] = 1049158 ;
-ann_weights[1459] = 1049184 ;
-ann_weights[1460] = 1048712 ;
-ann_weights[1461] = 1048578 ;
-ann_weights[1462] = 144 ;
-ann_weights[1463] = 250 ;
-ann_weights[1464] = 1048594 ;
-ann_weights[1465] = 1048831 ;
-ann_weights[1466] = 1048661 ;
-ann_weights[1467] = 22 ;
-ann_weights[1468] = 1048873 ;
-ann_weights[1469] = 1049377 ;
-ann_weights[1470] = 1048713 ;
-ann_weights[1471] = 1048741 ;
-ann_weights[1472] = 33 ;
-ann_weights[1473] = 148 ;
-ann_weights[1474] = 1048590 ;
-ann_weights[1475] = 1048727 ;
-ann_weights[1476] = 1048769 ;
-ann_weights[1477] = 59 ;
-ann_weights[1478] = 1048586 ;
-ann_weights[1479] = 1049131 ;
-ann_weights[1480] = 10 ;
-ann_weights[1481] = 1048923 ;
-ann_weights[1482] = 65 ;
-ann_weights[1483] = 83 ;
-ann_weights[1484] = 1048619 ;
-ann_weights[1485] = 1048671 ;
-ann_weights[1486] = 64 ;
-ann_weights[1487] = 129 ;
-ann_weights[1488] = 1048728 ;
-ann_weights[1489] = 1048981 ;
-ann_weights[1490] = 1048597 ;
-ann_weights[1491] = 1048926 ;
-ann_weights[1492] = 119 ;
-ann_weights[1493] = 123 ;
-ann_weights[1494] = 1048626 ;
-ann_weights[1495] = 1048686 ;
-ann_weights[1496] = 1048689 ;
-ann_weights[1497] = 1048594 ;
-ann_weights[1498] = 1048630 ;
-ann_weights[1499] = 1048929 ;
-ann_weights[1500] = 77 ;
-ann_weights[1501] = 1048855 ;
-ann_weights[1502] = 119 ;
-ann_weights[1503] = 96 ;
-ann_weights[1504] = 1048776 ;
-ann_weights[1505] = 25 ;
-ann_weights[1506] = 1048664 ;
-ann_weights[1507] = 1048775 ;
-ann_weights[1508] = 1048776 ;
-ann_weights[1509] = 1048850 ;
-ann_weights[1510] = 0 ;
-ann_weights[1511] = 1048937 ;
-ann_weights[1512] = 151 ;
-ann_weights[1513] = 91 ;
-ann_weights[1514] = 1048726 ;
-ann_weights[1515] = 1048632 ;
-ann_weights[1516] = 1048876 ;
-ann_weights[1517] = 1048807 ;
-ann_weights[1518] = 72 ;
-ann_weights[1519] = 111 ;
-ann_weights[1520] = 1048658 ;
-ann_weights[1521] = 1048769 ;
-ann_weights[1522] = 118 ;
-ann_weights[1523] = 8 ;
-ann_weights[1524] = 1048766 ;
-ann_weights[1525] = 1048602 ;
-ann_weights[1526] = 1048760 ;
-ann_weights[1527] = 1048793 ;
-ann_weights[1528] = 84 ;
-ann_weights[1529] = 1048604 ;
-ann_weights[1530] = 69 ;
-ann_weights[1531] = 1048700 ;
-ann_weights[1532] = 207 ;
-ann_weights[1533] = 132 ;
-ann_weights[1534] = 1048826 ;
-ann_weights[1535] = 1048654 ;
-ann_weights[1536] = 1048819 ;
-ann_weights[1537] = 1048807 ;
-ann_weights[1538] = 175 ;
-ann_weights[1539] = 46 ;
-ann_weights[1540] = 88 ;
-ann_weights[1541] = 1048599 ;
-ann_weights[1542] = 150 ;
-ann_weights[1543] = 1048618 ;
-ann_weights[1544] = 1048676 ;
-ann_weights[1545] = 1048621 ;
-ann_weights[1546] = 1048694 ;
-ann_weights[1547] = 1048924 ;
-ann_weights[1548] = 62 ;
-ann_weights[1549] = 1048741 ;
-ann_weights[1550] = 55 ;
-ann_weights[1551] = 1048581 ;
-ann_weights[1552] = 200 ;
-ann_weights[1553] = 153 ;
-ann_weights[1554] = 1048706 ;
-ann_weights[1555] = 1048729 ;
-ann_weights[1556] = 1048671 ;
-ann_weights[1557] = 1048954 ;
-ann_weights[1558] = 105 ;
-ann_weights[1559] = 1048824 ;
-ann_weights[1560] = 98 ;
-ann_weights[1561] = 1048779 ;
-ann_weights[1562] = 216 ;
-ann_weights[1563] = 161 ;
-ann_weights[1564] = 56 ;
-ann_weights[1565] = 29 ;
-ann_weights[1566] = 1048725 ;
-ann_weights[1567] = 1048930 ;
-ann_weights[1568] = 134 ;
-ann_weights[1569] = 1048928 ;
-ann_weights[1570] = 137 ;
-ann_weights[1571] = 1048849 ;
-ann_weights[1572] = 133 ;
-ann_weights[1573] = 1048675 ;
-ann_weights[1574] = 1048599 ;
-ann_weights[1575] = 82 ;
-ann_weights[1576] = 48 ;
-ann_weights[1577] = 1049054 ;
-ann_weights[1578] = 104 ;
-ann_weights[1579] = 1048978 ;
-ann_weights[1580] = 62 ;
-ann_weights[1581] = 1048706 ;
-ann_weights[1582] = 129 ;
-ann_weights[1583] = 1048599 ;
-ann_weights[1584] = 1048586 ;
-ann_weights[1585] = 102 ;
-ann_weights[1586] = 84 ;
-ann_weights[1587] = 1049027 ;
-ann_weights[1588] = 1048606 ;
-ann_weights[1589] = 1048952 ;
-ann_weights[1590] = 81 ;
-ann_weights[1591] = 1048626 ;
-ann_weights[1592] = 1048630 ;
-ann_weights[1593] = 62 ;
-ann_weights[1594] = 43 ;
-ann_weights[1595] = 102 ;
-ann_weights[1596] = 160 ;
-ann_weights[1597] = 1049237 ;
-ann_weights[1598] = 57 ;
-ann_weights[1599] = 1048941 ;
-ann_weights[1600] = 1048646 ;
-ann_weights[1601] = 17 ;
-ann_weights[1602] = 1048587 ;
-ann_weights[1603] = 1048747 ;
-ann_weights[1604] = 53 ;
-ann_weights[1605] = 90 ;
-ann_weights[1606] = 127 ;
-ann_weights[1607] = 1049450 ;
-ann_weights[1608] = 70 ;
-ann_weights[1609] = 1048880 ;
-ann_weights[1610] = 1048611 ;
-ann_weights[1611] = 168 ;
-ann_weights[1612] = 1048659 ;
-ann_weights[1613] = 1048715 ;
-ann_weights[1614] = 25 ;
-ann_weights[1615] = 43 ;
-ann_weights[1616] = 101 ;
-ann_weights[1617] = 1049370 ;
-ann_weights[1618] = 1048609 ;
-ann_weights[1619] = 1048951 ;
-ann_weights[1620] = 12 ;
-ann_weights[1621] = 201 ;
-ann_weights[1622] = 1048713 ;
-ann_weights[1623] = 1048768 ;
-ann_weights[1624] = 123 ;
-ann_weights[1625] = 104 ;
-ann_weights[1626] = 111 ;
-ann_weights[1627] = 1049150 ;
-ann_weights[1628] = 1048731 ;
-ann_weights[1629] = 1049234 ;
-ann_weights[1630] = 1048856 ;
-ann_weights[1631] = 19 ;
-ann_weights[1632] = 1048869 ;
-ann_weights[1633] = 1049003 ;
-ann_weights[1634] = 416 ;
-ann_weights[1635] = 237 ;
-ann_weights[1636] = 294 ;
-ann_weights[1637] = 1049404 ;
-ann_weights[1638] = 1048856 ;
-ann_weights[1639] = 1049944 ;
-ann_weights[1640] = 1048966 ;
-ann_weights[1641] = 1048587 ;
-ann_weights[1642] = 1049085 ;
-ann_weights[1643] = 1049094 ;
-ann_weights[1644] = 93 ;
-ann_weights[1645] = 294 ;
-ann_weights[1646] = 79 ;
-ann_weights[1647] = 1049250 ;
-ann_weights[1648] = 1048642 ;
-ann_weights[1649] = 1049464 ;
-ann_weights[1650] = 1049306 ;
-ann_weights[1651] = 1049107 ;
-ann_weights[1652] = 1048862 ;
-ann_weights[1653] = 1049178 ;
-ann_weights[1654] = 1048663 ;
-ann_weights[1655] = 478 ;
-ann_weights[1656] = 1048654 ;
-ann_weights[1657] = 1048914 ;
-ann_weights[1658] = 268 ;
-ann_weights[1659] = 1049061 ;
-ann_weights[1660] = 1048999 ;
-ann_weights[1661] = 1048885 ;
-ann_weights[1662] = 1048893 ;
-ann_weights[1663] = 1048778 ;
-ann_weights[1664] = 1048841 ;
-ann_weights[1665] = 381 ;
-ann_weights[1666] = 1048583 ;
-ann_weights[1667] = 1048875 ;
-ann_weights[1668] = 1048672 ;
-ann_weights[1669] = 1048926 ;
-ann_weights[1670] = 1048774 ;
-ann_weights[1671] = 1048769 ;
-ann_weights[1672] = 1048699 ;
-ann_weights[1673] = 1048800 ;
-ann_weights[1674] = 1048796 ;
-ann_weights[1675] = 58 ;
-ann_weights[1676] = 98 ;
-ann_weights[1677] = 1048625 ;
-ann_weights[1678] = 1048714 ;
-ann_weights[1679] = 1048657 ;
-ann_weights[1680] = 1048638 ;
-ann_weights[1681] = 76 ;
-ann_weights[1682] = 1048637 ;
-ann_weights[1683] = 8 ;
-ann_weights[1684] = 1048591 ;
-ann_weights[1685] = 1048583 ;
-ann_weights[1686] = 1048603 ;
-ann_weights[1687] = 42 ;
-ann_weights[1688] = 0 ;
-ann_weights[1689] = 38 ;
-ann_weights[1690] = 1048584 ;
-ann_weights[1691] = 1048676 ;
-ann_weights[1692] = 1048637 ;
-ann_weights[1693] = 202 ;
-ann_weights[1694] = 1048676 ;
-ann_weights[1695] = 1048631 ;
-ann_weights[1696] = 48 ;
-ann_weights[1697] = 1048715 ;
-ann_weights[1698] = 1048760 ;
-ann_weights[1699] = 1048725 ;
-ann_weights[1700] = 1048782 ;
-ann_weights[1701] = 1048840 ;
-ann_weights[1702] = 1048745 ;
-ann_weights[1703] = 1048590 ;
-ann_weights[1704] = 1048836 ;
-ann_weights[1705] = 24 ;
-ann_weights[1706] = 1048707 ;
-ann_weights[1707] = 205 ;
-ann_weights[1708] = 1048876 ;
-ann_weights[1709] = 1048830 ;
-ann_weights[1710] = 1048774 ;
-ann_weights[1711] = 61 ;
-ann_weights[1712] = 1048658 ;
-ann_weights[1713] = 251 ;
-ann_weights[1714] = 1048853 ;
-ann_weights[1715] = 1049163 ;
-ann_weights[1716] = 1048989 ;
-ann_weights[1717] = 245 ;
-ann_weights[1718] = 1049039 ;
-ann_weights[1719] = 1048950 ;
-ann_weights[1720] = 1048941 ;
-ann_weights[1721] = 65 ;
-ann_weights[1722] = 124 ;
-ann_weights[1723] = 141 ;
-ann_weights[1724] = 29 ;
-ann_weights[1725] = 1049029 ;
-ann_weights[1726] = 1048711 ;
-ann_weights[1727] = 2 ;
-ann_weights[1728] = 1048934 ;
-ann_weights[1729] = 1049206 ;
-ann_weights[1730] = 1048616 ;
-ann_weights[1731] = 1048717 ;
-ann_weights[1732] = 137 ;
-ann_weights[1733] = 261 ;
-ann_weights[1734] = 172 ;
-ann_weights[1735] = 1048826 ;
-ann_weights[1736] = 1048843 ;
-ann_weights[1737] = 234 ;
-ann_weights[1738] = 1048792 ;
-ann_weights[1739] = 1049430 ;
-ann_weights[1740] = 1048686 ;
-ann_weights[1741] = 1048597 ;
-ann_weights[1742] = 70 ;
-ann_weights[1743] = 206 ;
-ann_weights[1744] = 30 ;
-ann_weights[1745] = 1048738 ;
-ann_weights[1746] = 1048751 ;
-ann_weights[1747] = 209 ;
-ann_weights[1748] = 1048809 ;
-ann_weights[1749] = 1049005 ;
-ann_weights[1750] = 15 ;
-ann_weights[1751] = 1048908 ;
-ann_weights[1752] = 113 ;
-ann_weights[1753] = 105 ;
-ann_weights[1754] = 1048623 ;
-ann_weights[1755] = 1048668 ;
-ann_weights[1756] = 1048690 ;
-ann_weights[1757] = 124 ;
-ann_weights[1758] = 1048718 ;
-ann_weights[1759] = 1049059 ;
-ann_weights[1760] = 1048703 ;
-ann_weights[1761] = 1048972 ;
-ann_weights[1762] = 127 ;
-ann_weights[1763] = 74 ;
-ann_weights[1764] = 1048580 ;
-ann_weights[1765] = 25 ;
-ann_weights[1766] = 1048579 ;
-ann_weights[1767] = 192 ;
-ann_weights[1768] = 1048579 ;
-ann_weights[1769] = 1048818 ;
-ann_weights[1770] = 1048873 ;
-ann_weights[1771] = 1048930 ;
-ann_weights[1772] = 47 ;
-ann_weights[1773] = 82 ;
-ann_weights[1774] = 1048669 ;
-ann_weights[1775] = 1048631 ;
-ann_weights[1776] = 1048671 ;
-ann_weights[1777] = 154 ;
-ann_weights[1778] = 1048670 ;
-ann_weights[1779] = 1048667 ;
-ann_weights[1780] = 1 ;
-ann_weights[1781] = 1048854 ;
-ann_weights[1782] = 142 ;
-ann_weights[1783] = 152 ;
-ann_weights[1784] = 1048718 ;
-ann_weights[1785] = 11 ;
-ann_weights[1786] = 1048824 ;
-ann_weights[1787] = 84 ;
-ann_weights[1788] = 1048605 ;
-ann_weights[1789] = 1048619 ;
-ann_weights[1790] = 1048637 ;
-ann_weights[1791] = 1048797 ;
-ann_weights[1792] = 1048616 ;
-ann_weights[1793] = 75 ;
-ann_weights[1794] = 1048811 ;
-ann_weights[1795] = 52 ;
-ann_weights[1796] = 1048729 ;
-ann_weights[1797] = 243 ;
-ann_weights[1798] = 1048596 ;
-ann_weights[1799] = 72 ;
-ann_weights[1800] = 1048604 ;
-ann_weights[1801] = 1048721 ;
-ann_weights[1802] = 37 ;
-ann_weights[1803] = 134 ;
-ann_weights[1804] = 1048908 ;
-ann_weights[1805] = 6 ;
-ann_weights[1806] = 1048785 ;
-ann_weights[1807] = 11 ;
-ann_weights[1808] = 18 ;
-ann_weights[1809] = 94 ;
-ann_weights[1810] = 151 ;
-ann_weights[1811] = 1048792 ;
-ann_weights[1812] = 35 ;
-ann_weights[1813] = 158 ;
-ann_weights[1814] = 1048921 ;
-ann_weights[1815] = 1048592 ;
-ann_weights[1816] = 1048704 ;
-ann_weights[1817] = 1048648 ;
-ann_weights[1818] = 74 ;
-ann_weights[1819] = 278 ;
-ann_weights[1820] = 157 ;
-ann_weights[1821] = 1048772 ;
-ann_weights[1822] = 37 ;
-ann_weights[1823] = 127 ;
-ann_weights[1824] = 1048960 ;
-ann_weights[1825] = 40 ;
-ann_weights[1826] = 1048794 ;
-ann_weights[1827] = 1048646 ;
-ann_weights[1828] = 79 ;
-ann_weights[1829] = 279 ;
-ann_weights[1830] = 8 ;
-ann_weights[1831] = 1048898 ;
-ann_weights[1832] = 35 ;
-ann_weights[1833] = 73 ;
-ann_weights[1834] = 1048996 ;
-ann_weights[1835] = 1048640 ;
-ann_weights[1836] = 1048636 ;
-ann_weights[1837] = 1048695 ;
-ann_weights[1838] = 95 ;
-ann_weights[1839] = 191 ;
-ann_weights[1840] = 93 ;
-ann_weights[1841] = 1048850 ;
-ann_weights[1842] = 89 ;
-ann_weights[1843] = 181 ;
-ann_weights[1844] = 1049045 ;
-ann_weights[1845] = 1048658 ;
-ann_weights[1846] = 1048788 ;
-ann_weights[1847] = 9 ;
-ann_weights[1848] = 118 ;
-ann_weights[1849] = 208 ;
-ann_weights[1850] = 129 ;
-ann_weights[1851] = 1048891 ;
-ann_weights[1852] = 1048597 ;
-ann_weights[1853] = 1048580 ;
-ann_weights[1854] = 1048820 ;
-ann_weights[1855] = 29 ;
-ann_weights[1856] = 1048738 ;
-ann_weights[1857] = 1048666 ;
-ann_weights[1858] = 52 ;
-ann_weights[1859] = 186 ;
-ann_weights[1860] = 220 ;
-ann_weights[1861] = 1048663 ;
-ann_weights[1862] = 1048614 ;
-ann_weights[1863] = 145 ;
-ann_weights[1864] = 1048816 ;
-ann_weights[1865] = 75 ;
-ann_weights[1866] = 1048805 ;
-ann_weights[1867] = 1048687 ;
-ann_weights[1868] = 27 ;
-ann_weights[1869] = 224 ;
-ann_weights[1870] = 185 ;
-ann_weights[1871] = 1048681 ;
-ann_weights[1872] = 1048635 ;
-ann_weights[1873] = 1048621 ;
-ann_weights[1874] = 1048687 ;
-ann_weights[1875] = 123 ;
-ann_weights[1876] = 1048652 ;
-ann_weights[1877] = 1048639 ;
-ann_weights[1878] = 65 ;
-ann_weights[1879] = 0 ;
-ann_weights[1880] = 87 ;
-ann_weights[1881] = 90 ;
-ann_weights[1882] = 1048646 ;
-ann_weights[1883] = 1048602 ;
-ann_weights[1884] = 1048640 ;
-ann_weights[1885] = 185 ;
-ann_weights[1886] = 1048598 ;
-ann_weights[1887] = 1048721 ;
-ann_weights[1888] = 136 ;
-ann_weights[1889] = 49 ;
-ann_weights[1890] = 138 ;
-ann_weights[1891] = 31 ;
-ann_weights[1892] = 1048658 ;
-ann_weights[1893] = 1048589 ;
-ann_weights[1894] = 1048700 ;
-ann_weights[1895] = 75 ;
-ann_weights[1896] = 8 ;
-ann_weights[1897] = 1048654 ;
-ann_weights[1898] = 31 ;
-ann_weights[1899] = 1048745 ;
-ann_weights[1900] = 158 ;
-ann_weights[1901] = 1048576 ;
-ann_weights[1902] = 1048727 ;
-ann_weights[1903] = 1048779 ;
-ann_weights[1904] = 165 ;
-ann_weights[1905] = 158 ;
-ann_weights[1906] = 28 ;
-ann_weights[1907] = 1048743 ;
-ann_weights[1908] = 1048591 ;
-ann_weights[1909] = 1048950 ;
-ann_weights[1910] = 1048617 ;
-ann_weights[1911] = 16 ;
-ann_weights[1912] = 1049026 ;
-ann_weights[1913] = 1048868 ;
-ann_weights[1914] = 320 ;
-ann_weights[1915] = 200 ;
-ann_weights[1916] = 50 ;
-ann_weights[1917] = 1049034 ;
-ann_weights[1918] = 87 ;
-ann_weights[1919] = 1049155 ;
-ann_weights[1920] = 1049190 ;
-ann_weights[1921] = 1048733 ;
-ann_weights[1922] = 1049269 ;
-ann_weights[1923] = 1049027 ;
-ann_weights[1924] = 54 ;
-ann_weights[1925] = 467 ;
-ann_weights[1926] = 150 ;
-ann_weights[1927] = 1049178 ;
-ann_weights[1928] = 1048629 ;
-ann_weights[1929] = 1049169 ;
-ann_weights[1930] = 1049522 ;
-ann_weights[1931] = 1049498 ;
-ann_weights[1932] = 1049063 ;
-ann_weights[1933] = 1049490 ;
-ann_weights[1934] = 1048763 ;
-ann_weights[1935] = 506 ;
-ann_weights[1936] = 1048651 ;
-ann_weights[1937] = 1049321 ;
-ann_weights[1938] = 210 ;
-ann_weights[1939] = 1049001 ;
-ann_weights[1940] = 1049118 ;
-ann_weights[1941] = 1048830 ;
-ann_weights[1942] = 1049020 ;
-ann_weights[1943] = 1048958 ;
-ann_weights[1944] = 75 ;
-ann_weights[1945] = 368 ;
-ann_weights[1946] = 1048744 ;
-ann_weights[1947] = 1049094 ;
-ann_weights[1948] = 1048585 ;
-ann_weights[1949] = 1048972 ;
-ann_weights[1950] = 1048886 ;
-ann_weights[1951] = 1048641 ;
-ann_weights[1952] = 1048841 ;
-ann_weights[1953] = 1048631 ;
-ann_weights[1954] = 1048794 ;
-ann_weights[1955] = 140 ;
-ann_weights[1956] = 1048631 ;
-ann_weights[1957] = 1048866 ;
-ann_weights[1958] = 1048601 ;
-ann_weights[1959] = 1048730 ;
-ann_weights[1960] = 34 ;
-ann_weights[1961] = 1048616 ;
-ann_weights[1962] = 67 ;
-ann_weights[1963] = 18 ;
-ann_weights[1964] = 7 ;
-ann_weights[1965] = 30 ;
-ann_weights[1966] = 11 ;
-ann_weights[1967] = 31 ;
-ann_weights[1968] = 1048604 ;
-ann_weights[1969] = 30 ;
-ann_weights[1970] = 1048882 ;
-ann_weights[1971] = 1048652 ;
-ann_weights[1972] = 1049005 ;
-ann_weights[1973] = 218 ;
-ann_weights[1974] = 1048731 ;
-ann_weights[1975] = 1048970 ;
-ann_weights[1976] = 1048736 ;
-ann_weights[1977] = 68 ;
-ann_weights[1978] = 1048802 ;
-ann_weights[1979] = 1048965 ;
-ann_weights[1980] = 1048735 ;
-ann_weights[1981] = 1048780 ;
-ann_weights[1982] = 73 ;
-ann_weights[1983] = 1048806 ;
-ann_weights[1984] = 1048847 ;
-ann_weights[1985] = 1048732 ;
-ann_weights[1986] = 1048775 ;
-ann_weights[1987] = 258 ;
-ann_weights[1988] = 1049048 ;
-ann_weights[1989] = 1049013 ;
-ann_weights[1990] = 1048823 ;
-ann_weights[1991] = 1048784 ;
-ann_weights[1992] = 43 ;
-ann_weights[1993] = 108 ;
-ann_weights[1994] = 1048717 ;
-ann_weights[1995] = 1049315 ;
-ann_weights[1996] = 1048957 ;
-ann_weights[1997] = 327 ;
-ann_weights[1998] = 1048932 ;
-ann_weights[1999] = 1049150 ;
-ann_weights[2000] = 1049033 ;
-ann_weights[2001] = 1048651 ;
-ann_weights[2002] = 186 ;
-ann_weights[2003] = 270 ;
-ann_weights[2004] = 65 ;
-ann_weights[2005] = 1049286 ;
-ann_weights[2006] = 1048774 ;
-ann_weights[2007] = 107 ;
-ann_weights[2008] = 1048729 ;
-ann_weights[2009] = 1049410 ;
-ann_weights[2010] = 12 ;
-ann_weights[2011] = 1048912 ;
-ann_weights[2012] = 129 ;
-ann_weights[2013] = 164 ;
-ann_weights[2014] = 196 ;
-ann_weights[2015] = 1048888 ;
-ann_weights[2016] = 1048673 ;
-ann_weights[2017] = 113 ;
-ann_weights[2018] = 1048792 ;
-ann_weights[2019] = 1049300 ;
-ann_weights[2020] = 0 ;
-ann_weights[2021] = 1048841 ;
-ann_weights[2022] = 172 ;
-ann_weights[2023] = 138 ;
-ann_weights[2024] = 12 ;
-ann_weights[2025] = 1048578 ;
-ann_weights[2026] = 1048893 ;
-ann_weights[2027] = 214 ;
-ann_weights[2028] = 1048599 ;
-ann_weights[2029] = 1048962 ;
-ann_weights[2030] = 1048676 ;
-ann_weights[2031] = 1048814 ;
-ann_weights[2032] = 58 ;
-ann_weights[2033] = 67 ;
-ann_weights[2034] = 1048600 ;
-ann_weights[2035] = 1048649 ;
-ann_weights[2036] = 1048627 ;
-ann_weights[2037] = 239 ;
-ann_weights[2038] = 29 ;
-ann_weights[2039] = 1048910 ;
-ann_weights[2040] = 1048784 ;
-ann_weights[2041] = 1049041 ;
-ann_weights[2042] = 80 ;
-ann_weights[2043] = 55 ;
-ann_weights[2044] = 1048613 ;
-ann_weights[2045] = 176 ;
-ann_weights[2046] = 1048705 ;
-ann_weights[2047] = 185 ;
-ann_weights[2048] = 95 ;
-ann_weights[2049] = 1048675 ;
-ann_weights[2050] = 1048694 ;
-ann_weights[2051] = 1048925 ;
-ann_weights[2052] = 1048634 ;
-ann_weights[2053] = 79 ;
-ann_weights[2054] = 1048629 ;
-ann_weights[2055] = 1048584 ;
-ann_weights[2056] = 1048742 ;
-ann_weights[2057] = 242 ;
-ann_weights[2058] = 1048640 ;
-ann_weights[2059] = 1048669 ;
-ann_weights[2060] = 21 ;
-ann_weights[2061] = 1048722 ;
-ann_weights[2062] = 25 ;
-ann_weights[2063] = 58 ;
-ann_weights[2064] = 1048719 ;
-ann_weights[2065] = 141 ;
-ann_weights[2066] = 1048812 ;
-ann_weights[2067] = 310 ;
-ann_weights[2068] = 3 ;
-ann_weights[2069] = 1048578 ;
-ann_weights[2070] = 74 ;
-ann_weights[2071] = 1048855 ;
-ann_weights[2072] = 111 ;
-ann_weights[2073] = 1048603 ;
-ann_weights[2074] = 1048776 ;
-ann_weights[2075] = 141 ;
-ann_weights[2076] = 1048617 ;
-ann_weights[2077] = 158 ;
-ann_weights[2078] = 4 ;
-ann_weights[2079] = 2 ;
-ann_weights[2080] = 40 ;
-ann_weights[2081] = 1048679 ;
-ann_weights[2082] = 7 ;
-ann_weights[2083] = 154 ;
-ann_weights[2084] = 1048960 ;
-ann_weights[2085] = 28 ;
-ann_weights[2086] = 1048675 ;
-ann_weights[2087] = 183 ;
-ann_weights[2088] = 1048615 ;
-ann_weights[2089] = 194 ;
-ann_weights[2090] = 113 ;
-ann_weights[2091] = 1048643 ;
-ann_weights[2092] = 92 ;
-ann_weights[2093] = 56 ;
-ann_weights[2094] = 1048929 ;
-ann_weights[2095] = 1048618 ;
-ann_weights[2096] = 1048808 ;
-ann_weights[2097] = 34 ;
-ann_weights[2098] = 1048634 ;
-ann_weights[2099] = 242 ;
-ann_weights[2100] = 2 ;
-ann_weights[2101] = 1048785 ;
-ann_weights[2102] = 32 ;
-ann_weights[2103] = 187 ;
-ann_weights[2104] = 1049069 ;
-ann_weights[2105] = 1048615 ;
-ann_weights[2106] = 1048731 ;
-ann_weights[2107] = 1048632 ;
-ann_weights[2108] = 1048722 ;
-ann_weights[2109] = 431 ;
-ann_weights[2110] = 133 ;
-ann_weights[2111] = 1048818 ;
-ann_weights[2112] = 22 ;
-ann_weights[2113] = 134 ;
-ann_weights[2114] = 1049063 ;
-ann_weights[2115] = 1048658 ;
-ann_weights[2116] = 1048727 ;
-ann_weights[2117] = 48 ;
-ann_weights[2118] = 98 ;
-ann_weights[2119] = 393 ;
-ann_weights[2120] = 76 ;
-ann_weights[2121] = 1048849 ;
-ann_weights[2122] = 1048649 ;
-ann_weights[2123] = 10 ;
-ann_weights[2124] = 1048963 ;
-ann_weights[2125] = 27 ;
-ann_weights[2126] = 1048876 ;
-ann_weights[2127] = 27 ;
-ann_weights[2128] = 3 ;
-ann_weights[2129] = 413 ;
-ann_weights[2130] = 199 ;
-ann_weights[2131] = 1048813 ;
-ann_weights[2132] = 1048698 ;
-ann_weights[2133] = 120 ;
-ann_weights[2134] = 1048867 ;
-ann_weights[2135] = 2 ;
-ann_weights[2136] = 1048751 ;
-ann_weights[2137] = 216 ;
-ann_weights[2138] = 1048616 ;
-ann_weights[2139] = 183 ;
-ann_weights[2140] = 222 ;
-ann_weights[2141] = 1048743 ;
-ann_weights[2142] = 1048684 ;
-ann_weights[2143] = 1048609 ;
-ann_weights[2144] = 1048819 ;
-ann_weights[2145] = 62 ;
-ann_weights[2146] = 1048817 ;
-ann_weights[2147] = 190 ;
-ann_weights[2148] = 48 ;
-ann_weights[2149] = 62 ;
-ann_weights[2150] = 96 ;
-ann_weights[2151] = 1048624 ;
-ann_weights[2152] = 1048585 ;
-ann_weights[2153] = 56 ;
-ann_weights[2154] = 1048742 ;
-ann_weights[2155] = 26 ;
-ann_weights[2156] = 1048840 ;
-ann_weights[2157] = 121 ;
-ann_weights[2158] = 7 ;
-ann_weights[2159] = 1048610 ;
-ann_weights[2160] = 11 ;
-ann_weights[2161] = 1048597 ;
-ann_weights[2162] = 1048682 ;
-ann_weights[2163] = 9 ;
-ann_weights[2164] = 1048685 ;
-ann_weights[2165] = 135 ;
-ann_weights[2166] = 1048845 ;
-ann_weights[2167] = 79 ;
-ann_weights[2168] = 54 ;
-ann_weights[2169] = 51 ;
-ann_weights[2170] = 122 ;
-ann_weights[2171] = 1048694 ;
-ann_weights[2172] = 1048628 ;
-ann_weights[2173] = 1048755 ;
-ann_weights[2174] = 1048576 ;
-ann_weights[2175] = 128 ;
-ann_weights[2176] = 1048706 ;
-ann_weights[2177] = 61 ;
-ann_weights[2178] = 73 ;
-ann_weights[2179] = 1048598 ;
-ann_weights[2180] = 126 ;
-ann_weights[2181] = 1048699 ;
-ann_weights[2182] = 1048610 ;
-ann_weights[2183] = 1048768 ;
-ann_weights[2184] = 33 ;
-ann_weights[2185] = 81 ;
-ann_weights[2186] = 1048864 ;
-ann_weights[2187] = 1048581 ;
-ann_weights[2188] = 1048612 ;
-ann_weights[2189] = 1048797 ;
-ann_weights[2190] = 89 ;
-ann_weights[2191] = 1048800 ;
-ann_weights[2192] = 1049123 ;
-ann_weights[2193] = 1048856 ;
-ann_weights[2194] = 261 ;
-ann_weights[2195] = 322 ;
-ann_weights[2196] = 1048746 ;
-ann_weights[2197] = 1048746 ;
-ann_weights[2198] = 209 ;
-ann_weights[2199] = 1048914 ;
-ann_weights[2200] = 1048723 ;
-ann_weights[2201] = 1049221 ;
-ann_weights[2202] = 1049278 ;
-ann_weights[2203] = 1049149 ;
-ann_weights[2204] = 58 ;
-ann_weights[2205] = 530 ;
-ann_weights[2206] = 1048619 ;
-ann_weights[2207] = 1049009 ;
-ann_weights[2208] = 120 ;
-ann_weights[2209] = 1049052 ;
-ann_weights[2210] = 1049505 ;
-ann_weights[2211] = 1049361 ;
-ann_weights[2212] = 1048870 ;
-ann_weights[2213] = 1049486 ;
-ann_weights[2214] = 1048636 ;
-ann_weights[2215] = 637 ;
-ann_weights[2216] = 1048866 ;
-ann_weights[2217] = 1049005 ;
-ann_weights[2218] = 50 ;
-ann_weights[2219] = 1049148 ;
-ann_weights[2220] = 1049292 ;
-ann_weights[2221] = 1048868 ;
-ann_weights[2222] = 1048914 ;
-ann_weights[2223] = 1048771 ;
-ann_weights[2224] = 18 ;
-ann_weights[2225] = 114 ;
-ann_weights[2226] = 1048648 ;
-ann_weights[2227] = 1049106 ;
-ann_weights[2228] = 36 ;
-ann_weights[2229] = 1049167 ;
-ann_weights[2230] = 1048816 ;
-ann_weights[2231] = 1048699 ;
-ann_weights[2232] = 1048810 ;
-ann_weights[2233] = 1048732 ;
-ann_weights[2234] = 1048938 ;
-ann_weights[2235] = 43 ;
-ann_weights[2236] = 26 ;
-ann_weights[2237] = 1048782 ;
-ann_weights[2238] = 1048581 ;
-ann_weights[2239] = 1048854 ;
-ann_weights[2240] = 107 ;
-ann_weights[2241] = 1048634 ;
-ann_weights[2242] = 1048611 ;
-ann_weights[2243] = 1048687 ;
-ann_weights[2244] = 1048691 ;
-ann_weights[2245] = 50 ;
-ann_weights[2246] = 54 ;
-ann_weights[2247] = 1048672 ;
-ann_weights[2248] = 1048678 ;
-ann_weights[2249] = 1048667 ;
-ann_weights[2250] = 1048870 ;
-ann_weights[2251] = 1048695 ;
-ann_weights[2252] = 93 ;
-ann_weights[2253] = 1048765 ;
-ann_weights[2254] = 1048830 ;
-ann_weights[2255] = 1048759 ;
-ann_weights[2256] = 1048664 ;
-ann_weights[2257] = 377 ;
-ann_weights[2258] = 1048887 ;
-ann_weights[2259] = 1048845 ;
-ann_weights[2260] = 1048586 ;
-ann_weights[2261] = 1048740 ;
-ann_weights[2262] = 0 ;
-ann_weights[2263] = 1048653 ;
-ann_weights[2264] = 25 ;
-ann_weights[2265] = 1048873 ;
-ann_weights[2266] = 1048684 ;
-ann_weights[2267] = 324 ;
-ann_weights[2268] = 1049015 ;
-ann_weights[2269] = 1049136 ;
-ann_weights[2270] = 1048666 ;
-ann_weights[2271] = 1048831 ;
-ann_weights[2272] = 18 ;
-ann_weights[2273] = 41 ;
-ann_weights[2274] = 1048796 ;
-ann_weights[2275] = 1049370 ;
-ann_weights[2276] = 1049024 ;
-ann_weights[2277] = 308 ;
-ann_weights[2278] = 1048735 ;
-ann_weights[2279] = 1049108 ;
-ann_weights[2280] = 1049043 ;
-ann_weights[2281] = 1048657 ;
-ann_weights[2282] = 166 ;
-ann_weights[2283] = 214 ;
-ann_weights[2284] = 1048671 ;
-ann_weights[2285] = 1049406 ;
-ann_weights[2286] = 1048731 ;
-ann_weights[2287] = 164 ;
-ann_weights[2288] = 1048591 ;
-ann_weights[2289] = 1049039 ;
-ann_weights[2290] = 1048774 ;
-ann_weights[2291] = 1048908 ;
-ann_weights[2292] = 60 ;
-ann_weights[2293] = 179 ;
-ann_weights[2294] = 81 ;
-ann_weights[2295] = 1048916 ;
-ann_weights[2296] = 1048689 ;
-ann_weights[2297] = 111 ;
-ann_weights[2298] = 40 ;
-ann_weights[2299] = 1048945 ;
-ann_weights[2300] = 1048696 ;
-ann_weights[2301] = 1048959 ;
-ann_weights[2302] = 128 ;
-ann_weights[2303] = 94 ;
-ann_weights[2304] = 33 ;
-ann_weights[2305] = 1048672 ;
-ann_weights[2306] = 1048834 ;
-ann_weights[2307] = 239 ;
-ann_weights[2308] = 129 ;
-ann_weights[2309] = 1048753 ;
-ann_weights[2310] = 1048645 ;
-ann_weights[2311] = 1048853 ;
-ann_weights[2312] = 1048577 ;
-ann_weights[2313] = 44 ;
-ann_weights[2314] = 1048582 ;
-ann_weights[2315] = 1048693 ;
-ann_weights[2316] = 1048652 ;
-ann_weights[2317] = 261 ;
-ann_weights[2318] = 78 ;
-ann_weights[2319] = 1048803 ;
-ann_weights[2320] = 1048708 ;
-ann_weights[2321] = 1048896 ;
-ann_weights[2322] = 71 ;
-ann_weights[2323] = 1048608 ;
-ann_weights[2324] = 1048677 ;
-ann_weights[2325] = 89 ;
-ann_weights[2326] = 1048722 ;
-ann_weights[2327] = 221 ;
-ann_weights[2328] = 41 ;
-ann_weights[2329] = 3 ;
-ann_weights[2330] = 93 ;
-ann_weights[2331] = 1048999 ;
-ann_weights[2332] = 41 ;
-ann_weights[2333] = 1048606 ;
-ann_weights[2334] = 1048635 ;
-ann_weights[2335] = 93 ;
-ann_weights[2336] = 1048755 ;
-ann_weights[2337] = 150 ;
-ann_weights[2338] = 183 ;
-ann_weights[2339] = 1048726 ;
-ann_weights[2340] = 1048644 ;
-ann_weights[2341] = 1048894 ;
-ann_weights[2342] = 107 ;
-ann_weights[2343] = 83 ;
-ann_weights[2344] = 1048704 ;
-ann_weights[2345] = 41 ;
-ann_weights[2346] = 1048750 ;
-ann_weights[2347] = 86 ;
-ann_weights[2348] = 18 ;
-ann_weights[2349] = 1048645 ;
-ann_weights[2350] = 35 ;
-ann_weights[2351] = 1048686 ;
-ann_weights[2352] = 46 ;
-ann_weights[2353] = 1048625 ;
-ann_weights[2354] = 1048744 ;
-ann_weights[2355] = 128 ;
-ann_weights[2356] = 1048762 ;
-ann_weights[2357] = 193 ;
-ann_weights[2358] = 1048601 ;
-ann_weights[2359] = 1048674 ;
-ann_weights[2360] = 50 ;
-ann_weights[2361] = 1048657 ;
-ann_weights[2362] = 14 ;
-ann_weights[2363] = 113 ;
-ann_weights[2364] = 1048853 ;
-ann_weights[2365] = 43 ;
-ann_weights[2366] = 1048682 ;
-ann_weights[2367] = 299 ;
-ann_weights[2368] = 125 ;
-ann_weights[2369] = 1048668 ;
-ann_weights[2370] = 31 ;
-ann_weights[2371] = 1048592 ;
-ann_weights[2372] = 1048602 ;
-ann_weights[2373] = 31 ;
-ann_weights[2374] = 1048780 ;
-ann_weights[2375] = 1048677 ;
-ann_weights[2376] = 1048805 ;
-ann_weights[2377] = 27 ;
-ann_weights[2378] = 30 ;
-ann_weights[2379] = 129 ;
-ann_weights[2380] = 189 ;
-ann_weights[2381] = 1048606 ;
-ann_weights[2382] = 80 ;
-ann_weights[2383] = 169 ;
-ann_weights[2384] = 1049019 ;
-ann_weights[2385] = 1048675 ;
-ann_weights[2386] = 1048757 ;
-ann_weights[2387] = 214 ;
-ann_weights[2388] = 1048641 ;
-ann_weights[2389] = 237 ;
-ann_weights[2390] = 116 ;
-ann_weights[2391] = 23 ;
-ann_weights[2392] = 48 ;
-ann_weights[2393] = 221 ;
-ann_weights[2394] = 1048985 ;
-ann_weights[2395] = 1048826 ;
-ann_weights[2396] = 1048922 ;
-ann_weights[2397] = 206 ;
-ann_weights[2398] = 1048662 ;
-ann_weights[2399] = 178 ;
-ann_weights[2400] = 346 ;
-ann_weights[2401] = 1048701 ;
-ann_weights[2402] = 1048639 ;
-ann_weights[2403] = 90 ;
-ann_weights[2404] = 1049006 ;
-ann_weights[2405] = 1048753 ;
-ann_weights[2406] = 1048911 ;
-ann_weights[2407] = 225 ;
-ann_weights[2408] = 71 ;
-ann_weights[2409] = 112 ;
-ann_weights[2410] = 284 ;
-ann_weights[2411] = 54 ;
-ann_weights[2412] = 1048617 ;
-ann_weights[2413] = 48 ;
-ann_weights[2414] = 1048757 ;
-ann_weights[2415] = 1048651 ;
-ann_weights[2416] = 1048906 ;
-ann_weights[2417] = 211 ;
-ann_weights[2418] = 1048633 ;
-ann_weights[2419] = 16 ;
-ann_weights[2420] = 183 ;
-ann_weights[2421] = 1048684 ;
-ann_weights[2422] = 1048583 ;
-ann_weights[2423] = 202 ;
-ann_weights[2424] = 1048631 ;
-ann_weights[2425] = 1048577 ;
-ann_weights[2426] = 1049200 ;
-ann_weights[2427] = 274 ;
-ann_weights[2428] = 110 ;
-ann_weights[2429] = 36 ;
-ann_weights[2430] = 156 ;
-ann_weights[2431] = 1048715 ;
-ann_weights[2432] = 70 ;
-ann_weights[2433] = 97 ;
-ann_weights[2434] = 1048664 ;
-ann_weights[2435] = 102 ;
-ann_weights[2436] = 1048992 ;
-ann_weights[2437] = 67 ;
-ann_weights[2438] = 134 ;
-ann_weights[2439] = 1048602 ;
-ann_weights[2440] = 49 ;
-ann_weights[2441] = 1048749 ;
-ann_weights[2442] = 54 ;
-ann_weights[2443] = 151 ;
-ann_weights[2444] = 1048635 ;
-ann_weights[2445] = 178 ;
-ann_weights[2446] = 1049013 ;
-ann_weights[2447] = 70 ;
-ann_weights[2448] = 41 ;
-ann_weights[2449] = 1048643 ;
-ann_weights[2450] = 1048582 ;
-ann_weights[2451] = 1048757 ;
-ann_weights[2452] = 1048673 ;
-ann_weights[2453] = 1048612 ;
-ann_weights[2454] = 1048722 ;
-ann_weights[2455] = 102 ;
-ann_weights[2456] = 1048749 ;
-ann_weights[2457] = 1048641 ;
-ann_weights[2458] = 34 ;
-ann_weights[2459] = 1048599 ;
-ann_weights[2460] = 72 ;
-ann_weights[2461] = 1048903 ;
-ann_weights[2462] = 1048711 ;
-ann_weights[2463] = 140 ;
-ann_weights[2464] = 1048709 ;
-ann_weights[2465] = 172 ;
-ann_weights[2466] = 1048846 ;
-ann_weights[2467] = 1048591 ;
-ann_weights[2468] = 163 ;
-ann_weights[2469] = 1048705 ;
-ann_weights[2470] = 247 ;
-ann_weights[2471] = 1048987 ;
-ann_weights[2472] = 1048683 ;
-ann_weights[2473] = 1048978 ;
-ann_weights[2474] = 1048634 ;
-ann_weights[2475] = 423 ;
-ann_weights[2476] = 1049062 ;
-ann_weights[2477] = 1048702 ;
-ann_weights[2478] = 133 ;
-ann_weights[2479] = 1048974 ;
-ann_weights[2480] = 1048655 ;
-ann_weights[2481] = 1049302 ;
-ann_weights[2482] = 1049528 ;
-ann_weights[2483] = 1049618 ;
-ann_weights[2484] = 1048660 ;
-ann_weights[2485] = 713 ;
-ann_weights[2486] = 1049135 ;
-ann_weights[2487] = 1048955 ;
-ann_weights[2488] = 194 ;
-ann_weights[2489] = 1049036 ;
-ann_weights[2490] = 1049635 ;
-ann_weights[2491] = 1049428 ;
-ann_weights[2492] = 1049457 ;
-ann_weights[2493] = 1049563 ;
-ann_weights[2494] = 1048634 ;
-ann_weights[2495] = 770 ;
-ann_weights[2496] = 1049315 ;
-ann_weights[2497] = 1049191 ;
-ann_weights[2498] = 42 ;
-ann_weights[2499] = 1049018 ;
-ann_weights[2500] = 1049443 ;
-ann_weights[2501] = 1049007 ;
-ann_weights[2502] = 1049143 ;
-ann_weights[2503] = 1048888 ;
-ann_weights[2504] = 1048707 ;
-ann_weights[2505] = 261 ;
-ann_weights[2506] = 1048969 ;
-ann_weights[2507] = 1049086 ;
-ann_weights[2508] = 192 ;
-ann_weights[2509] = 1049168 ;
-ann_weights[2510] = 1048771 ;
-ann_weights[2511] = 1048770 ;
-ann_weights[2512] = 1048769 ;
-ann_weights[2513] = 1048640 ;
-ann_weights[2514] = 1048770 ;
-ann_weights[2515] = 33 ;
-ann_weights[2516] = 1048858 ;
-ann_weights[2517] = 1048836 ;
-ann_weights[2518] = 166 ;
-ann_weights[2519] = 1048838 ;
-ann_weights[2520] = 1048668 ;
-ann_weights[2521] = 1048618 ;
-ann_weights[2522] = 1048614 ;
-ann_weights[2523] = 1048744 ;
-ann_weights[2524] = 1048780 ;
-ann_weights[2525] = 1048687 ;
-ann_weights[2526] = 1048626 ;
-ann_weights[2527] = 129 ;
-ann_weights[2528] = 1048586 ;
-ann_weights[2529] = 1048788 ;
-ann_weights[2530] = 1048664 ;
-ann_weights[2531] = 1048730 ;
-ann_weights[2532] = 1048821 ;
-ann_weights[2533] = 1048749 ;
-ann_weights[2534] = 1048885 ;
-ann_weights[2535] = 1048908 ;
-ann_weights[2536] = 1048658 ;
-ann_weights[2537] = 264 ;
-ann_weights[2538] = 1048851 ;
-ann_weights[2539] = 1048793 ;
-ann_weights[2540] = 126 ;
-ann_weights[2541] = 1048814 ;
-ann_weights[2542] = 1048654 ;
-ann_weights[2543] = 107 ;
-ann_weights[2544] = 1048696 ;
-ann_weights[2545] = 1048911 ;
-ann_weights[2546] = 1048825 ;
-ann_weights[2547] = 244 ;
-ann_weights[2548] = 1048891 ;
-ann_weights[2549] = 1049146 ;
-ann_weights[2550] = 1048618 ;
-ann_weights[2551] = 1048791 ;
-ann_weights[2552] = 1048578 ;
-ann_weights[2553] = 206 ;
-ann_weights[2554] = 1048974 ;
-ann_weights[2555] = 1049312 ;
-ann_weights[2556] = 1049112 ;
-ann_weights[2557] = 368 ;
-ann_weights[2558] = 1048651 ;
-ann_weights[2559] = 1048932 ;
-ann_weights[2560] = 1048809 ;
-ann_weights[2561] = 1048710 ;
-ann_weights[2562] = 141 ;
-ann_weights[2563] = 389 ;
-ann_weights[2564] = 1048904 ;
-ann_weights[2565] = 1049156 ;
-ann_weights[2566] = 1048609 ;
-ann_weights[2567] = 237 ;
-ann_weights[2568] = 1048759 ;
-ann_weights[2569] = 1048984 ;
-ann_weights[2570] = 1048618 ;
-ann_weights[2571] = 1049118 ;
-ann_weights[2572] = 276 ;
-ann_weights[2573] = 38 ;
-ann_weights[2574] = 1048749 ;
-ann_weights[2575] = 1048932 ;
-ann_weights[2576] = 1048846 ;
-ann_weights[2577] = 241 ;
-ann_weights[2578] = 1048594 ;
-ann_weights[2579] = 1048745 ;
-ann_weights[2580] = 1048766 ;
-ann_weights[2581] = 1048899 ;
-ann_weights[2582] = 1048629 ;
-ann_weights[2583] = 163 ;
-ann_weights[2584] = 1048791 ;
-ann_weights[2585] = 1048745 ;
-ann_weights[2586] = 1048847 ;
-ann_weights[2587] = 108 ;
-ann_weights[2588] = 135 ;
-ann_weights[2589] = 8 ;
-ann_weights[2590] = 1048694 ;
-ann_weights[2591] = 1048669 ;
-ann_weights[2592] = 1048585 ;
-ann_weights[2593] = 42 ;
-ann_weights[2594] = 1048688 ;
-ann_weights[2595] = 1048615 ;
-ann_weights[2596] = 1048673 ;
-ann_weights[2597] = 73 ;
-ann_weights[2598] = 152 ;
-ann_weights[2599] = 1048655 ;
-ann_weights[2600] = 1048715 ;
-ann_weights[2601] = 1048818 ;
-ann_weights[2602] = 1048620 ;
-ann_weights[2603] = 22 ;
-ann_weights[2604] = 1048601 ;
-ann_weights[2605] = 141 ;
-ann_weights[2606] = 1048647 ;
-ann_weights[2607] = 72 ;
-ann_weights[2608] = 91 ;
-ann_weights[2609] = 1048642 ;
-ann_weights[2610] = 27 ;
-ann_weights[2611] = 1048904 ;
-ann_weights[2612] = 84 ;
-ann_weights[2613] = 1048710 ;
-ann_weights[2614] = 1048626 ;
-ann_weights[2615] = 30 ;
-ann_weights[2616] = 1048737 ;
-ann_weights[2617] = 24 ;
-ann_weights[2618] = 178 ;
-ann_weights[2619] = 17 ;
-ann_weights[2620] = 1 ;
-ann_weights[2621] = 1048763 ;
-ann_weights[2622] = 127 ;
-ann_weights[2623] = 1048770 ;
-ann_weights[2624] = 1048710 ;
-ann_weights[2625] = 111 ;
-ann_weights[2626] = 1048815 ;
-ann_weights[2627] = 24 ;
-ann_weights[2628] = 142 ;
-ann_weights[2629] = 1048591 ;
-ann_weights[2630] = 1048621 ;
-ann_weights[2631] = 1048655 ;
-ann_weights[2632] = 37 ;
-ann_weights[2633] = 1048873 ;
-ann_weights[2634] = 1048641 ;
-ann_weights[2635] = 257 ;
-ann_weights[2636] = 1048702 ;
-ann_weights[2637] = 46 ;
-ann_weights[2638] = 122 ;
-ann_weights[2639] = 12 ;
-ann_weights[2640] = 13 ;
-ann_weights[2641] = 1048666 ;
-ann_weights[2642] = 74 ;
-ann_weights[2643] = 1048787 ;
-ann_weights[2644] = 1048598 ;
-ann_weights[2645] = 124 ;
-ann_weights[2646] = 1048794 ;
-ann_weights[2647] = 221 ;
-ann_weights[2648] = 110 ;
-ann_weights[2649] = 52 ;
-ann_weights[2650] = 140 ;
-ann_weights[2651] = 48 ;
-ann_weights[2652] = 25 ;
-ann_weights[2653] = 1048663 ;
-ann_weights[2654] = 1048797 ;
-ann_weights[2655] = 27 ;
-ann_weights[2656] = 1048782 ;
-ann_weights[2657] = 99 ;
-ann_weights[2658] = 60 ;
-ann_weights[2659] = 1048639 ;
-ann_weights[2660] = 143 ;
-ann_weights[2661] = 295 ;
-ann_weights[2662] = 105 ;
-ann_weights[2663] = 203 ;
-ann_weights[2664] = 1049142 ;
-ann_weights[2665] = 1048780 ;
-ann_weights[2666] = 1048781 ;
-ann_weights[2667] = 231 ;
-ann_weights[2668] = 1048780 ;
-ann_weights[2669] = 131 ;
-ann_weights[2670] = 1048616 ;
-ann_weights[2671] = 400 ;
-ann_weights[2672] = 239 ;
-ann_weights[2673] = 255 ;
-ann_weights[2674] = 1049000 ;
-ann_weights[2675] = 1048866 ;
-ann_weights[2676] = 1048858 ;
-ann_weights[2677] = 294 ;
-ann_weights[2678] = 1048923 ;
-ann_weights[2679] = 84 ;
-ann_weights[2680] = 167 ;
-ann_weights[2681] = 65 ;
-ann_weights[2682] = 35 ;
-ann_weights[2683] = 175 ;
-ann_weights[2684] = 1048665 ;
-ann_weights[2685] = 1048999 ;
-ann_weights[2686] = 1049128 ;
-ann_weights[2687] = 284 ;
-ann_weights[2688] = 1048767 ;
-ann_weights[2689] = 1048679 ;
-ann_weights[2690] = 243 ;
-ann_weights[2691] = 1048603 ;
-ann_weights[2692] = 110 ;
-ann_weights[2693] = 142 ;
-ann_weights[2694] = 1048740 ;
-ann_weights[2695] = 1048790 ;
-ann_weights[2696] = 1049208 ;
-ann_weights[2697] = 257 ;
-ann_weights[2698] = 1048636 ;
-ann_weights[2699] = 1048681 ;
-ann_weights[2700] = 302 ;
-ann_weights[2701] = 1048598 ;
-ann_weights[2702] = 14 ;
-ann_weights[2703] = 88 ;
-ann_weights[2704] = 1048600 ;
-ann_weights[2705] = 1048707 ;
-ann_weights[2706] = 1049081 ;
-ann_weights[2707] = 239 ;
-ann_weights[2708] = 58 ;
-ann_weights[2709] = 10 ;
-ann_weights[2710] = 234 ;
-ann_weights[2711] = 1048786 ;
-ann_weights[2712] = 61 ;
-ann_weights[2713] = 102 ;
-ann_weights[2714] = 1048637 ;
-ann_weights[2715] = 1048699 ;
-ann_weights[2716] = 1049119 ;
-ann_weights[2717] = 253 ;
-ann_weights[2718] = 66 ;
-ann_weights[2719] = 1048648 ;
-ann_weights[2720] = 141 ;
-ann_weights[2721] = 1048917 ;
-ann_weights[2722] = 1048645 ;
-ann_weights[2723] = 146 ;
-ann_weights[2724] = 1048690 ;
-ann_weights[2725] = 1048588 ;
-ann_weights[2726] = 1048848 ;
-ann_weights[2727] = 38 ;
-ann_weights[2728] = 90 ;
-ann_weights[2729] = 1048694 ;
-ann_weights[2730] = 6 ;
-ann_weights[2731] = 1048853 ;
-ann_weights[2732] = 1048622 ;
-ann_weights[2733] = 242 ;
-ann_weights[2734] = 17 ;
-ann_weights[2735] = 200 ;
-ann_weights[2736] = 1048791 ;
-ann_weights[2737] = 110 ;
-ann_weights[2738] = 131 ;
-ann_weights[2739] = 1048718 ;
-ann_weights[2740] = 1048593 ;
-ann_weights[2741] = 1048927 ;
-ann_weights[2742] = 1048624 ;
-ann_weights[2743] = 157 ;
-ann_weights[2744] = 1048602 ;
-ann_weights[2745] = 205 ;
-ann_weights[2746] = 1048942 ;
-ann_weights[2747] = 25 ;
-ann_weights[2748] = 85 ;
-ann_weights[2749] = 1048807 ;
-ann_weights[2750] = 306 ;
-ann_weights[2751] = 1049296 ;
-ann_weights[2752] = 1048698 ;
-ann_weights[2753] = 1048844 ;
-ann_weights[2754] = 1048810 ;
-ann_weights[2755] = 481 ;
-ann_weights[2756] = 1048955 ;
-ann_weights[2757] = 1048735 ;
-ann_weights[2758] = 162 ;
-ann_weights[2759] = 1048886 ;
-ann_weights[2760] = 178 ;
-ann_weights[2761] = 1049214 ;
-ann_weights[2762] = 1049615 ;
-ann_weights[2763] = 1050145 ;
-ann_weights[2764] = 1049002 ;
-ann_weights[2765] = 994 ;
-ann_weights[2766] = 1049099 ;
-ann_weights[2767] = 1048918 ;
-ann_weights[2768] = 1048608 ;
-ann_weights[2769] = 1049131 ;
-ann_weights[2770] = 1049497 ;
-ann_weights[2771] = 1049347 ;
-ann_weights[2772] = 1049434 ;
-ann_weights[2773] = 1049339 ;
-ann_weights[2774] = 1049056 ;
-ann_weights[2775] = 944 ;
-ann_weights[2776] = 1049512 ;
-ann_weights[2777] = 1049106 ;
-ann_weights[2778] = 14 ;
-ann_weights[2779] = 1049220 ;
-ann_weights[2780] = 1049391 ;
-ann_weights[2781] = 1048885 ;
-ann_weights[2782] = 1048773 ;
-ann_weights[2783] = 1049055 ;
-ann_weights[2784] = 1049043 ;
-ann_weights[2785] = 446 ;
-ann_weights[2786] = 1049338 ;
-ann_weights[2787] = 1048664 ;
-ann_weights[2788] = 122 ;
-ann_weights[2789] = 1049321 ;
-ann_weights[2790] = 1048795 ;
-ann_weights[2791] = 1048682 ;
-ann_weights[2792] = 1048793 ;
-ann_weights[2793] = 1048708 ;
-ann_weights[2794] = 1048865 ;
-ann_weights[2795] = 148 ;
-ann_weights[2796] = 1048880 ;
-ann_weights[2797] = 132 ;
-ann_weights[2798] = 1048635 ;
-ann_weights[2799] = 1048849 ;
-ann_weights[2800] = 1048713 ;
-ann_weights[2801] = 1048652 ;
-ann_weights[2802] = 1048635 ;
-ann_weights[2803] = 1048648 ;
-ann_weights[2804] = 1048671 ;
-ann_weights[2805] = 1048723 ;
-ann_weights[2806] = 1048642 ;
-ann_weights[2807] = 209 ;
-ann_weights[2808] = 1048586 ;
-ann_weights[2809] = 1048732 ;
-ann_weights[2810] = 1048663 ;
-ann_weights[2811] = 1048631 ;
-ann_weights[2812] = 1048874 ;
-ann_weights[2813] = 1048863 ;
-ann_weights[2814] = 1048824 ;
-ann_weights[2815] = 1048779 ;
-ann_weights[2816] = 1048680 ;
-ann_weights[2817] = 279 ;
-ann_weights[2818] = 1048817 ;
-ann_weights[2819] = 1048791 ;
-ann_weights[2820] = 60 ;
-ann_weights[2821] = 1048687 ;
-ann_weights[2822] = 1048626 ;
-ann_weights[2823] = 67 ;
-ann_weights[2824] = 1048966 ;
-ann_weights[2825] = 1048888 ;
-ann_weights[2826] = 1048843 ;
-ann_weights[2827] = 490 ;
-ann_weights[2828] = 1048904 ;
-ann_weights[2829] = 1049131 ;
-ann_weights[2830] = 1048604 ;
-ann_weights[2831] = 1048868 ;
-ann_weights[2832] = 128 ;
-ann_weights[2833] = 382 ;
-ann_weights[2834] = 1048976 ;
-ann_weights[2835] = 1049228 ;
-ann_weights[2836] = 1049088 ;
-ann_weights[2837] = 380 ;
-ann_weights[2838] = 1048982 ;
-ann_weights[2839] = 1048952 ;
-ann_weights[2840] = 1048798 ;
-ann_weights[2841] = 1048800 ;
-ann_weights[2842] = 23 ;
-ann_weights[2843] = 171 ;
-ann_weights[2844] = 1048805 ;
-ann_weights[2845] = 1048858 ;
-ann_weights[2846] = 1048825 ;
-ann_weights[2847] = 201 ;
-ann_weights[2848] = 112 ;
-ann_weights[2849] = 1048875 ;
-ann_weights[2850] = 28 ;
-ann_weights[2851] = 1049168 ;
-ann_weights[2852] = 169 ;
-ann_weights[2853] = 1048600 ;
-ann_weights[2854] = 1048764 ;
-ann_weights[2855] = 1048757 ;
-ann_weights[2856] = 1048773 ;
-ann_weights[2857] = 212 ;
-ann_weights[2858] = 22 ;
-ann_weights[2859] = 100 ;
-ann_weights[2860] = 1048610 ;
-ann_weights[2861] = 1049003 ;
-ann_weights[2862] = 47 ;
-ann_weights[2863] = 1048664 ;
-ann_weights[2864] = 1048803 ;
-ann_weights[2865] = 1048652 ;
-ann_weights[2866] = 1048767 ;
-ann_weights[2867] = 59 ;
-ann_weights[2868] = 36 ;
-ann_weights[2869] = 108 ;
-ann_weights[2870] = 1048626 ;
-ann_weights[2871] = 1048805 ;
-ann_weights[2872] = 1048626 ;
-ann_weights[2873] = 1048620 ;
-ann_weights[2874] = 1048607 ;
-ann_weights[2875] = 83 ;
-ann_weights[2876] = 1048648 ;
-ann_weights[2877] = 19 ;
-ann_weights[2878] = 139 ;
-ann_weights[2879] = 78 ;
-ann_weights[2880] = 1048678 ;
-ann_weights[2881] = 1048737 ;
-ann_weights[2882] = 1048730 ;
-ann_weights[2883] = 1048845 ;
-ann_weights[2884] = 1048582 ;
-ann_weights[2885] = 206 ;
-ann_weights[2886] = 14 ;
-ann_weights[2887] = 1048663 ;
-ann_weights[2888] = 185 ;
-ann_weights[2889] = 88 ;
-ann_weights[2890] = 36 ;
-ann_weights[2891] = 1048853 ;
-ann_weights[2892] = 1048673 ;
-ann_weights[2893] = 1048941 ;
-ann_weights[2894] = 67 ;
-ann_weights[2895] = 298 ;
-ann_weights[2896] = 1048626 ;
-ann_weights[2897] = 0 ;
-ann_weights[2898] = 221 ;
-ann_weights[2899] = 102 ;
-ann_weights[2900] = 1048712 ;
-ann_weights[2901] = 0 ;
-ann_weights[2902] = 1048772 ;
-ann_weights[2903] = 1049049 ;
-ann_weights[2904] = 42 ;
-ann_weights[2905] = 186 ;
-ann_weights[2906] = 1048686 ;
-ann_weights[2907] = 44 ;
-ann_weights[2908] = 179 ;
-ann_weights[2909] = 56 ;
-ann_weights[2910] = 74 ;
-ann_weights[2911] = 1048667 ;
-ann_weights[2912] = 1048686 ;
-ann_weights[2913] = 1048998 ;
-ann_weights[2914] = 1048581 ;
-ann_weights[2915] = 317 ;
-ann_weights[2916] = 1048691 ;
-ann_weights[2917] = 2 ;
-ann_weights[2918] = 206 ;
-ann_weights[2919] = 165 ;
-ann_weights[2920] = 1048577 ;
-ann_weights[2921] = 14 ;
-ann_weights[2922] = 1048751 ;
-ann_weights[2923] = 1048952 ;
-ann_weights[2924] = 174 ;
-ann_weights[2925] = 298 ;
-ann_weights[2926] = 1048680 ;
-ann_weights[2927] = 1048632 ;
-ann_weights[2928] = 122 ;
-ann_weights[2929] = 94 ;
-ann_weights[2930] = 5 ;
-ann_weights[2931] = 188 ;
-ann_weights[2932] = 1048854 ;
-ann_weights[2933] = 1048588 ;
-ann_weights[2934] = 1048861 ;
-ann_weights[2935] = 167 ;
-ann_weights[2936] = 1048667 ;
-ann_weights[2937] = 157 ;
-ann_weights[2938] = 9 ;
-ann_weights[2939] = 1048739 ;
-ann_weights[2940] = 2 ;
-ann_weights[2941] = 411 ;
-ann_weights[2942] = 1048682 ;
-ann_weights[2943] = 210 ;
-ann_weights[2944] = 1049304 ;
-ann_weights[2945] = 1048578 ;
-ann_weights[2946] = 1048876 ;
-ann_weights[2947] = 221 ;
-ann_weights[2948] = 1048696 ;
-ann_weights[2949] = 1048588 ;
-ann_weights[2950] = 1048718 ;
-ann_weights[2951] = 621 ;
-ann_weights[2952] = 1048746 ;
-ann_weights[2953] = 169 ;
-ann_weights[2954] = 1048779 ;
-ann_weights[2955] = 1048752 ;
-ann_weights[2956] = 1048986 ;
-ann_weights[2957] = 440 ;
-ann_weights[2958] = 1048877 ;
-ann_weights[2959] = 1048726 ;
-ann_weights[2960] = 1048645 ;
-ann_weights[2961] = 256 ;
-ann_weights[2962] = 15 ;
-ann_weights[2963] = 224 ;
-ann_weights[2964] = 1048635 ;
-ann_weights[2965] = 1048895 ;
-ann_weights[2966] = 1049075 ;
-ann_weights[2967] = 436 ;
-ann_weights[2968] = 1048869 ;
-ann_weights[2969] = 1048594 ;
-ann_weights[2970] = 141 ;
-ann_weights[2971] = 79 ;
-ann_weights[2972] = 23 ;
-ann_weights[2973] = 97 ;
-ann_weights[2974] = 64 ;
-ann_weights[2975] = 1048963 ;
-ann_weights[2976] = 1049067 ;
-ann_weights[2977] = 325 ;
-ann_weights[2978] = 1048753 ;
-ann_weights[2979] = 1048605 ;
-ann_weights[2980] = 205 ;
-ann_weights[2981] = 1048761 ;
-ann_weights[2982] = 1048600 ;
-ann_weights[2983] = 126 ;
-ann_weights[2984] = 1048650 ;
-ann_weights[2985] = 1048934 ;
-ann_weights[2986] = 1049045 ;
-ann_weights[2987] = 291 ;
-ann_weights[2988] = 1048588 ;
-ann_weights[2989] = 1048579 ;
-ann_weights[2990] = 32 ;
-ann_weights[2991] = 1048841 ;
-ann_weights[2992] = 1048581 ;
-ann_weights[2993] = 181 ;
-ann_weights[2994] = 19 ;
-ann_weights[2995] = 1048896 ;
-ann_weights[2996] = 1048909 ;
-ann_weights[2997] = 162 ;
-ann_weights[2998] = 79 ;
-ann_weights[2999] = 1048611 ;
-ann_weights[3000] = 90 ;
-ann_weights[3001] = 1048934 ;
-ann_weights[3002] = 1048647 ;
-ann_weights[3003] = 172 ;
-ann_weights[3004] = 1048673 ;
-ann_weights[3005] = 1048806 ;
-ann_weights[3006] = 1048852 ;
-ann_weights[3007] = 247 ;
-ann_weights[3008] = 1048576 ;
-ann_weights[3009] = 1048610 ;
-ann_weights[3010] = 113 ;
-ann_weights[3011] = 1048960 ;
-ann_weights[3012] = 1048634 ;
-ann_weights[3013] = 64 ;
-ann_weights[3014] = 1048710 ;
-ann_weights[3015] = 1048674 ;
-ann_weights[3016] = 1048795 ;
-ann_weights[3017] = 215 ;
-ann_weights[3018] = 130 ;
-ann_weights[3019] = 1048593 ;
-ann_weights[3020] = 130 ;
-ann_weights[3021] = 1049030 ;
-ann_weights[3022] = 1048724 ;
-ann_weights[3023] = 104 ;
-ann_weights[3024] = 1048672 ;
-ann_weights[3025] = 0 ;
-ann_weights[3026] = 1048862 ;
-ann_weights[3027] = 94 ;
-ann_weights[3028] = 79 ;
-ann_weights[3029] = 1048653 ;
-ann_weights[3030] = 307 ;
-ann_weights[3031] = 1049303 ;
-ann_weights[3032] = 1048809 ;
-ann_weights[3033] = 1048612 ;
-ann_weights[3034] = 1049094 ;
-ann_weights[3035] = 408 ;
-ann_weights[3036] = 1048686 ;
-ann_weights[3037] = 1048808 ;
-ann_weights[3038] = 79 ;
-ann_weights[3039] = 1048802 ;
-ann_weights[3040] = 186 ;
-ann_weights[3041] = 1049529 ;
-ann_weights[3042] = 1049214 ;
-ann_weights[3043] = 1049705 ;
-ann_weights[3044] = 1049166 ;
-ann_weights[3045] = 1019 ;
-ann_weights[3046] = 1048822 ;
-ann_weights[3047] = 1049075 ;
-ann_weights[3048] = 1048727 ;
-ann_weights[3049] = 1049144 ;
-ann_weights[3050] = 1049303 ;
-ann_weights[3051] = 1048952 ;
-ann_weights[3052] = 1048870 ;
-ann_weights[3053] = 1049004 ;
-ann_weights[3054] = 1049200 ;
-ann_weights[3055] = 1166 ;
-ann_weights[3056] = 1049406 ;
-ann_weights[3057] = 1048913 ;
-ann_weights[3058] = 1049038 ;
-ann_weights[3059] = 1049127 ;
-ann_weights[3060] = 1049144 ;
-ann_weights[3061] = 1048842 ;
-ann_weights[3062] = 1048713 ;
-ann_weights[3063] = 1049072 ;
-ann_weights[3064] = 1049068 ;
-ann_weights[3065] = 894 ;
-ann_weights[3066] = 1049312 ;
-ann_weights[3067] = 1048647 ;
-ann_weights[3068] = 1048607 ;
-ann_weights[3069] = 1049266 ;
-ann_weights[3070] = 1048683 ;
-ann_weights[3071] = 109 ;
-ann_weights[3072] = 1048838 ;
-ann_weights[3073] = 1048641 ;
-ann_weights[3074] = 1048840 ;
-ann_weights[3075] = 154 ;
-ann_weights[3076] = 1048796 ;
-ann_weights[3077] = 132 ;
-ann_weights[3078] = 35 ;
-ann_weights[3079] = 1048799 ;
-ann_weights[3080] = 1048603 ;
-ann_weights[3081] = 1048710 ;
-ann_weights[3082] = 1048579 ;
-ann_weights[3083] = 1048753 ;
-ann_weights[3084] = 1048653 ;
-ann_weights[3085] = 1048612 ;
-ann_weights[3086] = 1048654 ;
-ann_weights[3087] = 114 ;
-ann_weights[3088] = 1048776 ;
-ann_weights[3089] = 1048680 ;
-ann_weights[3090] = 110 ;
-ann_weights[3091] = 106 ;
-ann_weights[3092] = 1048847 ;
-ann_weights[3093] = 1048792 ;
-ann_weights[3094] = 1048840 ;
-ann_weights[3095] = 1048802 ;
-ann_weights[3096] = 1048763 ;
-ann_weights[3097] = 276 ;
-ann_weights[3098] = 1048913 ;
-ann_weights[3099] = 1049009 ;
-ann_weights[3100] = 1048745 ;
-ann_weights[3101] = 1048624 ;
-ann_weights[3102] = 1048822 ;
-ann_weights[3103] = 1048595 ;
-ann_weights[3104] = 1049078 ;
-ann_weights[3105] = 1048834 ;
-ann_weights[3106] = 1048669 ;
-ann_weights[3107] = 473 ;
-ann_weights[3108] = 1049058 ;
-ann_weights[3109] = 1049206 ;
-ann_weights[3110] = 1048630 ;
-ann_weights[3111] = 1048814 ;
-ann_weights[3112] = 1048804 ;
-ann_weights[3113] = 360 ;
-ann_weights[3114] = 1048924 ;
-ann_weights[3115] = 1049168 ;
-ann_weights[3116] = 1048974 ;
-ann_weights[3117] = 511 ;
-ann_weights[3118] = 1048827 ;
-ann_weights[3119] = 1048947 ;
-ann_weights[3120] = 1048824 ;
-ann_weights[3121] = 1048748 ;
-ann_weights[3122] = 1048723 ;
-ann_weights[3123] = 139 ;
-ann_weights[3124] = 1048796 ;
-ann_weights[3125] = 1048615 ;
-ann_weights[3126] = 1048716 ;
-ann_weights[3127] = 405 ;
-ann_weights[3128] = 94 ;
-ann_weights[3129] = 1048711 ;
-ann_weights[3130] = 1048798 ;
-ann_weights[3131] = 1048889 ;
-ann_weights[3132] = 1048651 ;
-ann_weights[3133] = 1048774 ;
-ann_weights[3134] = 1048797 ;
-ann_weights[3135] = 1048609 ;
-ann_weights[3136] = 1048702 ;
-ann_weights[3137] = 109 ;
-ann_weights[3138] = 82 ;
-ann_weights[3139] = 128 ;
-ann_weights[3140] = 1048668 ;
-ann_weights[3141] = 1049066 ;
-ann_weights[3142] = 1048723 ;
-ann_weights[3143] = 1048853 ;
-ann_weights[3144] = 1048668 ;
-ann_weights[3145] = 138 ;
-ann_weights[3146] = 1048622 ;
-ann_weights[3147] = 1048584 ;
-ann_weights[3148] = 101 ;
-ann_weights[3149] = 221 ;
-ann_weights[3150] = 1048635 ;
-ann_weights[3151] = 1048957 ;
-ann_weights[3152] = 1048994 ;
-ann_weights[3153] = 1049020 ;
-ann_weights[3154] = 1048629 ;
-ann_weights[3155] = 152 ;
-ann_weights[3156] = 102 ;
-ann_weights[3157] = 133 ;
-ann_weights[3158] = 282 ;
-ann_weights[3159] = 167 ;
-ann_weights[3160] = 39 ;
-ann_weights[3161] = 1048839 ;
-ann_weights[3162] = 1048993 ;
-ann_weights[3163] = 1049068 ;
-ann_weights[3164] = 151 ;
-ann_weights[3165] = 162 ;
-ann_weights[3166] = 1048616 ;
-ann_weights[3167] = 1048607 ;
-ann_weights[3168] = 192 ;
-ann_weights[3169] = 252 ;
-ann_weights[3170] = 1048768 ;
-ann_weights[3171] = 1048761 ;
-ann_weights[3172] = 1049140 ;
-ann_weights[3173] = 1049075 ;
-ann_weights[3174] = 239 ;
-ann_weights[3175] = 74 ;
-ann_weights[3176] = 1 ;
-ann_weights[3177] = 93 ;
-ann_weights[3178] = 177 ;
-ann_weights[3179] = 137 ;
-ann_weights[3180] = 1048649 ;
-ann_weights[3181] = 1048702 ;
-ann_weights[3182] = 1049167 ;
-ann_weights[3183] = 1048885 ;
-ann_weights[3184] = 313 ;
-ann_weights[3185] = 138 ;
-ann_weights[3186] = 53 ;
-ann_weights[3187] = 75 ;
-ann_weights[3188] = 166 ;
-ann_weights[3189] = 263 ;
-ann_weights[3190] = 36 ;
-ann_weights[3191] = 1048734 ;
-ann_weights[3192] = 1049112 ;
-ann_weights[3193] = 1048861 ;
-ann_weights[3194] = 180 ;
-ann_weights[3195] = 117 ;
-ann_weights[3196] = 1048644 ;
-ann_weights[3197] = 13 ;
-ann_weights[3198] = 64 ;
-ann_weights[3199] = 235 ;
-ann_weights[3200] = 1048685 ;
-ann_weights[3201] = 1048731 ;
-ann_weights[3202] = 1049219 ;
-ann_weights[3203] = 1048680 ;
-ann_weights[3204] = 234 ;
-ann_weights[3205] = 318 ;
-ann_weights[3206] = 84 ;
-ann_weights[3207] = 1048590 ;
-ann_weights[3208] = 168 ;
-ann_weights[3209] = 1048598 ;
-ann_weights[3210] = 1048704 ;
-ann_weights[3211] = 220 ;
-ann_weights[3212] = 1049330 ;
-ann_weights[3213] = 41 ;
-ann_weights[3214] = 1048966 ;
-ann_weights[3215] = 306 ;
-ann_weights[3216] = 81 ;
-ann_weights[3217] = 1048602 ;
-ann_weights[3218] = 221 ;
-ann_weights[3219] = 1048665 ;
-ann_weights[3220] = 1048972 ;
-ann_weights[3221] = 630 ;
-ann_weights[3222] = 1049122 ;
-ann_weights[3223] = 113 ;
-ann_weights[3224] = 1049261 ;
-ann_weights[3225] = 51 ;
-ann_weights[3226] = 1048841 ;
-ann_weights[3227] = 171 ;
-ann_weights[3228] = 262 ;
-ann_weights[3229] = 1048589 ;
-ann_weights[3230] = 1049154 ;
-ann_weights[3231] = 619 ;
-ann_weights[3232] = 1048985 ;
-ann_weights[3233] = 126 ;
-ann_weights[3234] = 1048626 ;
-ann_weights[3235] = 1048748 ;
-ann_weights[3236] = 1049097 ;
-ann_weights[3237] = 373 ;
-ann_weights[3238] = 1048656 ;
-ann_weights[3239] = 28 ;
-ann_weights[3240] = 1049030 ;
-ann_weights[3241] = 221 ;
-ann_weights[3242] = 1048738 ;
-ann_weights[3243] = 9 ;
-ann_weights[3244] = 211 ;
-ann_weights[3245] = 1048771 ;
-ann_weights[3246] = 1048886 ;
-ann_weights[3247] = 411 ;
-ann_weights[3248] = 1048731 ;
-ann_weights[3249] = 126 ;
-ann_weights[3250] = 1048723 ;
-ann_weights[3251] = 1048722 ;
-ann_weights[3252] = 1048805 ;
-ann_weights[3253] = 191 ;
-ann_weights[3254] = 114 ;
-ann_weights[3255] = 1048901 ;
-ann_weights[3256] = 1048910 ;
-ann_weights[3257] = 339 ;
-ann_weights[3258] = 1048787 ;
-ann_weights[3259] = 296 ;
-ann_weights[3260] = 1048600 ;
-ann_weights[3261] = 1048675 ;
-ann_weights[3262] = 1048639 ;
-ann_weights[3263] = 154 ;
-ann_weights[3264] = 1048643 ;
-ann_weights[3265] = 1048796 ;
-ann_weights[3266] = 1048912 ;
-ann_weights[3267] = 333 ;
-ann_weights[3268] = 1048632 ;
-ann_weights[3269] = 141 ;
-ann_weights[3270] = 22 ;
-ann_weights[3271] = 1048694 ;
-ann_weights[3272] = 30 ;
-ann_weights[3273] = 24 ;
-ann_weights[3274] = 1048629 ;
-ann_weights[3275] = 1049022 ;
-ann_weights[3276] = 1048848 ;
-ann_weights[3277] = 92 ;
-ann_weights[3278] = 1048606 ;
-ann_weights[3279] = 169 ;
-ann_weights[3280] = 148 ;
-ann_weights[3281] = 1048730 ;
-ann_weights[3282] = 1048651 ;
-ann_weights[3283] = 175 ;
-ann_weights[3284] = 1048830 ;
-ann_weights[3285] = 1049182 ;
-ann_weights[3286] = 1048752 ;
-ann_weights[3287] = 132 ;
-ann_weights[3288] = 1048580 ;
-ann_weights[3289] = 267 ;
-ann_weights[3290] = 172 ;
-ann_weights[3291] = 1048801 ;
-ann_weights[3292] = 1048662 ;
-ann_weights[3293] = 1048745 ;
-ann_weights[3294] = 1048750 ;
-ann_weights[3295] = 1049201 ;
-ann_weights[3296] = 24 ;
-ann_weights[3297] = 177 ;
-ann_weights[3298] = 36 ;
-ann_weights[3299] = 228 ;
-ann_weights[3300] = 288 ;
-ann_weights[3301] = 1049017 ;
-ann_weights[3302] = 1048716 ;
-ann_weights[3303] = 1048734 ;
-ann_weights[3304] = 1048706 ;
-ann_weights[3305] = 1049110 ;
-ann_weights[3306] = 44 ;
-ann_weights[3307] = 111 ;
-ann_weights[3308] = 213 ;
-ann_weights[3309] = 83 ;
-ann_weights[3310] = 231 ;
-ann_weights[3311] = 1048950 ;
-ann_weights[3312] = 1048779 ;
-ann_weights[3313] = 1048867 ;
-ann_weights[3314] = 1049089 ;
-ann_weights[3315] = 1048690 ;
-ann_weights[3316] = 185 ;
-ann_weights[3317] = 1048767 ;
-ann_weights[3318] = 268 ;
-ann_weights[3319] = 1048735 ;
-ann_weights[3320] = 160 ;
-ann_weights[3321] = 1049450 ;
-ann_weights[3322] = 1048781 ;
-ann_weights[3323] = 1049361 ;
-ann_weights[3324] = 1049292 ;
-ann_weights[3325] = 468 ;
-ann_weights[3326] = 1048603 ;
-ann_weights[3327] = 1049312 ;
-ann_weights[3328] = 66 ;
-ann_weights[3329] = 1049026 ;
-ann_weights[3330] = 1049072 ;
-ann_weights[3331] = 1048893 ;
-ann_weights[3332] = 133 ;
-ann_weights[3333] = 1048713 ;
-ann_weights[3334] = 1049161 ;
-ann_weights[3335] = 905 ;
-ann_weights[3336] = 1049097 ;
-ann_weights[3337] = 1049295 ;
-ann_weights[3338] = 1048679 ;
-ann_weights[3339] = 1049158 ;
-ann_weights[3340] = 1049216 ;
-ann_weights[3341] = 1048859 ;
-ann_weights[3342] = 1048661 ;
-ann_weights[3343] = 1048878 ;
-ann_weights[3344] = 1048989 ;
-ann_weights[3345] = 485 ;
-ann_weights[3346] = 1049259 ;
-ann_weights[3347] = 1048916 ;
-ann_weights[3348] = 135 ;
-ann_weights[3349] = 1049037 ;
-ann_weights[3350] = 1048699 ;
-ann_weights[3351] = 205 ;
-ann_weights[3352] = 1048839 ;
-ann_weights[3353] = 1048705 ;
-ann_weights[3354] = 1048863 ;
-ann_weights[3355] = 1048653 ;
-ann_weights[3356] = 1048707 ;
-ann_weights[3357] = 90 ;
-ann_weights[3358] = 117 ;
-ann_weights[3359] = 1048862 ;
-ann_weights[3360] = 17 ;
-ann_weights[3361] = 1048626 ;
-ann_weights[3362] = 1048623 ;
-ann_weights[3363] = 1048754 ;
-ann_weights[3364] = 1048669 ;
-ann_weights[3365] = 1048622 ;
-ann_weights[3366] = 4 ;
-ann_weights[3367] = 144 ;
-ann_weights[3368] = 1048642 ;
-ann_weights[3369] = 1048726 ;
-ann_weights[3370] = 34 ;
-ann_weights[3371] = 1048840 ;
-ann_weights[3372] = 1048710 ;
-ann_weights[3373] = 1048832 ;
-ann_weights[3374] = 1048824 ;
-ann_weights[3375] = 1048895 ;
-ann_weights[3376] = 1048886 ;
-ann_weights[3377] = 335 ;
-ann_weights[3378] = 1048807 ;
-ann_weights[3379] = 1049024 ;
-ann_weights[3380] = 1048771 ;
-ann_weights[3381] = 1048705 ;
-ann_weights[3382] = 1048778 ;
-ann_weights[3383] = 1049017 ;
-ann_weights[3384] = 1048945 ;
-ann_weights[3385] = 1048857 ;
-ann_weights[3386] = 1048813 ;
-ann_weights[3387] = 504 ;
-ann_weights[3388] = 1048971 ;
-ann_weights[3389] = 1049047 ;
-ann_weights[3390] = 1048755 ;
-ann_weights[3391] = 1048622 ;
-ann_weights[3392] = 1048951 ;
-ann_weights[3393] = 46 ;
-ann_weights[3394] = 1048805 ;
-ann_weights[3395] = 1048781 ;
-ann_weights[3396] = 1048940 ;
-ann_weights[3397] = 552 ;
-ann_weights[3398] = 48 ;
-ann_weights[3399] = 1048712 ;
-ann_weights[3400] = 1048871 ;
-ann_weights[3401] = 52 ;
-ann_weights[3402] = 1048819 ;
-ann_weights[3403] = 1048615 ;
-ann_weights[3404] = 1048894 ;
-ann_weights[3405] = 1048685 ;
-ann_weights[3406] = 1048772 ;
-ann_weights[3407] = 365 ;
-ann_weights[3408] = 1048610 ;
-ann_weights[3409] = 225 ;
-ann_weights[3410] = 1048656 ;
-ann_weights[3411] = 1048898 ;
-ann_weights[3412] = 1049078 ;
-ann_weights[3413] = 1048944 ;
-ann_weights[3414] = 1048678 ;
-ann_weights[3415] = 56 ;
-ann_weights[3416] = 1048670 ;
-ann_weights[3417] = 41 ;
-ann_weights[3418] = 191 ;
-ann_weights[3419] = 206 ;
-ann_weights[3420] = 125 ;
-ann_weights[3421] = 1048683 ;
-ann_weights[3422] = 1049330 ;
-ann_weights[3423] = 1048970 ;
-ann_weights[3424] = 166 ;
-ann_weights[3425] = 272 ;
-ann_weights[3426] = 123 ;
-ann_weights[3427] = 1048647 ;
-ann_weights[3428] = 67 ;
-ann_weights[3429] = 183 ;
-ann_weights[3430] = 43 ;
-ann_weights[3431] = 6 ;
-ann_weights[3432] = 1049370 ;
-ann_weights[3433] = 1049017 ;
-ann_weights[3434] = 290 ;
-ann_weights[3435] = 75 ;
-ann_weights[3436] = 135 ;
-ann_weights[3437] = 97 ;
-ann_weights[3438] = 135 ;
-ann_weights[3439] = 203 ;
-ann_weights[3440] = 1048669 ;
-ann_weights[3441] = 1048717 ;
-ann_weights[3442] = 1049169 ;
-ann_weights[3443] = 1048895 ;
-ann_weights[3444] = 266 ;
-ann_weights[3445] = 1048585 ;
-ann_weights[3446] = 122 ;
-ann_weights[3447] = 226 ;
-ann_weights[3448] = 8 ;
-ann_weights[3449] = 135 ;
-ann_weights[3450] = 1048709 ;
-ann_weights[3451] = 1048738 ;
-ann_weights[3452] = 1049074 ;
-ann_weights[3453] = 1048794 ;
-ann_weights[3454] = 218 ;
-ann_weights[3455] = 1048671 ;
-ann_weights[3456] = 75 ;
-ann_weights[3457] = 1048638 ;
-ann_weights[3458] = 79 ;
-ann_weights[3459] = 163 ;
-ann_weights[3460] = 1048586 ;
-ann_weights[3461] = 1048908 ;
-ann_weights[3462] = 1049174 ;
-ann_weights[3463] = 1048626 ;
-ann_weights[3464] = 298 ;
-ann_weights[3465] = 115 ;
-ann_weights[3466] = 79 ;
-ann_weights[3467] = 1048646 ;
-ann_weights[3468] = 1048686 ;
-ann_weights[3469] = 101 ;
-ann_weights[3470] = 1048649 ;
-ann_weights[3471] = 1048932 ;
-ann_weights[3472] = 1049120 ;
-ann_weights[3473] = 1048655 ;
-ann_weights[3474] = 510 ;
-ann_weights[3475] = 204 ;
-ann_weights[3476] = 90 ;
-ann_weights[3477] = 1048752 ;
-ann_weights[3478] = 1048654 ;
-ann_weights[3479] = 41 ;
-ann_weights[3480] = 1048598 ;
-ann_weights[3481] = 1048763 ;
-ann_weights[3482] = 1049190 ;
-ann_weights[3483] = 1048611 ;
-ann_weights[3484] = 453 ;
-ann_weights[3485] = 282 ;
-ann_weights[3486] = 67 ;
-ann_weights[3487] = 1049086 ;
-ann_weights[3488] = 110 ;
-ann_weights[3489] = 1048752 ;
-ann_weights[3490] = 1048751 ;
-ann_weights[3491] = 278 ;
-ann_weights[3492] = 1049081 ;
-ann_weights[3493] = 139 ;
-ann_weights[3494] = 1048749 ;
-ann_weights[3495] = 173 ;
-ann_weights[3496] = 77 ;
-ann_weights[3497] = 1049292 ;
-ann_weights[3498] = 250 ;
-ann_weights[3499] = 1048626 ;
-ann_weights[3500] = 1049176 ;
-ann_weights[3501] = 644 ;
-ann_weights[3502] = 1049036 ;
-ann_weights[3503] = 234 ;
-ann_weights[3504] = 1048938 ;
-ann_weights[3505] = 1048609 ;
-ann_weights[3506] = 1048903 ;
-ann_weights[3507] = 1048764 ;
-ann_weights[3508] = 156 ;
-ann_weights[3509] = 109 ;
-ann_weights[3510] = 1049297 ;
-ann_weights[3511] = 504 ;
-ann_weights[3512] = 1048976 ;
-ann_weights[3513] = 114 ;
-ann_weights[3514] = 104 ;
-ann_weights[3515] = 1048733 ;
-ann_weights[3516] = 1048914 ;
-ann_weights[3517] = 124 ;
-ann_weights[3518] = 33 ;
-ann_weights[3519] = 264 ;
-ann_weights[3520] = 1049122 ;
-ann_weights[3521] = 121 ;
-ann_weights[3522] = 1048931 ;
-ann_weights[3523] = 124 ;
-ann_weights[3524] = 361 ;
-ann_weights[3525] = 1048969 ;
-ann_weights[3526] = 1048704 ;
-ann_weights[3527] = 360 ;
-ann_weights[3528] = 1048583 ;
-ann_weights[3529] = 255 ;
-ann_weights[3530] = 1048798 ;
-ann_weights[3531] = 1048606 ;
-ann_weights[3532] = 1048897 ;
-ann_weights[3533] = 1048590 ;
-ann_weights[3534] = 127 ;
-ann_weights[3535] = 1048863 ;
-ann_weights[3536] = 1048698 ;
-ann_weights[3537] = 275 ;
-ann_weights[3538] = 1048612 ;
-ann_weights[3539] = 281 ;
-ann_weights[3540] = 1048635 ;
-ann_weights[3541] = 1048610 ;
-ann_weights[3542] = 1048720 ;
-ann_weights[3543] = 41 ;
-ann_weights[3544] = 1048593 ;
-ann_weights[3545] = 1048881 ;
-ann_weights[3546] = 1048764 ;
-ann_weights[3547] = 265 ;
-ann_weights[3548] = 1048643 ;
-ann_weights[3549] = 333 ;
-ann_weights[3550] = 1048601 ;
-ann_weights[3551] = 1048856 ;
-ann_weights[3552] = 26 ;
-ann_weights[3553] = 1048580 ;
-ann_weights[3554] = 45 ;
-ann_weights[3555] = 1048886 ;
-ann_weights[3556] = 1048805 ;
-ann_weights[3557] = 1048633 ;
-ann_weights[3558] = 60 ;
-ann_weights[3559] = 331 ;
-ann_weights[3560] = 32 ;
-ann_weights[3561] = 1048777 ;
-ann_weights[3562] = 1048620 ;
-ann_weights[3563] = 1048772 ;
-ann_weights[3564] = 67 ;
-ann_weights[3565] = 1048990 ;
-ann_weights[3566] = 1048688 ;
-ann_weights[3567] = 27 ;
-ann_weights[3568] = 212 ;
-ann_weights[3569] = 330 ;
-ann_weights[3570] = 80 ;
-ann_weights[3571] = 1048602 ;
-ann_weights[3572] = 1048611 ;
-ann_weights[3573] = 1049033 ;
-ann_weights[3574] = 132 ;
-ann_weights[3575] = 1049334 ;
-ann_weights[3576] = 74 ;
-ann_weights[3577] = 1048599 ;
-ann_weights[3578] = 225 ;
-ann_weights[3579] = 322 ;
-ann_weights[3580] = 201 ;
-ann_weights[3581] = 1048801 ;
-ann_weights[3582] = 1048702 ;
-ann_weights[3583] = 1049028 ;
-ann_weights[3584] = 1048590 ;
-ann_weights[3585] = 1049606 ;
-ann_weights[3586] = 329 ;
-ann_weights[3587] = 1048640 ;
-ann_weights[3588] = 236 ;
-ann_weights[3589] = 285 ;
-ann_weights[3590] = 294 ;
-ann_weights[3591] = 1048682 ;
-ann_weights[3592] = 1049022 ;
-ann_weights[3593] = 1049084 ;
-ann_weights[3594] = 1048968 ;
-ann_weights[3595] = 1049593 ;
-ann_weights[3596] = 580 ;
-ann_weights[3597] = 1048834 ;
-ann_weights[3598] = 389 ;
-ann_weights[3599] = 173 ;
-ann_weights[3600] = 401 ;
-ann_weights[3601] = 1049147 ;
-ann_weights[3602] = 43 ;
-ann_weights[3603] = 1049151 ;
-ann_weights[3604] = 1048858 ;
-ann_weights[3605] = 1049421 ;
-ann_weights[3606] = 224 ;
-ann_weights[3607] = 1049011 ;
-ann_weights[3608] = 477 ;
-ann_weights[3609] = 1049253 ;
-ann_weights[3610] = 1048603 ;
-ann_weights[3611] = 1048840 ;
-ann_weights[3612] = 384 ;
-ann_weights[3613] = 100 ;
-ann_weights[3614] = 1048889 ;
-ann_weights[3615] = 92 ;
-ann_weights[3616] = 1048822 ;
-ann_weights[3617] = 1048643 ;
-ann_weights[3618] = 99 ;
-ann_weights[3619] = 1049532 ;
-ann_weights[3620] = 1048894 ;
-ann_weights[3621] = 1048914 ;
-ann_weights[3622] = 298 ;
-ann_weights[3623] = 1048691 ;
-ann_weights[3624] = 1048873 ;
-ann_weights[3625] = 266 ;
-ann_weights[3626] = 1049160 ;
-ann_weights[3627] = 187 ;
-ann_weights[3628] = 1048629 ;
-ann_weights[3629] = 1049047 ;
-ann_weights[3630] = 1048779 ;
-ann_weights[3631] = 118 ;
-ann_weights[3632] = 91 ;
-ann_weights[3633] = 1048762 ;
-ann_weights[3634] = 1048926 ;
-ann_weights[3635] = 1048766 ;
-ann_weights[3636] = 1048793 ;
-ann_weights[3637] = 38 ;
-ann_weights[3638] = 1048828 ;
-ann_weights[3639] = 1048882 ;
-ann_weights[3640] = 1048576 ;
-ann_weights[3641] = 84 ;
-ann_weights[3642] = 1048694 ;
-ann_weights[3643] = 1048676 ;
-ann_weights[3644] = 20 ;
-ann_weights[3645] = 19 ;
-ann_weights[3646] = 1048614 ;
-ann_weights[3647] = 1048748 ;
-ann_weights[3648] = 1048718 ;
-ann_weights[3649] = 1048727 ;
-ann_weights[3650] = 1 ;
-ann_weights[3651] = 1048820 ;
-ann_weights[3652] = 1048732 ;
-ann_weights[3653] = 1048833 ;
-ann_weights[3654] = 1048679 ;
-ann_weights[3655] = 1048771 ;
-ann_weights[3656] = 1048822 ;
-ann_weights[3657] = 246 ;
-ann_weights[3658] = 1048791 ;
-ann_weights[3659] = 1048859 ;
-ann_weights[3660] = 25 ;
-ann_weights[3661] = 1048811 ;
-ann_weights[3662] = 1048804 ;
-ann_weights[3663] = 1049000 ;
-ann_weights[3664] = 1048905 ;
-ann_weights[3665] = 1048945 ;
-ann_weights[3666] = 1048912 ;
-ann_weights[3667] = 408 ;
-ann_weights[3668] = 1048902 ;
-ann_weights[3669] = 1049099 ;
-ann_weights[3670] = 1048618 ;
-ann_weights[3671] = 60 ;
-ann_weights[3672] = 1048879 ;
-ann_weights[3673] = 1048603 ;
-ann_weights[3674] = 1048872 ;
-ann_weights[3675] = 1048632 ;
-ann_weights[3676] = 1048906 ;
-ann_weights[3677] = 491 ;
-ann_weights[3678] = 22 ;
-ann_weights[3679] = 1048631 ;
-ann_weights[3680] = 37 ;
-ann_weights[3681] = 53 ;
-ann_weights[3682] = 1049158 ;
-ann_weights[3683] = 1048838 ;
-ann_weights[3684] = 1048648 ;
-ann_weights[3685] = 108 ;
-ann_weights[3686] = 1048836 ;
-ann_weights[3687] = 279 ;
-ann_weights[3688] = 1048782 ;
-ann_weights[3689] = 375 ;
-ann_weights[3690] = 1048601 ;
-ann_weights[3691] = 1048674 ;
-ann_weights[3692] = 1049284 ;
-ann_weights[3693] = 1048920 ;
-ann_weights[3694] = 130 ;
-ann_weights[3695] = 114 ;
-ann_weights[3696] = 173 ;
-ann_weights[3697] = 109 ;
-ann_weights[3698] = 70 ;
-ann_weights[3699] = 217 ;
-ann_weights[3700] = 241 ;
-ann_weights[3701] = 1048620 ;
-ann_weights[3702] = 1049376 ;
-ann_weights[3703] = 1048947 ;
-ann_weights[3704] = 210 ;
-ann_weights[3705] = 23 ;
-ann_weights[3706] = 274 ;
-ann_weights[3707] = 110 ;
-ann_weights[3708] = 1048611 ;
-ann_weights[3709] = 211 ;
-ann_weights[3710] = 160 ;
-ann_weights[3711] = 1048754 ;
-ann_weights[3712] = 1049303 ;
-ann_weights[3713] = 1048875 ;
-ann_weights[3714] = 304 ;
-ann_weights[3715] = 165 ;
-ann_weights[3716] = 73 ;
-ann_weights[3717] = 53 ;
-ann_weights[3718] = 1048653 ;
-ann_weights[3719] = 168 ;
-ann_weights[3720] = 70 ;
-ann_weights[3721] = 54 ;
-ann_weights[3722] = 1048994 ;
-ann_weights[3723] = 1048779 ;
-ann_weights[3724] = 249 ;
-ann_weights[3725] = 1048576 ;
-ann_weights[3726] = 55 ;
-ann_weights[3727] = 1048635 ;
-ann_weights[3728] = 1048666 ;
-ann_weights[3729] = 170 ;
-ann_weights[3730] = 64 ;
-ann_weights[3731] = 1048719 ;
-ann_weights[3732] = 1048895 ;
-ann_weights[3733] = 1048738 ;
-ann_weights[3734] = 334 ;
-ann_weights[3735] = 89 ;
-ann_weights[3736] = 181 ;
-ann_weights[3737] = 1048726 ;
-ann_weights[3738] = 1048580 ;
-ann_weights[3739] = 115 ;
-ann_weights[3740] = 67 ;
-ann_weights[3741] = 1049155 ;
-ann_weights[3742] = 1048879 ;
-ann_weights[3743] = 1048770 ;
-ann_weights[3744] = 381 ;
-ann_weights[3745] = 207 ;
-ann_weights[3746] = 60 ;
-ann_weights[3747] = 1048658 ;
-ann_weights[3748] = 1048787 ;
-ann_weights[3749] = 83 ;
-ann_weights[3750] = 64 ;
-ann_weights[3751] = 1049200 ;
-ann_weights[3752] = 1048770 ;
-ann_weights[3753] = 1048736 ;
-ann_weights[3754] = 480 ;
-ann_weights[3755] = 232 ;
-ann_weights[3756] = 122 ;
-ann_weights[3757] = 1049124 ;
-ann_weights[3758] = 1048597 ;
-ann_weights[3759] = 1048700 ;
-ann_weights[3760] = 48 ;
-ann_weights[3761] = 1048780 ;
-ann_weights[3762] = 1048722 ;
-ann_weights[3763] = 1048590 ;
-ann_weights[3764] = 270 ;
-ann_weights[3765] = 245 ;
-ann_weights[3766] = 48 ;
-ann_weights[3767] = 1049452 ;
-ann_weights[3768] = 123 ;
-ann_weights[3769] = 1048760 ;
-ann_weights[3770] = 1049043 ;
-ann_weights[3771] = 265 ;
-ann_weights[3772] = 1048669 ;
-ann_weights[3773] = 175 ;
-ann_weights[3774] = 1048725 ;
-ann_weights[3775] = 160 ;
-ann_weights[3776] = 1048659 ;
-ann_weights[3777] = 1049525 ;
-ann_weights[3778] = 302 ;
-ann_weights[3779] = 38 ;
-ann_weights[3780] = 1049305 ;
-ann_weights[3781] = 585 ;
-ann_weights[3782] = 1048721 ;
-ann_weights[3783] = 196 ;
-ann_weights[3784] = 1048647 ;
-ann_weights[3785] = 1048647 ;
-ann_weights[3786] = 1048748 ;
-ann_weights[3787] = 1048814 ;
-ann_weights[3788] = 134 ;
-ann_weights[3789] = 216 ;
-ann_weights[3790] = 1049299 ;
-ann_weights[3791] = 451 ;
-ann_weights[3792] = 1048800 ;
-ann_weights[3793] = 1048658 ;
-ann_weights[3794] = 202 ;
-ann_weights[3795] = 1048826 ;
-ann_weights[3796] = 1048616 ;
-ann_weights[3797] = 36 ;
-ann_weights[3798] = 124 ;
-ann_weights[3799] = 211 ;
-ann_weights[3800] = 1049214 ;
-ann_weights[3801] = 131 ;
-ann_weights[3802] = 1048837 ;
-ann_weights[3803] = 55 ;
-ann_weights[3804] = 285 ;
-ann_weights[3805] = 1049047 ;
-ann_weights[3806] = 39 ;
-ann_weights[3807] = 105 ;
-ann_weights[3808] = 107 ;
-ann_weights[3809] = 368 ;
-ann_weights[3810] = 1048832 ;
-ann_weights[3811] = 130 ;
-ann_weights[3812] = 1048743 ;
-ann_weights[3813] = 98 ;
-ann_weights[3814] = 226 ;
-ann_weights[3815] = 1048806 ;
-ann_weights[3816] = 1048688 ;
-ann_weights[3817] = 117 ;
-ann_weights[3818] = 1048681 ;
-ann_weights[3819] = 259 ;
-ann_weights[3820] = 1048647 ;
-ann_weights[3821] = 1048841 ;
-ann_weights[3822] = 1048708 ;
-ann_weights[3823] = 109 ;
-ann_weights[3824] = 242 ;
-ann_weights[3825] = 1048823 ;
-ann_weights[3826] = 1048762 ;
-ann_weights[3827] = 106 ;
-ann_weights[3828] = 1048641 ;
-ann_weights[3829] = 195 ;
-ann_weights[3830] = 1048680 ;
-ann_weights[3831] = 1048896 ;
-ann_weights[3832] = 1048672 ;
-ann_weights[3833] = 1048734 ;
-ann_weights[3834] = 161 ;
-ann_weights[3835] = 1048696 ;
-ann_weights[3836] = 1048603 ;
-ann_weights[3837] = 10 ;
-ann_weights[3838] = 1048598 ;
-ann_weights[3839] = 271 ;
-ann_weights[3840] = 1048646 ;
-ann_weights[3841] = 1048773 ;
-ann_weights[3842] = 1048698 ;
-ann_weights[3843] = 1048884 ;
-ann_weights[3844] = 226 ;
-ann_weights[3845] = 1048624 ;
-ann_weights[3846] = 1048652 ;
-ann_weights[3847] = 1 ;
-ann_weights[3848] = 83 ;
-ann_weights[3849] = 223 ;
-ann_weights[3850] = 1048588 ;
-ann_weights[3851] = 1048735 ;
-ann_weights[3852] = 1048694 ;
-ann_weights[3853] = 1049080 ;
-ann_weights[3854] = 234 ;
-ann_weights[3855] = 1048934 ;
-ann_weights[3856] = 100 ;
-ann_weights[3857] = 28 ;
-ann_weights[3858] = 1048617 ;
-ann_weights[3859] = 251 ;
-ann_weights[3860] = 228 ;
-ann_weights[3861] = 1048956 ;
-ann_weights[3862] = 1048788 ;
-ann_weights[3863] = 1049167 ;
-ann_weights[3864] = 109 ;
-ann_weights[3865] = 1049004 ;
-ann_weights[3866] = 292 ;
-ann_weights[3867] = 1048662 ;
-ann_weights[3868] = 62 ;
-ann_weights[3869] = 149 ;
-ann_weights[3870] = 252 ;
-ann_weights[3871] = 1049130 ;
-ann_weights[3872] = 1048792 ;
-ann_weights[3873] = 1048913 ;
-ann_weights[3874] = 1048677 ;
-ann_weights[3875] = 1049229 ;
-ann_weights[3876] = 500 ;
-ann_weights[3877] = 1048796 ;
-ann_weights[3878] = 32 ;
-ann_weights[3879] = 1048813 ;
-ann_weights[3880] = 402 ;
-ann_weights[3881] = 1049203 ;
-ann_weights[3882] = 355 ;
-ann_weights[3883] = 1048868 ;
-ann_weights[3884] = 1048904 ;
-ann_weights[3885] = 1049454 ;
-ann_weights[3886] = 342 ;
-ann_weights[3887] = 1048717 ;
-ann_weights[3888] = 1048585 ;
-ann_weights[3889] = 1049333 ;
-ann_weights[3890] = 79 ;
-ann_weights[3891] = 1049033 ;
-ann_weights[3892] = 633 ;
-ann_weights[3893] = 1048721 ;
-ann_weights[3894] = 1048783 ;
-ann_weights[3895] = 1048917 ;
-ann_weights[3896] = 1048852 ;
-ann_weights[3897] = 92 ;
-ann_weights[3898] = 17 ;
-ann_weights[3899] = 1049223 ;
-ann_weights[3900] = 1048896 ;
-ann_weights[3901] = 1048872 ;
-ann_weights[3902] = 612 ;
-ann_weights[3903] = 1048858 ;
-ann_weights[3904] = 1048796 ;
-ann_weights[3905] = 54 ;
-ann_weights[3906] = 1049170 ;
-ann_weights[3907] = 1048653 ;
-ann_weights[3908] = 1048696 ;
-ann_weights[3909] = 1049032 ;
-ann_weights[3910] = 1048843 ;
-ann_weights[3911] = 1048747 ;
-ann_weights[3912] = 306 ;
-ann_weights[3913] = 1048773 ;
-ann_weights[3914] = 1048810 ;
-ann_weights[3915] = 1048786 ;
-ann_weights[3916] = 1048822 ;
-ann_weights[3917] = 1048713 ;
-ann_weights[3918] = 1048789 ;
-ann_weights[3919] = 1048708 ;
-ann_weights[3920] = 1048609 ;
-ann_weights[3921] = 1048606 ;
-ann_weights[3922] = 14 ;
-ann_weights[3923] = 1048724 ;
-ann_weights[3924] = 1048625 ;
-ann_weights[3925] = 197 ;
-ann_weights[3926] = 1048743 ;
-ann_weights[3927] = 1048625 ;
-ann_weights[3928] = 1048666 ;
-ann_weights[3929] = 1048660 ;
-ann_weights[3930] = 16 ;
-ann_weights[3931] = 1048646 ;
-ann_weights[3932] = 1048680 ;
-ann_weights[3933] = 99 ;
-ann_weights[3934] = 1048708 ;
-ann_weights[3935] = 1048717 ;
-ann_weights[3936] = 1048656 ;
-ann_weights[3937] = 174 ;
-ann_weights[3938] = 1048629 ;
-ann_weights[3939] = 1048745 ;
-ann_weights[3940] = 1048776 ;
-ann_weights[3941] = 108 ;
-ann_weights[3942] = 1048663 ;
-ann_weights[3943] = 49 ;
-ann_weights[3944] = 1048864 ;
-ann_weights[3945] = 1048896 ;
-ann_weights[3946] = 1048665 ;
-ann_weights[3947] = 370 ;
-ann_weights[3948] = 1048784 ;
-ann_weights[3949] = 1049110 ;
-ann_weights[3950] = 1048953 ;
-ann_weights[3951] = 62 ;
-ann_weights[3952] = 1048830 ;
-ann_weights[3953] = 1048621 ;
-ann_weights[3954] = 1048700 ;
-ann_weights[3955] = 1048660 ;
-ann_weights[3956] = 1048886 ;
-ann_weights[3957] = 284 ;
-ann_weights[3958] = 1048764 ;
-ann_weights[3959] = 36 ;
-ann_weights[3960] = 1048663 ;
-ann_weights[3961] = 208 ;
-ann_weights[3962] = 1049030 ;
-ann_weights[3963] = 1048728 ;
-ann_weights[3964] = 349 ;
-ann_weights[3965] = 47 ;
-ann_weights[3966] = 1049209 ;
-ann_weights[3967] = 120 ;
-ann_weights[3968] = 1049048 ;
-ann_weights[3969] = 183 ;
-ann_weights[3970] = 134 ;
-ann_weights[3971] = 1048710 ;
-ann_weights[3972] = 1049123 ;
-ann_weights[3973] = 1048921 ;
-ann_weights[3974] = 357 ;
-ann_weights[3975] = 1048710 ;
-ann_weights[3976] = 124 ;
-ann_weights[3977] = 128 ;
-ann_weights[3978] = 1048813 ;
-ann_weights[3979] = 122 ;
-ann_weights[3980] = 107 ;
-ann_weights[3981] = 1048817 ;
-ann_weights[3982] = 1048952 ;
-ann_weights[3983] = 1049072 ;
-ann_weights[3984] = 230 ;
-ann_weights[3985] = 1048600 ;
-ann_weights[3986] = 132 ;
-ann_weights[3987] = 1048613 ;
-ann_weights[3988] = 1048814 ;
-ann_weights[3989] = 100 ;
-ann_weights[3990] = 287 ;
-ann_weights[3991] = 1048942 ;
-ann_weights[3992] = 1048772 ;
-ann_weights[3993] = 1048888 ;
-ann_weights[3994] = 330 ;
-ann_weights[3995] = 1048626 ;
-ann_weights[3996] = 63 ;
-ann_weights[3997] = 1048652 ;
-ann_weights[3998] = 1048949 ;
-ann_weights[3999] = 152 ;
-ann_weights[4000] = 183 ;
-ann_weights[4001] = 0 ;
-ann_weights[4002] = 1048662 ;
-ann_weights[4003] = 1048835 ;
-ann_weights[4004] = 342 ;
-ann_weights[4005] = 1048613 ;
-ann_weights[4006] = 94 ;
-ann_weights[4007] = 1048684 ;
-ann_weights[4008] = 1048920 ;
-ann_weights[4009] = 1048590 ;
-ann_weights[4010] = 168 ;
-ann_weights[4011] = 1048815 ;
-ann_weights[4012] = 1048724 ;
-ann_weights[4013] = 1048659 ;
-ann_weights[4014] = 251 ;
-ann_weights[4015] = 114 ;
-ann_weights[4016] = 103 ;
-ann_weights[4017] = 1048765 ;
-ann_weights[4018] = 1048853 ;
-ann_weights[4019] = 1048578 ;
-ann_weights[4020] = 32 ;
-ann_weights[4021] = 1049176 ;
-ann_weights[4022] = 12 ;
-ann_weights[4023] = 1048769 ;
-ann_weights[4024] = 306 ;
-ann_weights[4025] = 179 ;
-ann_weights[4026] = 223 ;
-ann_weights[4027] = 1048832 ;
-ann_weights[4028] = 1048689 ;
-ann_weights[4029] = 1048604 ;
-ann_weights[4030] = 85 ;
-ann_weights[4031] = 1049171 ;
-ann_weights[4032] = 52 ;
-ann_weights[4033] = 1048816 ;
-ann_weights[4034] = 366 ;
-ann_weights[4035] = 77 ;
-ann_weights[4036] = 262 ;
-ann_weights[4037] = 1049188 ;
-ann_weights[4038] = 80 ;
-ann_weights[4039] = 1048704 ;
-ann_weights[4040] = 1048591 ;
-ann_weights[4041] = 1048636 ;
-ann_weights[4042] = 1048611 ;
-ann_weights[4043] = 32 ;
-ann_weights[4044] = 218 ;
-ann_weights[4045] = 97 ;
-ann_weights[4046] = 123 ;
-ann_weights[4047] = 1049432 ;
-ann_weights[4048] = 226 ;
-ann_weights[4049] = 1048696 ;
-ann_weights[4050] = 1048845 ;
-ann_weights[4051] = 383 ;
-ann_weights[4052] = 162 ;
-ann_weights[4053] = 108 ;
-ann_weights[4054] = 1048689 ;
-ann_weights[4055] = 45 ;
-ann_weights[4056] = 1048666 ;
-ann_weights[4057] = 1049195 ;
-ann_weights[4058] = 315 ;
-ann_weights[4059] = 60 ;
-ann_weights[4060] = 1049365 ;
-ann_weights[4061] = 545 ;
-ann_weights[4062] = 34 ;
-ann_weights[4063] = 53 ;
-ann_weights[4064] = 1048710 ;
-ann_weights[4065] = 1048715 ;
-ann_weights[4066] = 1048635 ;
-ann_weights[4067] = 1048832 ;
-ann_weights[4068] = 89 ;
-ann_weights[4069] = 1048625 ;
-ann_weights[4070] = 1049319 ;
-ann_weights[4071] = 326 ;
-ann_weights[4072] = 1048728 ;
-ann_weights[4073] = 37 ;
-ann_weights[4074] = 58 ;
-ann_weights[4075] = 1048765 ;
-ann_weights[4076] = 36 ;
-ann_weights[4077] = 1048625 ;
-ann_weights[4078] = 134 ;
-ann_weights[4079] = 135 ;
-ann_weights[4080] = 1049232 ;
-ann_weights[4081] = 31 ;
-ann_weights[4082] = 1048648 ;
-ann_weights[4083] = 1048667 ;
-ann_weights[4084] = 361 ;
-ann_weights[4085] = 1048910 ;
-ann_weights[4086] = 1048645 ;
-ann_weights[4087] = 14 ;
-ann_weights[4088] = 1048660 ;
-ann_weights[4089] = 322 ;
-ann_weights[4090] = 1048802 ;
-ann_weights[4091] = 1048656 ;
-ann_weights[4092] = 1048810 ;
-ann_weights[4093] = 1048602 ;
-ann_weights[4094] = 392 ;
-ann_weights[4095] = 1048870 ;
-ann_weights[4096] = 1048778 ;
-ann_weights[4097] = 193 ;
-ann_weights[4098] = 1048638 ;
-ann_weights[4099] = 281 ;
-ann_weights[4100] = 1048606 ;
-ann_weights[4101] = 1049001 ;
-ann_weights[4102] = 1048733 ;
-ann_weights[4103] = 1048601 ;
-ann_weights[4104] = 262 ;
-ann_weights[4105] = 1048675 ;
-ann_weights[4106] = 1048781 ;
-ann_weights[4107] = 295 ;
-ann_weights[4108] = 1048630 ;
-ann_weights[4109] = 193 ;
-ann_weights[4110] = 1048699 ;
-ann_weights[4111] = 1049034 ;
-ann_weights[4112] = 1048632 ;
-ann_weights[4113] = 1048651 ;
-ann_weights[4114] = 342 ;
-ann_weights[4115] = 1048738 ;
-ann_weights[4116] = 1048622 ;
-ann_weights[4117] = 384 ;
-ann_weights[4118] = 1048649 ;
-ann_weights[4119] = 137 ;
-ann_weights[4120] = 1048641 ;
-ann_weights[4121] = 1048900 ;
-ann_weights[4122] = 1048647 ;
-ann_weights[4123] = 1048694 ;
-ann_weights[4124] = 203 ;
-ann_weights[4125] = 1048711 ;
-ann_weights[4126] = 76 ;
-ann_weights[4127] = 190 ;
-ann_weights[4128] = 1048843 ;
-ann_weights[4129] = 183 ;
-ann_weights[4130] = 123 ;
-ann_weights[4131] = 1048842 ;
-ann_weights[4132] = 1048695 ;
-ann_weights[4133] = 1048673 ;
-ann_weights[4134] = 105 ;
-ann_weights[4135] = 1048684 ;
-ann_weights[4136] = 48 ;
-ann_weights[4137] = 151 ;
-ann_weights[4138] = 1048794 ;
-ann_weights[4139] = 56 ;
-ann_weights[4140] = 137 ;
-ann_weights[4141] = 1048796 ;
-ann_weights[4142] = 1048746 ;
-ann_weights[4143] = 1048884 ;
-ann_weights[4144] = 1048576 ;
-ann_weights[4145] = 1048664 ;
-ann_weights[4146] = 264 ;
-ann_weights[4147] = 113 ;
-ann_weights[4148] = 1048941 ;
-ann_weights[4149] = 1048633 ;
-ann_weights[4150] = 283 ;
-ann_weights[4151] = 1048791 ;
-ann_weights[4152] = 13 ;
-ann_weights[4153] = 1048755 ;
-ann_weights[4154] = 1048794 ;
-ann_weights[4155] = 1048773 ;
-ann_weights[4156] = 334 ;
-ann_weights[4157] = 226 ;
-ann_weights[4158] = 1048969 ;
-ann_weights[4159] = 1049067 ;
-ann_weights[4160] = 306 ;
-ann_weights[4161] = 1048749 ;
-ann_weights[4162] = 161 ;
-ann_weights[4163] = 1048806 ;
-ann_weights[4164] = 1048865 ;
-ann_weights[4165] = 1048843 ;
-ann_weights[4166] = 232 ;
-ann_weights[4167] = 1048696 ;
-ann_weights[4168] = 1048852 ;
-ann_weights[4169] = 1049505 ;
-ann_weights[4170] = 26 ;
-ann_weights[4171] = 1048786 ;
-ann_weights[4172] = 440 ;
-ann_weights[4173] = 1048927 ;
-ann_weights[4174] = 1048738 ;
-ann_weights[4175] = 1049169 ;
-ann_weights[4176] = 1048676 ;
-ann_weights[4177] = 1048820 ;
-ann_weights[4178] = 31 ;
-ann_weights[4179] = 1049321 ;
-ann_weights[4180] = 1048987 ;
-ann_weights[4181] = 1048666 ;
-ann_weights[4182] = 604 ;
-ann_weights[4183] = 1048904 ;
-ann_weights[4184] = 1048981 ;
-ann_weights[4185] = 1049041 ;
-ann_weights[4186] = 1049095 ;
-ann_weights[4187] = 1048846 ;
-ann_weights[4188] = 1048897 ;
-ann_weights[4189] = 1048903 ;
-ann_weights[4190] = 1048772 ;
-ann_weights[4191] = 1048666 ;
-ann_weights[4192] = 270 ;
-ann_weights[4193] = 1048641 ;
-ann_weights[4194] = 1048720 ;
-ann_weights[4195] = 1048821 ;
-ann_weights[4196] = 1048845 ;
-ann_weights[4197] = 1048684 ;
-ann_weights[4198] = 1048836 ;
-ann_weights[4199] = 1048769 ;
-ann_weights[4200] = 1048612 ;
-ann_weights[4201] = 1048655 ;
-ann_weights[4202] = 11 ;
-ann_weights[4203] = 1048626 ;
-ann_weights[4204] = 1048797 ;
-ann_weights[4205] = 98 ;
-ann_weights[4206] = 1048721 ;
-ann_weights[4207] = 119 ;
-ann_weights[4208] = 1048688 ;
-ann_weights[4209] = 1048625 ;
-ann_weights[4210] = 71 ;
-ann_weights[4211] = 10 ;
-ann_weights[4212] = 1048609 ;
-ann_weights[4213] = 123 ;
-ann_weights[4214] = 1048580 ;
-ann_weights[4215] = 1048693 ;
-ann_weights[4216] = 1048579 ;
-ann_weights[4217] = 1048620 ;
-ann_weights[4218] = 1048663 ;
-ann_weights[4219] = 58 ;
-ann_weights[4220] = 1048720 ;
-ann_weights[4221] = 104 ;
-ann_weights[4222] = 1048582 ;
-ann_weights[4223] = 244 ;
-ann_weights[4224] = 122 ;
-ann_weights[4225] = 1048955 ;
-ann_weights[4226] = 1048593 ;
-ann_weights[4227] = 170 ;
-ann_weights[4228] = 1048800 ;
-ann_weights[4229] = 1049111 ;
-ann_weights[4230] = 1049040 ;
-ann_weights[4231] = 141 ;
-ann_weights[4232] = 38 ;
-ann_weights[4233] = 1048643 ;
-ann_weights[4234] = 27 ;
-ann_weights[4235] = 1048711 ;
-ann_weights[4236] = 1049152 ;
-ann_weights[4237] = 176 ;
-ann_weights[4238] = 1048766 ;
-ann_weights[4239] = 1048631 ;
-ann_weights[4240] = 1048592 ;
-ann_weights[4241] = 1048577 ;
-ann_weights[4242] = 15 ;
-ann_weights[4243] = 1048701 ;
-ann_weights[4244] = 184 ;
-ann_weights[4245] = 1048711 ;
-ann_weights[4246] = 1049412 ;
-ann_weights[4247] = 24 ;
-ann_weights[4248] = 1049055 ;
-ann_weights[4249] = 92 ;
-ann_weights[4250] = 168 ;
-ann_weights[4251] = 1048973 ;
-ann_weights[4252] = 126 ;
-ann_weights[4253] = 1048710 ;
-ann_weights[4254] = 46 ;
-ann_weights[4255] = 1048890 ;
-ann_weights[4256] = 1048668 ;
-ann_weights[4257] = 1048664 ;
-ann_weights[4258] = 1048982 ;
-ann_weights[4259] = 105 ;
-ann_weights[4260] = 1048612 ;
-ann_weights[4261] = 1049200 ;
-ann_weights[4262] = 163 ;
-ann_weights[4263] = 1048782 ;
-ann_weights[4264] = 173 ;
-ann_weights[4265] = 1048827 ;
-ann_weights[4266] = 61 ;
-ann_weights[4267] = 1048594 ;
-ann_weights[4268] = 1048929 ;
-ann_weights[4269] = 10 ;
-ann_weights[4270] = 280 ;
-ann_weights[4271] = 1048727 ;
-ann_weights[4272] = 1048621 ;
-ann_weights[4273] = 1048937 ;
-ann_weights[4274] = 290 ;
-ann_weights[4275] = 1048800 ;
-ann_weights[4276] = 197 ;
-ann_weights[4277] = 1048799 ;
-ann_weights[4278] = 1048840 ;
-ann_weights[4279] = 36 ;
-ann_weights[4280] = 176 ;
-ann_weights[4281] = 1048690 ;
-ann_weights[4282] = 1048611 ;
-ann_weights[4283] = 1048957 ;
-ann_weights[4284] = 263 ;
-ann_weights[4285] = 1048631 ;
-ann_weights[4286] = 147 ;
-ann_weights[4287] = 1048832 ;
-ann_weights[4288] = 1048843 ;
-ann_weights[4289] = 42 ;
-ann_weights[4290] = 193 ;
-ann_weights[4291] = 1048788 ;
-ann_weights[4292] = 1048619 ;
-ann_weights[4293] = 1048806 ;
-ann_weights[4294] = 266 ;
-ann_weights[4295] = 149 ;
-ann_weights[4296] = 118 ;
-ann_weights[4297] = 1048881 ;
-ann_weights[4298] = 1048668 ;
-ann_weights[4299] = 1048695 ;
-ann_weights[4300] = 254 ;
-ann_weights[4301] = 1048935 ;
-ann_weights[4302] = 1048624 ;
-ann_weights[4303] = 1048754 ;
-ann_weights[4304] = 178 ;
-ann_weights[4305] = 115 ;
-ann_weights[4306] = 264 ;
-ann_weights[4307] = 1048890 ;
-ann_weights[4308] = 1048654 ;
-ann_weights[4309] = 45 ;
-ann_weights[4310] = 44 ;
-ann_weights[4311] = 1048796 ;
-ann_weights[4312] = 1048607 ;
-ann_weights[4313] = 1048587 ;
-ann_weights[4314] = 165 ;
-ann_weights[4315] = 73 ;
-ann_weights[4316] = 327 ;
-ann_weights[4317] = 1049079 ;
-ann_weights[4318] = 1048591 ;
-ann_weights[4319] = 1048583 ;
-ann_weights[4320] = 1048690 ;
-ann_weights[4321] = 1048631 ;
-ann_weights[4322] = 1048587 ;
-ann_weights[4323] = 60 ;
-ann_weights[4324] = 75 ;
-ann_weights[4325] = 104 ;
-ann_weights[4326] = 124 ;
-ann_weights[4327] = 1049149 ;
-ann_weights[4328] = 160 ;
-ann_weights[4329] = 1048638 ;
-ann_weights[4330] = 1049139 ;
-ann_weights[4331] = 379 ;
-ann_weights[4332] = 180 ;
-ann_weights[4333] = 117 ;
-ann_weights[4334] = 1048654 ;
-ann_weights[4335] = 1048690 ;
-ann_weights[4336] = 37 ;
-ann_weights[4337] = 1049010 ;
-ann_weights[4338] = 272 ;
-ann_weights[4339] = 1048796 ;
-ann_weights[4340] = 1049459 ;
-ann_weights[4341] = 468 ;
-ann_weights[4342] = 1048577 ;
-ann_weights[4343] = 36 ;
-ann_weights[4344] = 47 ;
-ann_weights[4345] = 1048849 ;
-ann_weights[4346] = 18 ;
-ann_weights[4347] = 1048822 ;
-ann_weights[4348] = 237 ;
-ann_weights[4349] = 1048692 ;
-ann_weights[4350] = 1049196 ;
-ann_weights[4351] = 248 ;
-ann_weights[4352] = 1048609 ;
-ann_weights[4353] = 64 ;
-ann_weights[4354] = 286 ;
-ann_weights[4355] = 1048866 ;
-ann_weights[4356] = 79 ;
-ann_weights[4357] = 1048660 ;
-ann_weights[4358] = 38 ;
-ann_weights[4359] = 37 ;
-ann_weights[4360] = 1049109 ;
-ann_weights[4361] = 39 ;
-ann_weights[4362] = 1048642 ;
-ann_weights[4363] = 1048724 ;
-ann_weights[4364] = 419 ;
-ann_weights[4365] = 1048833 ;
-ann_weights[4366] = 1048617 ;
-ann_weights[4367] = 32 ;
-ann_weights[4368] = 1048692 ;
-ann_weights[4369] = 290 ;
-ann_weights[4370] = 1048826 ;
-ann_weights[4371] = 1048931 ;
-ann_weights[4372] = 1048726 ;
-ann_weights[4373] = 1048693 ;
-ann_weights[4374] = 323 ;
-ann_weights[4375] = 1048734 ;
-ann_weights[4376] = 1048721 ;
-ann_weights[4377] = 288 ;
-ann_weights[4378] = 1048724 ;
-ann_weights[4379] = 204 ;
-ann_weights[4380] = 1048587 ;
-ann_weights[4381] = 1049168 ;
-ann_weights[4382] = 1048627 ;
-ann_weights[4383] = 1048597 ;
-ann_weights[4384] = 137 ;
-ann_weights[4385] = 1048581 ;
-ann_weights[4386] = 1048634 ;
-ann_weights[4387] = 415 ;
-ann_weights[4388] = 1048781 ;
-ann_weights[4389] = 80 ;
-ann_weights[4390] = 6 ;
-ann_weights[4391] = 1049305 ;
-ann_weights[4392] = 1048648 ;
-ann_weights[4393] = 133 ;
-ann_weights[4394] = 118 ;
-ann_weights[4395] = 1048623 ;
-ann_weights[4396] = 1048637 ;
-ann_weights[4397] = 352 ;
-ann_weights[4398] = 1048762 ;
-ann_weights[4399] = 1048608 ;
-ann_weights[4400] = 111 ;
-ann_weights[4401] = 1049188 ;
-ann_weights[4402] = 1048754 ;
-ann_weights[4403] = 42 ;
-ann_weights[4404] = 9 ;
-ann_weights[4405] = 1048641 ;
-ann_weights[4406] = 22 ;
-ann_weights[4407] = 335 ;
-ann_weights[4408] = 1048868 ;
-ann_weights[4409] = 55 ;
-ann_weights[4410] = 43 ;
-ann_weights[4411] = 1048858 ;
-ann_weights[4412] = 1048739 ;
-ann_weights[4413] = 22 ;
-ann_weights[4414] = 1048629 ;
-ann_weights[4415] = 1048620 ;
-ann_weights[4416] = 144 ;
-ann_weights[4417] = 307 ;
-ann_weights[4418] = 1048957 ;
-ann_weights[4419] = 1048720 ;
-ann_weights[4420] = 62 ;
-ann_weights[4421] = 1049064 ;
-ann_weights[4422] = 1048789 ;
-ann_weights[4423] = 116 ;
-ann_weights[4424] = 47 ;
-ann_weights[4425] = 1048600 ;
-ann_weights[4426] = 24 ;
-ann_weights[4427] = 215 ;
-ann_weights[4428] = 1048870 ;
-ann_weights[4429] = 1048702 ;
-ann_weights[4430] = 252 ;
-ann_weights[4431] = 1049165 ;
-ann_weights[4432] = 1048622 ;
-ann_weights[4433] = 154 ;
-ann_weights[4434] = 1048698 ;
-ann_weights[4435] = 73 ;
-ann_weights[4436] = 105 ;
-ann_weights[4437] = 68 ;
-ann_weights[4438] = 1048913 ;
-ann_weights[4439] = 1049066 ;
-ann_weights[4440] = 169 ;
-ann_weights[4441] = 1048984 ;
-ann_weights[4442] = 287 ;
-ann_weights[4443] = 59 ;
-ann_weights[4444] = 1049158 ;
-ann_weights[4445] = 42 ;
-ann_weights[4446] = 39 ;
-ann_weights[4447] = 1048798 ;
-ann_weights[4448] = 1049007 ;
-ann_weights[4449] = 1049486 ;
-ann_weights[4450] = 1048642 ;
-ann_weights[4451] = 1048902 ;
-ann_weights[4452] = 514 ;
-ann_weights[4453] = 1049225 ;
-ann_weights[4454] = 1049044 ;
-ann_weights[4455] = 1049005 ;
-ann_weights[4456] = 1048583 ;
-ann_weights[4457] = 1049026 ;
-ann_weights[4458] = 1048725 ;
-ann_weights[4459] = 1049190 ;
-ann_weights[4460] = 1049102 ;
-ann_weights[4461] = 1048822 ;
-ann_weights[4462] = 667 ;
-ann_weights[4463] = 1048668 ;
-ann_weights[4464] = 1048663 ;
-ann_weights[4465] = 1048975 ;
-ann_weights[4466] = 1049086 ;
-ann_weights[4467] = 1048887 ;
-ann_weights[4468] = 1049208 ;
-ann_weights[4469] = 1048803 ;
-ann_weights[4470] = 1048839 ;
-ann_weights[4471] = 1048678 ;
-ann_weights[4472] = 269 ;
-ann_weights[4473] = 1048729 ;
-ann_weights[4474] = 1048781 ;
-ann_weights[4475] = 1048844 ;
-ann_weights[4476] = 1048819 ;
-ann_weights[4477] = 1048675 ;
-ann_weights[4478] = 1048889 ;
-ann_weights[4479] = 1048714 ;
-ann_weights[4480] = 1048597 ;
-ann_weights[4481] = 1048648 ;
-ann_weights[4482] = 78 ;
-ann_weights[4483] = 1048633 ;
-ann_weights[4484] = 1048619 ;
-ann_weights[4485] = 1048683 ;
-ann_weights[4486] = 1048649 ;
-ann_weights[4487] = 103 ;
-ann_weights[4488] = 1048749 ;
-ann_weights[4489] = 1048757 ;
-ann_weights[4490] = 8 ;
-ann_weights[4491] = 108 ;
-ann_weights[4492] = 1048665 ;
-ann_weights[4493] = 119 ;
-ann_weights[4494] = 60 ;
-ann_weights[4495] = 1048637 ;
-ann_weights[4496] = 58 ;
-ann_weights[4497] = 1048627 ;
-ann_weights[4498] = 1048744 ;
-ann_weights[4499] = 1048760 ;
-ann_weights[4500] = 1048785 ;
-ann_weights[4501] = 119 ;
-ann_weights[4502] = 1048646 ;
-ann_weights[4503] = 284 ;
-ann_weights[4504] = 1048650 ;
-ann_weights[4505] = 1048914 ;
-ann_weights[4506] = 1048706 ;
-ann_weights[4507] = 1048617 ;
-ann_weights[4508] = 1048891 ;
-ann_weights[4509] = 1049016 ;
-ann_weights[4510] = 1048833 ;
-ann_weights[4511] = 1048651 ;
-ann_weights[4512] = 289 ;
-ann_weights[4513] = 273 ;
-ann_weights[4514] = 1048757 ;
-ann_weights[4515] = 1048585 ;
-ann_weights[4516] = 1049128 ;
-ann_weights[4517] = 1048581 ;
-ann_weights[4518] = 1048724 ;
-ann_weights[4519] = 1048716 ;
-ann_weights[4520] = 127 ;
-ann_weights[4521] = 1048714 ;
-ann_weights[4522] = 325 ;
-ann_weights[4523] = 224 ;
-ann_weights[4524] = 1048867 ;
-ann_weights[4525] = 1048720 ;
-ann_weights[4526] = 1049090 ;
-ann_weights[4527] = 35 ;
-ann_weights[4528] = 1049032 ;
-ann_weights[4529] = 44 ;
-ann_weights[4530] = 241 ;
-ann_weights[4531] = 1049016 ;
-ann_weights[4532] = 175 ;
-ann_weights[4533] = 21 ;
-ann_weights[4534] = 1048617 ;
-ann_weights[4535] = 1048790 ;
-ann_weights[4536] = 1048590 ;
-ann_weights[4537] = 1048671 ;
-ann_weights[4538] = 1048958 ;
-ann_weights[4539] = 1048659 ;
-ann_weights[4540] = 128 ;
-ann_weights[4541] = 1049127 ;
-ann_weights[4542] = 133 ;
-ann_weights[4543] = 1048771 ;
-ann_weights[4544] = 51 ;
-ann_weights[4545] = 1048801 ;
-ann_weights[4546] = 179 ;
-ann_weights[4547] = 36 ;
-ann_weights[4548] = 1048755 ;
-ann_weights[4549] = 1048708 ;
-ann_weights[4550] = 226 ;
-ann_weights[4551] = 1048886 ;
-ann_weights[4552] = 15 ;
-ann_weights[4553] = 1048864 ;
-ann_weights[4554] = 209 ;
-ann_weights[4555] = 1048975 ;
-ann_weights[4556] = 177 ;
-ann_weights[4557] = 64 ;
-ann_weights[4558] = 1048741 ;
-ann_weights[4559] = 1048625 ;
-ann_weights[4560] = 170 ;
-ann_weights[4561] = 1048762 ;
-ann_weights[4562] = 1048712 ;
-ann_weights[4563] = 1048983 ;
-ann_weights[4564] = 284 ;
-ann_weights[4565] = 1048943 ;
-ann_weights[4566] = 193 ;
-ann_weights[4567] = 1048767 ;
-ann_weights[4568] = 20 ;
-ann_weights[4569] = 72 ;
-ann_weights[4570] = 279 ;
-ann_weights[4571] = 1048707 ;
-ann_weights[4572] = 74 ;
-ann_weights[4573] = 1048828 ;
-ann_weights[4574] = 197 ;
-ann_weights[4575] = 1048866 ;
-ann_weights[4576] = 239 ;
-ann_weights[4577] = 1048780 ;
-ann_weights[4578] = 1048590 ;
-ann_weights[4579] = 1048637 ;
-ann_weights[4580] = 214 ;
-ann_weights[4581] = 1048779 ;
-ann_weights[4582] = 148 ;
-ann_weights[4583] = 1048802 ;
-ann_weights[4584] = 64 ;
-ann_weights[4585] = 1048710 ;
-ann_weights[4586] = 411 ;
-ann_weights[4587] = 1048928 ;
-ann_weights[4588] = 1048604 ;
-ann_weights[4589] = 14 ;
-ann_weights[4590] = 138 ;
-ann_weights[4591] = 1048694 ;
-ann_weights[4592] = 161 ;
-ann_weights[4593] = 1048708 ;
-ann_weights[4594] = 30 ;
-ann_weights[4595] = 1048705 ;
-ann_weights[4596] = 420 ;
-ann_weights[4597] = 1049178 ;
-ann_weights[4598] = 109 ;
-ann_weights[4599] = 81 ;
-ann_weights[4600] = 1048944 ;
-ann_weights[4601] = 1048620 ;
-ann_weights[4602] = 263 ;
-ann_weights[4603] = 1048600 ;
-ann_weights[4604] = 1048586 ;
-ann_weights[4605] = 1048614 ;
-ann_weights[4606] = 25 ;
-ann_weights[4607] = 1048875 ;
-ann_weights[4608] = 249 ;
-ann_weights[4609] = 1048648 ;
-ann_weights[4610] = 1049386 ;
-ann_weights[4611] = 380 ;
-ann_weights[4612] = 154 ;
-ann_weights[4613] = 115 ;
-ann_weights[4614] = 18 ;
-ann_weights[4615] = 1048845 ;
-ann_weights[4616] = 1048610 ;
-ann_weights[4617] = 1048799 ;
-ann_weights[4618] = 127 ;
-ann_weights[4619] = 1048840 ;
-ann_weights[4620] = 1049362 ;
-ann_weights[4621] = 450 ;
-ann_weights[4622] = 121 ;
-ann_weights[4623] = 1048671 ;
-ann_weights[4624] = 141 ;
-ann_weights[4625] = 1048827 ;
-ann_weights[4626] = 91 ;
-ann_weights[4627] = 1048712 ;
-ann_weights[4628] = 51 ;
-ann_weights[4629] = 1048771 ;
-ann_weights[4630] = 1049036 ;
-ann_weights[4631] = 1048591 ;
-ann_weights[4632] = 1048601 ;
-ann_weights[4633] = 1048728 ;
-ann_weights[4634] = 440 ;
-ann_weights[4635] = 1048782 ;
-ann_weights[4636] = 13 ;
-ann_weights[4637] = 1048607 ;
-ann_weights[4638] = 1048601 ;
-ann_weights[4639] = 76 ;
-ann_weights[4640] = 1048871 ;
-ann_weights[4641] = 1048838 ;
-ann_weights[4642] = 82 ;
-ann_weights[4643] = 1048736 ;
-ann_weights[4644] = 336 ;
-ann_weights[4645] = 1048789 ;
-ann_weights[4646] = 1048697 ;
-ann_weights[4647] = 50 ;
-ann_weights[4648] = 45 ;
-ann_weights[4649] = 103 ;
-ann_weights[4650] = 1048619 ;
-ann_weights[4651] = 1049287 ;
-ann_weights[4652] = 111 ;
-ann_weights[4653] = 1048635 ;
-ann_weights[4654] = 225 ;
-ann_weights[4655] = 1048714 ;
-ann_weights[4656] = 1048734 ;
-ann_weights[4657] = 252 ;
-ann_weights[4658] = 1048716 ;
-ann_weights[4659] = 96 ;
-ann_weights[4660] = 1048646 ;
-ann_weights[4661] = 1049245 ;
-ann_weights[4662] = 4 ;
-ann_weights[4663] = 145 ;
-ann_weights[4664] = 156 ;
-ann_weights[4665] = 1048618 ;
-ann_weights[4666] = 32 ;
-ann_weights[4667] = 214 ;
-ann_weights[4668] = 1048793 ;
-ann_weights[4669] = 26 ;
-ann_weights[4670] = 49 ;
-ann_weights[4671] = 1049044 ;
-ann_weights[4672] = 1048627 ;
-ann_weights[4673] = 156 ;
-ann_weights[4674] = 40 ;
-ann_weights[4675] = 24 ;
-ann_weights[4676] = 99 ;
-ann_weights[4677] = 190 ;
-ann_weights[4678] = 1048834 ;
-ann_weights[4679] = 1048711 ;
-ann_weights[4680] = 104 ;
-ann_weights[4681] = 1049017 ;
-ann_weights[4682] = 1048678 ;
-ann_weights[4683] = 147 ;
-ann_weights[4684] = 93 ;
-ann_weights[4685] = 1048614 ;
-ann_weights[4686] = 58 ;
-ann_weights[4687] = 223 ;
-ann_weights[4688] = 1048927 ;
-ann_weights[4689] = 1048707 ;
-ann_weights[4690] = 147 ;
-ann_weights[4691] = 1048836 ;
-ann_weights[4692] = 118 ;
-ann_weights[4693] = 166 ;
-ann_weights[4694] = 16 ;
-ann_weights[4695] = 1048609 ;
-ann_weights[4696] = 1048644 ;
-ann_weights[4697] = 140 ;
-ann_weights[4698] = 1048952 ;
-ann_weights[4699] = 1048843 ;
-ann_weights[4700] = 133 ;
-ann_weights[4701] = 1049007 ;
-ann_weights[4702] = 107 ;
-ann_weights[4703] = 256 ;
-ann_weights[4704] = 1048613 ;
-ann_weights[4705] = 98 ;
-ann_weights[4706] = 1048590 ;
-ann_weights[4707] = 50 ;
-ann_weights[4708] = 1048896 ;
-ann_weights[4709] = 1048741 ;
-ann_weights[4710] = 156 ;
-ann_weights[4711] = 1048994 ;
-ann_weights[4712] = 33 ;
-ann_weights[4713] = 284 ;
-ann_weights[4714] = 1048819 ;
-ann_weights[4715] = 73 ;
-ann_weights[4716] = 1048613 ;
-ann_weights[4717] = 1048718 ;
-ann_weights[4718] = 1048685 ;
-ann_weights[4719] = 1049081 ;
-ann_weights[4720] = 1048580 ;
-ann_weights[4721] = 1048803 ;
-ann_weights[4722] = 379 ;
-ann_weights[4723] = 273 ;
-ann_weights[4724] = 1048987 ;
-ann_weights[4725] = 6 ;
-ann_weights[4726] = 27 ;
-ann_weights[4727] = 1048908 ;
-ann_weights[4728] = 1048832 ;
-ann_weights[4729] = 1049352 ;
-ann_weights[4730] = 1048950 ;
-ann_weights[4731] = 1048965 ;
-ann_weights[4732] = 810 ;
-ann_weights[4733] = 1049252 ;
-ann_weights[4734] = 1048971 ;
-ann_weights[4735] = 1048953 ;
-ann_weights[4736] = 1048645 ;
-ann_weights[4737] = 1049244 ;
-ann_weights[4738] = 1048986 ;
-ann_weights[4739] = 1049333 ;
-ann_weights[4740] = 1048967 ;
-ann_weights[4741] = 1048727 ;
-ann_weights[4742] = 750 ;
-ann_weights[4743] = 1049052 ;
-ann_weights[4744] = 1048799 ;
-ann_weights[4745] = 1049097 ;
-ann_weights[4746] = 1049273 ;
-ann_weights[4747] = 1049065 ;
-ann_weights[4748] = 1049230 ;
-ann_weights[4749] = 1049058 ;
-ann_weights[4750] = 1048720 ;
-ann_weights[4751] = 1048945 ;
-ann_weights[4752] = 413 ;
-ann_weights[4753] = 1048783 ;
-ann_weights[4754] = 1048729 ;
-ann_weights[4755] = 1048773 ;
-ann_weights[4756] = 1048948 ;
-ann_weights[4757] = 1048735 ;
-ann_weights[4758] = 1048873 ;
-ann_weights[4759] = 1048801 ;
-ann_weights[4760] = 1048663 ;
-ann_weights[4761] = 1048588 ;
-ann_weights[4762] = 17 ;
-ann_weights[4763] = 1048656 ;
-ann_weights[4764] = 1048581 ;
-ann_weights[4765] = 0 ;
-ann_weights[4766] = 17 ;
-ann_weights[4767] = 1048600 ;
-ann_weights[4768] = 16 ;
-ann_weights[4769] = 1048620 ;
-ann_weights[4770] = 1048697 ;
-ann_weights[4771] = 178 ;
-ann_weights[4772] = 1048751 ;
-ann_weights[4773] = 220 ;
-ann_weights[4774] = 1048609 ;
-ann_weights[4775] = 1048697 ;
-ann_weights[4776] = 1048699 ;
-ann_weights[4777] = 14 ;
-ann_weights[4778] = 1048755 ;
-ann_weights[4779] = 1048674 ;
-ann_weights[4780] = 1048918 ;
-ann_weights[4781] = 1048586 ;
-ann_weights[4782] = 29 ;
-ann_weights[4783] = 154 ;
-ann_weights[4784] = 42 ;
-ann_weights[4785] = 1049019 ;
-ann_weights[4786] = 1048814 ;
-ann_weights[4787] = 1048783 ;
-ann_weights[4788] = 1048837 ;
-ann_weights[4789] = 1048906 ;
-ann_weights[4790] = 1048801 ;
-ann_weights[4791] = 1048694 ;
-ann_weights[4792] = 209 ;
-ann_weights[4793] = 379 ;
-ann_weights[4794] = 1049103 ;
-ann_weights[4795] = 100 ;
-ann_weights[4796] = 1049085 ;
-ann_weights[4797] = 1048816 ;
-ann_weights[4798] = 1048895 ;
-ann_weights[4799] = 1048854 ;
-ann_weights[4800] = 1048592 ;
-ann_weights[4801] = 1048760 ;
-ann_weights[4802] = 292 ;
-ann_weights[4803] = 219 ;
-ann_weights[4804] = 1048892 ;
-ann_weights[4805] = 1048653 ;
-ann_weights[4806] = 1049339 ;
-ann_weights[4807] = 132 ;
-ann_weights[4808] = 1048912 ;
-ann_weights[4809] = 1048788 ;
-ann_weights[4810] = 63 ;
-ann_weights[4811] = 1049215 ;
-ann_weights[4812] = 194 ;
-ann_weights[4813] = 135 ;
-ann_weights[4814] = 1048831 ;
-ann_weights[4815] = 121 ;
-ann_weights[4816] = 1048712 ;
-ann_weights[4817] = 36 ;
-ann_weights[4818] = 1048912 ;
-ann_weights[4819] = 1048764 ;
-ann_weights[4820] = 176 ;
-ann_weights[4821] = 1049190 ;
-ann_weights[4822] = 244 ;
-ann_weights[4823] = 1048703 ;
-ann_weights[4824] = 1048678 ;
-ann_weights[4825] = 213 ;
-ann_weights[4826] = 60 ;
-ann_weights[4827] = 1048825 ;
-ann_weights[4828] = 1048819 ;
-ann_weights[4829] = 1048747 ;
-ann_weights[4830] = 156 ;
-ann_weights[4831] = 1048973 ;
-ann_weights[4832] = 80 ;
-ann_weights[4833] = 1048694 ;
-ann_weights[4834] = 65 ;
-ann_weights[4835] = 1048783 ;
-ann_weights[4836] = 88 ;
-ann_weights[4837] = 1048806 ;
-ann_weights[4838] = 77 ;
-ann_weights[4839] = 5 ;
-ann_weights[4840] = 80 ;
-ann_weights[4841] = 1048821 ;
-ann_weights[4842] = 7 ;
-ann_weights[4843] = 1048873 ;
-ann_weights[4844] = 245 ;
-ann_weights[4845] = 1048984 ;
-ann_weights[4846] = 234 ;
-ann_weights[4847] = 1048724 ;
-ann_weights[4848] = 118 ;
-ann_weights[4849] = 1048625 ;
-ann_weights[4850] = 251 ;
-ann_weights[4851] = 1048756 ;
-ann_weights[4852] = 10 ;
-ann_weights[4853] = 1049004 ;
-ann_weights[4854] = 25 ;
-ann_weights[4855] = 1048960 ;
-ann_weights[4856] = 240 ;
-ann_weights[4857] = 1048869 ;
-ann_weights[4858] = 133 ;
-ann_weights[4859] = 1048577 ;
-ann_weights[4860] = 343 ;
-ann_weights[4861] = 1048700 ;
-ann_weights[4862] = 209 ;
-ann_weights[4863] = 1049129 ;
-ann_weights[4864] = 1048663 ;
-ann_weights[4865] = 1048913 ;
-ann_weights[4866] = 386 ;
-ann_weights[4867] = 1048984 ;
-ann_weights[4868] = 101 ;
-ann_weights[4869] = 68 ;
-ann_weights[4870] = 42 ;
-ann_weights[4871] = 1048854 ;
-ann_weights[4872] = 164 ;
-ann_weights[4873] = 1049008 ;
-ann_weights[4874] = 1048694 ;
-ann_weights[4875] = 1048875 ;
-ann_weights[4876] = 482 ;
-ann_weights[4877] = 1048866 ;
-ann_weights[4878] = 187 ;
-ann_weights[4879] = 1048631 ;
-ann_weights[4880] = 1048831 ;
-ann_weights[4881] = 1048600 ;
-ann_weights[4882] = 278 ;
-ann_weights[4883] = 1048876 ;
-ann_weights[4884] = 1048612 ;
-ann_weights[4885] = 1049057 ;
-ann_weights[4886] = 163 ;
-ann_weights[4887] = 1048668 ;
-ann_weights[4888] = 223 ;
-ann_weights[4889] = 1048601 ;
-ann_weights[4890] = 1049209 ;
-ann_weights[4891] = 297 ;
-ann_weights[4892] = 174 ;
-ann_weights[4893] = 1048835 ;
-ann_weights[4894] = 251 ;
-ann_weights[4895] = 1048892 ;
-ann_weights[4896] = 17 ;
-ann_weights[4897] = 1048610 ;
-ann_weights[4898] = 181 ;
-ann_weights[4899] = 1048685 ;
-ann_weights[4900] = 1049153 ;
-ann_weights[4901] = 402 ;
-ann_weights[4902] = 107 ;
-ann_weights[4903] = 1048901 ;
-ann_weights[4904] = 401 ;
-ann_weights[4905] = 1048927 ;
-ann_weights[4906] = 37 ;
-ann_weights[4907] = 16 ;
-ann_weights[4908] = 1048606 ;
-ann_weights[4909] = 1048692 ;
-ann_weights[4910] = 1048934 ;
-ann_weights[4911] = 1048635 ;
-ann_weights[4912] = 27 ;
-ann_weights[4913] = 1048838 ;
-ann_weights[4914] = 368 ;
-ann_weights[4915] = 1048656 ;
-ann_weights[4916] = 1048614 ;
-ann_weights[4917] = 53 ;
-ann_weights[4918] = 1048709 ;
-ann_weights[4919] = 129 ;
-ann_weights[4920] = 1048723 ;
-ann_weights[4921] = 1048955 ;
-ann_weights[4922] = 41 ;
-ann_weights[4923] = 1048648 ;
-ann_weights[4924] = 305 ;
-ann_weights[4925] = 1048623 ;
-ann_weights[4926] = 1048718 ;
-ann_weights[4927] = 1048581 ;
-ann_weights[4928] = 5 ;
-ann_weights[4929] = 37 ;
-ann_weights[4930] = 84 ;
-ann_weights[4931] = 1049161 ;
-ann_weights[4932] = 1048588 ;
-ann_weights[4933] = 61 ;
-ann_weights[4934] = 204 ;
-ann_weights[4935] = 108 ;
-ann_weights[4936] = 1048589 ;
-ann_weights[4937] = 10 ;
-ann_weights[4938] = 1048690 ;
-ann_weights[4939] = 104 ;
-ann_weights[4940] = 1048620 ;
-ann_weights[4941] = 1048920 ;
-ann_weights[4942] = 112 ;
-ann_weights[4943] = 89 ;
-ann_weights[4944] = 77 ;
-ann_weights[4945] = 123 ;
-ann_weights[4946] = 114 ;
-ann_weights[4947] = 90 ;
-ann_weights[4948] = 1048873 ;
-ann_weights[4949] = 1048653 ;
-ann_weights[4950] = 70 ;
-ann_weights[4951] = 1048839 ;
-ann_weights[4952] = 1048602 ;
-ann_weights[4953] = 175 ;
-ann_weights[4954] = 13 ;
-ann_weights[4955] = 1048584 ;
-ann_weights[4956] = 33 ;
-ann_weights[4957] = 7 ;
-ann_weights[4958] = 1048814 ;
-ann_weights[4959] = 1048631 ;
-ann_weights[4960] = 3 ;
-ann_weights[4961] = 1048767 ;
-ann_weights[4962] = 16 ;
-ann_weights[4963] = 38 ;
-ann_weights[4964] = 26 ;
-ann_weights[4965] = 93 ;
-ann_weights[4966] = 1048598 ;
-ann_weights[4967] = 61 ;
-ann_weights[4968] = 1048774 ;
-ann_weights[4969] = 1048661 ;
-ann_weights[4970] = 50 ;
-ann_weights[4971] = 1048675 ;
-ann_weights[4972] = 86 ;
-ann_weights[4973] = 88 ;
-ann_weights[4974] = 64 ;
-ann_weights[4975] = 54 ;
-ann_weights[4976] = 1048628 ;
-ann_weights[4977] = 1048606 ;
-ann_weights[4978] = 1048702 ;
-ann_weights[4979] = 1048840 ;
-ann_weights[4980] = 134 ;
-ann_weights[4981] = 1048645 ;
-ann_weights[4982] = 131 ;
-ann_weights[4983] = 172 ;
-ann_weights[4984] = 1048768 ;
-ann_weights[4985] = 42 ;
-ann_weights[4986] = 45 ;
-ann_weights[4987] = 1048627 ;
-ann_weights[4988] = 1048687 ;
-ann_weights[4989] = 1048892 ;
-ann_weights[4990] = 1048603 ;
-ann_weights[4991] = 1048741 ;
-ann_weights[4992] = 127 ;
-ann_weights[4993] = 283 ;
-ann_weights[4994] = 1048766 ;
-ann_weights[4995] = 36 ;
-ann_weights[4996] = 1048613 ;
-ann_weights[4997] = 1048691 ;
-ann_weights[4998] = 1048661 ;
-ann_weights[4999] = 1049213 ;
-ann_weights[5000] = 7 ;
-ann_weights[5001] = 1048737 ;
-ann_weights[5002] = 280 ;
-ann_weights[5003] = 1048743 ;
-ann_weights[5004] = 1048928 ;
-ann_weights[5005] = 112 ;
-ann_weights[5006] = 1048583 ;
-ann_weights[5007] = 1048705 ;
-ann_weights[5008] = 1048618 ;
-ann_weights[5009] = 1049395 ;
-ann_weights[5010] = 1048861 ;
-ann_weights[5011] = 1049025 ;
-ann_weights[5012] = 838 ;
-ann_weights[5013] = 1049282 ;
-ann_weights[5014] = 1049108 ;
-ann_weights[5015] = 1049102 ;
-ann_weights[5016] = 1048591 ;
-ann_weights[5017] = 61 ;
-ann_weights[5018] = 1049398 ;
-ann_weights[5019] = 1049074 ;
-ann_weights[5020] = 1048966 ;
-ann_weights[5021] = 1048751 ;
-ann_weights[5022] = 517 ;
-ann_weights[5023] = 1049111 ;
-ann_weights[5024] = 1048905 ;
-ann_weights[5025] = 1049205 ;
-ann_weights[5026] = 1049173 ;
-ann_weights[5027] = 172 ;
-ann_weights[5028] = 1049149 ;
-ann_weights[5029] = 1048890 ;
-ann_weights[5030] = 114 ;
-ann_weights[5031] = 1048881 ;
-ann_weights[5032] = 363 ;
-ann_weights[5033] = 1048856 ;
-ann_weights[5034] = 1048755 ;
-ann_weights[5035] = 1048796 ;
-ann_weights[5036] = 1049049 ;
-ann_weights[5037] = 1048701 ;
-ann_weights[5038] = 1048814 ;
-ann_weights[5039] = 1048820 ;
-ann_weights[5040] = 1048735 ;
-ann_weights[5041] = 1048614 ;
-ann_weights[5042] = 1048750 ;
-ann_weights[5043] = 1048759 ;
-ann_weights[5044] = 1048723 ;
-ann_weights[5045] = 1048738 ;
-ann_weights[5046] = 0 ;
-ann_weights[5047] = 150 ;
-ann_weights[5048] = 1048707 ;
-ann_weights[5049] = 1048579 ;
-ann_weights[5050] = 1048737 ;
-ann_weights[5051] = 84 ;
-ann_weights[5052] = 1048878 ;
-ann_weights[5053] = 179 ;
-ann_weights[5054] = 1048638 ;
-ann_weights[5055] = 1048740 ;
-ann_weights[5056] = 1048710 ;
-ann_weights[5057] = 80 ;
-ann_weights[5058] = 1048856 ;
-ann_weights[5059] = 1048780 ;
-ann_weights[5060] = 1048966 ;
-ann_weights[5061] = 1048601 ;
-ann_weights[5062] = 1048756 ;
-ann_weights[5063] = 101 ;
-ann_weights[5064] = 1048706 ;
-ann_weights[5065] = 1048842 ;
-ann_weights[5066] = 1048694 ;
-ann_weights[5067] = 247 ;
-ann_weights[5068] = 1048792 ;
-ann_weights[5069] = 1048980 ;
-ann_weights[5070] = 1049099 ;
-ann_weights[5071] = 1048822 ;
-ann_weights[5072] = 107 ;
-ann_weights[5073] = 573 ;
-ann_weights[5074] = 1048996 ;
-ann_weights[5075] = 1048647 ;
-ann_weights[5076] = 1048864 ;
-ann_weights[5077] = 1048707 ;
-ann_weights[5078] = 1049392 ;
-ann_weights[5079] = 1049087 ;
-ann_weights[5080] = 1048704 ;
-ann_weights[5081] = 1049134 ;
-ann_weights[5082] = 292 ;
-ann_weights[5083] = 199 ;
-ann_weights[5084] = 1048781 ;
-ann_weights[5085] = 201 ;
-ann_weights[5086] = 1049138 ;
-ann_weights[5087] = 1048621 ;
-ann_weights[5088] = 1049001 ;
-ann_weights[5089] = 1049044 ;
-ann_weights[5090] = 71 ;
-ann_weights[5091] = 1049358 ;
-ann_weights[5092] = 307 ;
-ann_weights[5093] = 215 ;
-ann_weights[5094] = 1048746 ;
-ann_weights[5095] = 286 ;
-ann_weights[5096] = 1048928 ;
-ann_weights[5097] = 1048683 ;
-ann_weights[5098] = 1048749 ;
-ann_weights[5099] = 1048958 ;
-ann_weights[5100] = 1048622 ;
-ann_weights[5101] = 1049426 ;
-ann_weights[5102] = 184 ;
-ann_weights[5103] = 123 ;
-ann_weights[5104] = 1048710 ;
-ann_weights[5105] = 307 ;
-ann_weights[5106] = 1048783 ;
-ann_weights[5107] = 1048951 ;
-ann_weights[5108] = 1048713 ;
-ann_weights[5109] = 1048657 ;
-ann_weights[5110] = 111 ;
-ann_weights[5111] = 1048983 ;
-ann_weights[5112] = 265 ;
-ann_weights[5113] = 1048720 ;
-ann_weights[5114] = 1048636 ;
-ann_weights[5115] = 150 ;
-ann_weights[5116] = 1048581 ;
-ann_weights[5117] = 1048884 ;
-ann_weights[5118] = 1048602 ;
-ann_weights[5119] = 1048649 ;
-ann_weights[5120] = 214 ;
-ann_weights[5121] = 1048700 ;
-ann_weights[5122] = 74 ;
-ann_weights[5123] = 1048744 ;
-ann_weights[5124] = 1048599 ;
-ann_weights[5125] = 1048662 ;
-ann_weights[5126] = 123 ;
-ann_weights[5127] = 1048922 ;
-ann_weights[5128] = 56 ;
-ann_weights[5129] = 1048641 ;
-ann_weights[5130] = 199 ;
-ann_weights[5131] = 25 ;
-ann_weights[5132] = 107 ;
-ann_weights[5133] = 1048914 ;
-ann_weights[5134] = 1048593 ;
-ann_weights[5135] = 1048732 ;
-ann_weights[5136] = 97 ;
-ann_weights[5137] = 1048925 ;
-ann_weights[5138] = 253 ;
-ann_weights[5139] = 1048630 ;
-ann_weights[5140] = 327 ;
-ann_weights[5141] = 1048790 ;
-ann_weights[5142] = 174 ;
-ann_weights[5143] = 1048956 ;
-ann_weights[5144] = 1048838 ;
-ann_weights[5145] = 1048815 ;
-ann_weights[5146] = 296 ;
-ann_weights[5147] = 1049005 ;
-ann_weights[5148] = 157 ;
-ann_weights[5149] = 141 ;
-ann_weights[5150] = 7 ;
-ann_weights[5151] = 1048694 ;
-ann_weights[5152] = 148 ;
-ann_weights[5153] = 1049024 ;
-ann_weights[5154] = 1048703 ;
-ann_weights[5155] = 1048805 ;
-ann_weights[5156] = 210 ;
-ann_weights[5157] = 1048744 ;
-ann_weights[5158] = 190 ;
-ann_weights[5159] = 1048598 ;
-ann_weights[5160] = 1048802 ;
-ann_weights[5161] = 1048587 ;
-ann_weights[5162] = 264 ;
-ann_weights[5163] = 1048976 ;
-ann_weights[5164] = 41 ;
-ann_weights[5165] = 1048797 ;
-ann_weights[5166] = 349 ;
-ann_weights[5167] = 1048753 ;
-ann_weights[5168] = 107 ;
-ann_weights[5169] = 1048820 ;
-ann_weights[5170] = 1049193 ;
-ann_weights[5171] = 216 ;
-ann_weights[5172] = 258 ;
-ann_weights[5173] = 1048998 ;
-ann_weights[5174] = 171 ;
-ann_weights[5175] = 1048662 ;
-ann_weights[5176] = 201 ;
-ann_weights[5177] = 24 ;
-ann_weights[5178] = 1048652 ;
-ann_weights[5179] = 1048738 ;
-ann_weights[5180] = 1048980 ;
-ann_weights[5181] = 250 ;
-ann_weights[5182] = 75 ;
-ann_weights[5183] = 1048834 ;
-ann_weights[5184] = 264 ;
-ann_weights[5185] = 20 ;
-ann_weights[5186] = 71 ;
-ann_weights[5187] = 64 ;
-ann_weights[5188] = 1048722 ;
-ann_weights[5189] = 70 ;
-ann_weights[5190] = 1048824 ;
-ann_weights[5191] = 1048669 ;
-ann_weights[5192] = 22 ;
-ann_weights[5193] = 45 ;
-ann_weights[5194] = 247 ;
-ann_weights[5195] = 64 ;
-ann_weights[5196] = 1048612 ;
-ann_weights[5197] = 1048612 ;
-ann_weights[5198] = 1048577 ;
-ann_weights[5199] = 53 ;
-ann_weights[5200] = 1048627 ;
-ann_weights[5201] = 1048911 ;
-ann_weights[5202] = 175 ;
-ann_weights[5203] = 272 ;
-ann_weights[5204] = 225 ;
-ann_weights[5205] = 65 ;
-ann_weights[5206] = 136 ;
-ann_weights[5207] = 1048643 ;
-ann_weights[5208] = 1048667 ;
-ann_weights[5209] = 1048583 ;
-ann_weights[5210] = 18 ;
-ann_weights[5211] = 1048802 ;
-ann_weights[5212] = 207 ;
-ann_weights[5213] = 252 ;
-ann_weights[5214] = 1048662 ;
-ann_weights[5215] = 88 ;
-ann_weights[5216] = 144 ;
-ann_weights[5217] = 1048664 ;
-ann_weights[5218] = 1048700 ;
-ann_weights[5219] = 1048649 ;
-ann_weights[5220] = 1048634 ;
-ann_weights[5221] = 1048661 ;
-ann_weights[5222] = 52 ;
-ann_weights[5223] = 195 ;
-ann_weights[5224] = 1048611 ;
-ann_weights[5225] = 22 ;
-ann_weights[5226] = 174 ;
-ann_weights[5227] = 1048720 ;
-ann_weights[5228] = 1048613 ;
-ann_weights[5229] = 1048654 ;
-ann_weights[5230] = 1048641 ;
-ann_weights[5231] = 1048647 ;
-ann_weights[5232] = 26 ;
-ann_weights[5233] = 259 ;
-ann_weights[5234] = 1048727 ;
-ann_weights[5235] = 59 ;
-ann_weights[5236] = 1048627 ;
-ann_weights[5237] = 1048648 ;
-ann_weights[5238] = 1048637 ;
-ann_weights[5239] = 1048679 ;
-ann_weights[5240] = 1048612 ;
-ann_weights[5241] = 6 ;
-ann_weights[5242] = 1048589 ;
-ann_weights[5243] = 89 ;
-ann_weights[5244] = 1048629 ;
-ann_weights[5245] = 27 ;
-ann_weights[5246] = 1048585 ;
-ann_weights[5247] = 1048625 ;
-ann_weights[5248] = 1048598 ;
-ann_weights[5249] = 1048621 ;
-ann_weights[5250] = 1048601 ;
-ann_weights[5251] = 1048621 ;
-ann_weights[5252] = 38 ;
-ann_weights[5253] = 240 ;
-ann_weights[5254] = 1048692 ;
-ann_weights[5255] = 119 ;
-ann_weights[5256] = 1048595 ;
-ann_weights[5257] = 1048768 ;
-ann_weights[5258] = 1048808 ;
-ann_weights[5259] = 1048861 ;
-ann_weights[5260] = 100 ;
-ann_weights[5261] = 1048750 ;
-ann_weights[5262] = 197 ;
-ann_weights[5263] = 299 ;
-ann_weights[5264] = 1048945 ;
-ann_weights[5265] = 94 ;
-ann_weights[5266] = 1048614 ;
-ann_weights[5267] = 1048881 ;
-ann_weights[5268] = 1048689 ;
-ann_weights[5269] = 1048881 ;
-ann_weights[5270] = 1048621 ;
-ann_weights[5271] = 1048751 ;
-ann_weights[5272] = 275 ;
-ann_weights[5273] = 85 ;
-ann_weights[5274] = 1048908 ;
-ann_weights[5275] = 165 ;
-ann_weights[5276] = 1048667 ;
-ann_weights[5277] = 1049005 ;
-ann_weights[5278] = 47 ;
-ann_weights[5279] = 1049105 ;
-ann_weights[5280] = 1048711 ;
-ann_weights[5281] = 1048656 ;
-ann_weights[5282] = 477 ;
-ann_weights[5283] = 1048944 ;
-ann_weights[5284] = 1048943 ;
-ann_weights[5285] = 97 ;
-ann_weights[5286] = 1048576 ;
-ann_weights[5287] = 1048951 ;
-ann_weights[5288] = 1048737 ;
-ann_weights[5289] = 1049319 ;
-ann_weights[5290] = 1048894 ;
-ann_weights[5291] = 1048658 ;
-ann_weights[5292] = 685 ;
-ann_weights[5293] = 1049458 ;
-ann_weights[5294] = 1049243 ;
-ann_weights[5295] = 1048933 ;
-ann_weights[5296] = 39 ;
-ann_weights[5297] = 1048766 ;
-ann_weights[5298] = 1049424 ;
-ann_weights[5299] = 1049018 ;
-ann_weights[5300] = 1048857 ;
-ann_weights[5301] = 1048670 ;
-ann_weights[5302] = 304 ;
-ann_weights[5303] = 1049077 ;
-ann_weights[5304] = 1048703 ;
-ann_weights[5305] = 1049018 ;
-ann_weights[5306] = 1048935 ;
-ann_weights[5307] = 216 ;
-ann_weights[5308] = 1049060 ;
-ann_weights[5309] = 1048914 ;
-ann_weights[5310] = 1048780 ;
-ann_weights[5311] = 151 ;
-ann_weights[5312] = 282 ;
-ann_weights[5313] = 1048733 ;
-ann_weights[5314] = 1048633 ;
-ann_weights[5315] = 1048886 ;
-ann_weights[5316] = 1048849 ;
-ann_weights[5317] = 1048750 ;
-ann_weights[5318] = 1048796 ;
-ann_weights[5319] = 1048824 ;
-ann_weights[5320] = 1048630 ;
-ann_weights[5321] = 47 ;
-ann_weights[5322] = 1048698 ;
-ann_weights[5323] = 1048577 ;
-ann_weights[5324] = 1048579 ;
-ann_weights[5325] = 1048651 ;
-ann_weights[5326] = 14 ;
-ann_weights[5327] = 22 ;
-ann_weights[5328] = 1048750 ;
-ann_weights[5329] = 49 ;
-ann_weights[5330] = 198 ;
-ann_weights[5331] = 150 ;
-ann_weights[5332] = 1048757 ;
-ann_weights[5333] = 27 ;
-ann_weights[5334] = 1048661 ;
-ann_weights[5335] = 1048886 ;
-ann_weights[5336] = 1048700 ;
-ann_weights[5337] = 198 ;
-ann_weights[5338] = 1048741 ;
-ann_weights[5339] = 1048766 ;
-ann_weights[5340] = 1048805 ;
-ann_weights[5341] = 26 ;
-ann_weights[5342] = 1048804 ;
-ann_weights[5343] = 1048635 ;
-ann_weights[5344] = 1048657 ;
-ann_weights[5345] = 121 ;
-ann_weights[5346] = 1048816 ;
-ann_weights[5347] = 311 ;
-ann_weights[5348] = 1048983 ;
-ann_weights[5349] = 1049037 ;
-ann_weights[5350] = 1048922 ;
-ann_weights[5351] = 1048781 ;
-ann_weights[5352] = 1048682 ;
-ann_weights[5353] = 486 ;
-ann_weights[5354] = 1048726 ;
-ann_weights[5355] = 1 ;
-ann_weights[5356] = 1049042 ;
-ann_weights[5357] = 1048757 ;
-ann_weights[5358] = 1049103 ;
-ann_weights[5359] = 1048937 ;
-ann_weights[5360] = 1048611 ;
-ann_weights[5361] = 1049294 ;
-ann_weights[5362] = 105 ;
-ann_weights[5363] = 228 ;
-ann_weights[5364] = 1048866 ;
-ann_weights[5365] = 135 ;
-ann_weights[5366] = 1048949 ;
-ann_weights[5367] = 1048678 ;
-ann_weights[5368] = 1048977 ;
-ann_weights[5369] = 1049025 ;
-ann_weights[5370] = 13 ;
-ann_weights[5371] = 1049455 ;
-ann_weights[5372] = 145 ;
-ann_weights[5373] = 377 ;
-ann_weights[5374] = 1048638 ;
-ann_weights[5375] = 158 ;
-ann_weights[5376] = 1048917 ;
-ann_weights[5377] = 1048828 ;
-ann_weights[5378] = 74 ;
-ann_weights[5379] = 1048875 ;
-ann_weights[5380] = 78 ;
-ann_weights[5381] = 1049037 ;
-ann_weights[5382] = 96 ;
-ann_weights[5383] = 117 ;
-ann_weights[5384] = 1048792 ;
-ann_weights[5385] = 175 ;
-ann_weights[5386] = 1048726 ;
-ann_weights[5387] = 1049020 ;
-ann_weights[5388] = 1048653 ;
-ann_weights[5389] = 1048817 ;
-ann_weights[5390] = 141 ;
-ann_weights[5391] = 1048683 ;
-ann_weights[5392] = 182 ;
-ann_weights[5393] = 1048633 ;
-ann_weights[5394] = 1048827 ;
-ann_weights[5395] = 169 ;
-ann_weights[5396] = 1048592 ;
-ann_weights[5397] = 1049063 ;
-ann_weights[5398] = 1048673 ;
-ann_weights[5399] = 1048650 ;
-ann_weights[5400] = 85 ;
-ann_weights[5401] = 1048705 ;
-ann_weights[5402] = 169 ;
-ann_weights[5403] = 26 ;
-ann_weights[5404] = 1048951 ;
-ann_weights[5405] = 159 ;
-ann_weights[5406] = 1048603 ;
-ann_weights[5407] = 1048936 ;
-ann_weights[5408] = 14 ;
-ann_weights[5409] = 1048832 ;
-ann_weights[5410] = 108 ;
-ann_weights[5411] = 1048641 ;
-ann_weights[5412] = 130 ;
-ann_weights[5413] = 1048705 ;
-ann_weights[5414] = 1049056 ;
-ann_weights[5415] = 13 ;
-ann_weights[5416] = 144 ;
-ann_weights[5417] = 1048933 ;
-ann_weights[5418] = 73 ;
-ann_weights[5419] = 1048812 ;
-ann_weights[5420] = 221 ;
-ann_weights[5421] = 1048638 ;
-ann_weights[5422] = 144 ;
-ann_weights[5423] = 1048770 ;
-ann_weights[5424] = 1049018 ;
-ann_weights[5425] = 1048581 ;
-ann_weights[5426] = 252 ;
-ann_weights[5427] = 1048975 ;
-ann_weights[5428] = 96 ;
-ann_weights[5429] = 1048853 ;
-ann_weights[5430] = 234 ;
-ann_weights[5431] = 1048591 ;
-ann_weights[5432] = 219 ;
-ann_weights[5433] = 1048883 ;
-ann_weights[5434] = 1048820 ;
-ann_weights[5435] = 4 ;
-ann_weights[5436] = 458 ;
-ann_weights[5437] = 1048784 ;
-ann_weights[5438] = 1048595 ;
-ann_weights[5439] = 1048815 ;
-ann_weights[5440] = 70 ;
-ann_weights[5441] = 1048656 ;
-ann_weights[5442] = 236 ;
-ann_weights[5443] = 1048916 ;
-ann_weights[5444] = 1048906 ;
-ann_weights[5445] = 9 ;
-ann_weights[5446] = 327 ;
-ann_weights[5447] = 1048614 ;
-ann_weights[5448] = 1048623 ;
-ann_weights[5449] = 1048947 ;
-ann_weights[5450] = 1048742 ;
-ann_weights[5451] = 95 ;
-ann_weights[5452] = 206 ;
-ann_weights[5453] = 1048760 ;
-ann_weights[5454] = 1048657 ;
-ann_weights[5455] = 54 ;
-ann_weights[5456] = 158 ;
-ann_weights[5457] = 1048585 ;
-ann_weights[5458] = 1048688 ;
-ann_weights[5459] = 1048754 ;
-ann_weights[5460] = 1048681 ;
-ann_weights[5461] = 1048631 ;
-ann_weights[5462] = 168 ;
-ann_weights[5463] = 1048649 ;
-ann_weights[5464] = 14 ;
-ann_weights[5465] = 1048620 ;
-ann_weights[5466] = 143 ;
-ann_weights[5467] = 60 ;
-ann_weights[5468] = 1048757 ;
-ann_weights[5469] = 1048648 ;
-ann_weights[5470] = 1048710 ;
-ann_weights[5471] = 1048637 ;
-ann_weights[5472] = 109 ;
-ann_weights[5473] = 80 ;
-ann_weights[5474] = 77 ;
-ann_weights[5475] = 60 ;
-ann_weights[5476] = 195 ;
-ann_weights[5477] = 1048735 ;
-ann_weights[5478] = 1048701 ;
-ann_weights[5479] = 1048787 ;
-ann_weights[5480] = 1048640 ;
-ann_weights[5481] = 21 ;
-ann_weights[5482] = 188 ;
-ann_weights[5483] = 166 ;
-ann_weights[5484] = 43 ;
-ann_weights[5485] = 41 ;
-ann_weights[5486] = 205 ;
-ann_weights[5487] = 1048745 ;
-ann_weights[5488] = 1048577 ;
-ann_weights[5489] = 1048647 ;
-ann_weights[5490] = 1048637 ;
-ann_weights[5491] = 1048613 ;
-ann_weights[5492] = 167 ;
-ann_weights[5493] = 204 ;
-ann_weights[5494] = 1048699 ;
-ann_weights[5495] = 1048633 ;
-ann_weights[5496] = 207 ;
-ann_weights[5497] = 1048818 ;
-ann_weights[5498] = 1048645 ;
-ann_weights[5499] = 1048711 ;
-ann_weights[5500] = 43 ;
-ann_weights[5501] = 129 ;
-ann_weights[5502] = 107 ;
-ann_weights[5503] = 202 ;
-ann_weights[5504] = 1048755 ;
-ann_weights[5505] = 82 ;
-ann_weights[5506] = 103 ;
-ann_weights[5507] = 1048857 ;
-ann_weights[5508] = 14 ;
-ann_weights[5509] = 1048671 ;
-ann_weights[5510] = 1048605 ;
-ann_weights[5511] = 195 ;
-ann_weights[5512] = 1048594 ;
-ann_weights[5513] = 109 ;
-ann_weights[5514] = 1048755 ;
-ann_weights[5515] = 1048601 ;
-ann_weights[5516] = 54 ;
-ann_weights[5517] = 1048728 ;
-ann_weights[5518] = 1048603 ;
-ann_weights[5519] = 1048644 ;
-ann_weights[5520] = 1048647 ;
-ann_weights[5521] = 17 ;
-ann_weights[5522] = 151 ;
-ann_weights[5523] = 131 ;
-ann_weights[5524] = 1048746 ;
-ann_weights[5525] = 158 ;
-ann_weights[5526] = 1048582 ;
-ann_weights[5527] = 1048856 ;
-ann_weights[5528] = 31 ;
-ann_weights[5529] = 1048673 ;
-ann_weights[5530] = 46 ;
-ann_weights[5531] = 69 ;
-ann_weights[5532] = 201 ;
-ann_weights[5533] = 144 ;
-ann_weights[5534] = 1048767 ;
-ann_weights[5535] = 55 ;
-ann_weights[5536] = 60 ;
-ann_weights[5537] = 1049043 ;
-ann_weights[5538] = 1 ;
-ann_weights[5539] = 1048857 ;
-ann_weights[5540] = 130 ;
-ann_weights[5541] = 1048634 ;
-ann_weights[5542] = 279 ;
-ann_weights[5543] = 66 ;
-ann_weights[5544] = 1049059 ;
-ann_weights[5545] = 104 ;
-ann_weights[5546] = 37 ;
-ann_weights[5547] = 1049003 ;
-ann_weights[5548] = 149 ;
-ann_weights[5549] = 1048922 ;
-ann_weights[5550] = 1048628 ;
-ann_weights[5551] = 1048740 ;
-ann_weights[5552] = 207 ;
-ann_weights[5553] = 20 ;
-ann_weights[5554] = 1049035 ;
-ann_weights[5555] = 127 ;
-ann_weights[5556] = 1048593 ;
-ann_weights[5557] = 1049118 ;
-ann_weights[5558] = 100 ;
-ann_weights[5559] = 1048841 ;
-ann_weights[5560] = 1048700 ;
-ann_weights[5561] = 62 ;
-ann_weights[5562] = 294 ;
-ann_weights[5563] = 1048815 ;
-ann_weights[5564] = 1049062 ;
-ann_weights[5565] = 168 ;
-ann_weights[5566] = 1048694 ;
-ann_weights[5567] = 1048868 ;
-ann_weights[5568] = 1048640 ;
-ann_weights[5569] = 1048956 ;
-ann_weights[5570] = 1049012 ;
-ann_weights[5571] = 10 ;
-ann_weights[5572] = 644 ;
-ann_weights[5573] = 1049508 ;
-ann_weights[5574] = 1049107 ;
-ann_weights[5575] = 1048704 ;
-ann_weights[5576] = 1048878 ;
-ann_weights[5577] = 1048868 ;
-ann_weights[5578] = 1049354 ;
-ann_weights[5579] = 1048762 ;
-ann_weights[5580] = 1048851 ;
-ann_weights[5581] = 26 ;
-ann_weights[5582] = 400 ;
-ann_weights[5583] = 1048908 ;
-ann_weights[5584] = 1048780 ;
-ann_weights[5585] = 1048927 ;
-ann_weights[5586] = 1048937 ;
-ann_weights[5587] = 1048757 ;
-ann_weights[5588] = 1048945 ;
-ann_weights[5589] = 1048799 ;
-ann_weights[5590] = 1048658 ;
-ann_weights[5591] = 117 ;
-ann_weights[5592] = 133 ;
-ann_weights[5593] = 1048692 ;
-ann_weights[5594] = 1048605 ;
-ann_weights[5595] = 1048723 ;
-ann_weights[5596] = 1048703 ;
-ann_weights[5597] = 1048755 ;
-ann_weights[5598] = 1048677 ;
-ann_weights[5599] = 1048745 ;
-ann_weights[5600] = 1048632 ;
-ann_weights[5601] = 68 ;
-ann_weights[5602] = 53 ;
-ann_weights[5603] = 1048625 ;
-ann_weights[5604] = 1048637 ;
-ann_weights[5605] = 1048607 ;
-ann_weights[5606] = 66 ;
-ann_weights[5607] = 1048614 ;
-ann_weights[5608] = 1048625 ;
-ann_weights[5609] = 85 ;
-ann_weights[5610] = 170 ;
-ann_weights[5611] = 1048711 ;
-ann_weights[5612] = 1048731 ;
-ann_weights[5613] = 27 ;
-ann_weights[5614] = 1048682 ;
-ann_weights[5615] = 1048680 ;
-ann_weights[5616] = 1048779 ;
-ann_weights[5617] = 1048610 ;
-ann_weights[5618] = 1048768 ;
-ann_weights[5619] = 1048668 ;
-ann_weights[5620] = 1048672 ;
-ann_weights[5621] = 1048870 ;
-ann_weights[5622] = 1048596 ;
-ann_weights[5623] = 1048682 ;
-ann_weights[5624] = 1048677 ;
-ann_weights[5625] = 76 ;
-ann_weights[5626] = 1048855 ;
-ann_weights[5627] = 1048821 ;
-ann_weights[5628] = 1049134 ;
-ann_weights[5629] = 1048958 ;
-ann_weights[5630] = 1048939 ;
-ann_weights[5631] = 1048822 ;
-ann_weights[5632] = 1048598 ;
-ann_weights[5633] = 485 ;
-ann_weights[5634] = 1048677 ;
-ann_weights[5635] = 50 ;
-ann_weights[5636] = 1049056 ;
-ann_weights[5637] = 1049172 ;
-ann_weights[5638] = 1049099 ;
-ann_weights[5639] = 1049189 ;
-ann_weights[5640] = 1048646 ;
-ann_weights[5641] = 1048910 ;
-ann_weights[5642] = 134 ;
-ann_weights[5643] = 283 ;
-ann_weights[5644] = 1048846 ;
-ann_weights[5645] = 49 ;
-ann_weights[5646] = 1048987 ;
-ann_weights[5647] = 1049115 ;
-ann_weights[5648] = 1048802 ;
-ann_weights[5649] = 1048887 ;
-ann_weights[5650] = 11 ;
-ann_weights[5651] = 1049056 ;
-ann_weights[5652] = 59 ;
-ann_weights[5653] = 213 ;
-ann_weights[5654] = 1048856 ;
-ann_weights[5655] = 172 ;
-ann_weights[5656] = 1049003 ;
-ann_weights[5657] = 1049042 ;
-ann_weights[5658] = 1048673 ;
-ann_weights[5659] = 1048602 ;
-ann_weights[5660] = 28 ;
-ann_weights[5661] = 1048723 ;
-ann_weights[5662] = 177 ;
-ann_weights[5663] = 320 ;
-ann_weights[5664] = 1048836 ;
-ann_weights[5665] = 164 ;
-ann_weights[5666] = 1048866 ;
-ann_weights[5667] = 1049145 ;
-ann_weights[5668] = 37 ;
-ann_weights[5669] = 1048731 ;
-ann_weights[5670] = 1048616 ;
-ann_weights[5671] = 14 ;
-ann_weights[5672] = 298 ;
-ann_weights[5673] = 161 ;
-ann_weights[5674] = 1049063 ;
-ann_weights[5675] = 1048592 ;
-ann_weights[5676] = 1048714 ;
-ann_weights[5677] = 1049095 ;
-ann_weights[5678] = 173 ;
-ann_weights[5679] = 1048834 ;
-ann_weights[5680] = 19 ;
-ann_weights[5681] = 63 ;
-ann_weights[5682] = 149 ;
-ann_weights[5683] = 91 ;
-ann_weights[5684] = 1049009 ;
-ann_weights[5685] = 183 ;
-ann_weights[5686] = 1048666 ;
-ann_weights[5687] = 1048834 ;
-ann_weights[5688] = 1048610 ;
-ann_weights[5689] = 1048880 ;
-ann_weights[5690] = 142 ;
-ann_weights[5691] = 89 ;
-ann_weights[5692] = 217 ;
-ann_weights[5693] = 112 ;
-ann_weights[5694] = 1049010 ;
-ann_weights[5695] = 133 ;
-ann_weights[5696] = 103 ;
-ann_weights[5697] = 1048808 ;
-ann_weights[5698] = 1048586 ;
-ann_weights[5699] = 1049005 ;
-ann_weights[5700] = 314 ;
-ann_weights[5701] = 1048579 ;
-ann_weights[5702] = 162 ;
-ann_weights[5703] = 1048620 ;
-ann_weights[5704] = 1049029 ;
-ann_weights[5705] = 4 ;
-ann_weights[5706] = 234 ;
-ann_weights[5707] = 1048798 ;
-ann_weights[5708] = 1048640 ;
-ann_weights[5709] = 1049078 ;
-ann_weights[5710] = 282 ;
-ann_weights[5711] = 118 ;
-ann_weights[5712] = 188 ;
-ann_weights[5713] = 1048742 ;
-ann_weights[5714] = 1048871 ;
-ann_weights[5715] = 94 ;
-ann_weights[5716] = 200 ;
-ann_weights[5717] = 1048816 ;
-ann_weights[5718] = 1048709 ;
-ann_weights[5719] = 1049007 ;
-ann_weights[5720] = 326 ;
-ann_weights[5721] = 20 ;
-ann_weights[5722] = 77 ;
-ann_weights[5723] = 1048830 ;
-ann_weights[5724] = 1048856 ;
-ann_weights[5725] = 80 ;
-ann_weights[5726] = 442 ;
-ann_weights[5727] = 8 ;
-ann_weights[5728] = 1048669 ;
-ann_weights[5729] = 1049054 ;
-ann_weights[5730] = 68 ;
-ann_weights[5731] = 1048585 ;
-ann_weights[5732] = 106 ;
-ann_weights[5733] = 1048628 ;
-ann_weights[5734] = 1048807 ;
-ann_weights[5735] = 1048609 ;
-ann_weights[5736] = 265 ;
-ann_weights[5737] = 57 ;
-ann_weights[5738] = 1048616 ;
-ann_weights[5739] = 1048716 ;
-ann_weights[5740] = 1048586 ;
-ann_weights[5741] = 1 ;
-ann_weights[5742] = 15 ;
-ann_weights[5743] = 1048590 ;
-ann_weights[5744] = 5 ;
-ann_weights[5745] = 1048584 ;
-ann_weights[5746] = 390 ;
-ann_weights[5747] = 59 ;
-ann_weights[5748] = 1048687 ;
-ann_weights[5749] = 1048822 ;
-ann_weights[5750] = 1048618 ;
-ann_weights[5751] = 1048617 ;
-ann_weights[5752] = 94 ;
-ann_weights[5753] = 57 ;
-ann_weights[5754] = 60 ;
-ann_weights[5755] = 1048589 ;
-ann_weights[5756] = 227 ;
-ann_weights[5757] = 1048756 ;
-ann_weights[5758] = 10 ;
-ann_weights[5759] = 1048734 ;
-ann_weights[5760] = 8 ;
-ann_weights[5761] = 210 ;
-ann_weights[5762] = 55 ;
-ann_weights[5763] = 167 ;
-ann_weights[5764] = 40 ;
-ann_weights[5765] = 55 ;
-ann_weights[5766] = 192 ;
-ann_weights[5767] = 1048871 ;
-ann_weights[5768] = 1048699 ;
-ann_weights[5769] = 1048750 ;
-ann_weights[5770] = 1048647 ;
-ann_weights[5771] = 138 ;
-ann_weights[5772] = 13 ;
-ann_weights[5773] = 206 ;
-ann_weights[5774] = 15 ;
-ann_weights[5775] = 150 ;
-ann_weights[5776] = 19 ;
-ann_weights[5777] = 1048813 ;
-ann_weights[5778] = 1048598 ;
-ann_weights[5779] = 1048747 ;
-ann_weights[5780] = 1048748 ;
-ann_weights[5781] = 341 ;
-ann_weights[5782] = 103 ;
-ann_weights[5783] = 241 ;
-ann_weights[5784] = 1048590 ;
-ann_weights[5785] = 30 ;
-ann_weights[5786] = 210 ;
-ann_weights[5787] = 1049075 ;
-ann_weights[5788] = 1048580 ;
-ann_weights[5789] = 1048791 ;
-ann_weights[5790] = 1048708 ;
-ann_weights[5791] = 178 ;
-ann_weights[5792] = 166 ;
-ann_weights[5793] = 60 ;
-ann_weights[5794] = 1048833 ;
-ann_weights[5795] = 15 ;
-ann_weights[5796] = 62 ;
-ann_weights[5797] = 1049000 ;
-ann_weights[5798] = 18 ;
-ann_weights[5799] = 1048623 ;
-ann_weights[5800] = 1048679 ;
-ann_weights[5801] = 91 ;
-ann_weights[5802] = 110 ;
-ann_weights[5803] = 178 ;
-ann_weights[5804] = 1048775 ;
-ann_weights[5805] = 62 ;
-ann_weights[5806] = 1048582 ;
-ann_weights[5807] = 1049154 ;
-ann_weights[5808] = 98 ;
-ann_weights[5809] = 1048753 ;
-ann_weights[5810] = 2 ;
-ann_weights[5811] = 15 ;
-ann_weights[5812] = 141 ;
-ann_weights[5813] = 37 ;
-ann_weights[5814] = 1048726 ;
-ann_weights[5815] = 8 ;
-ann_weights[5816] = 18 ;
-ann_weights[5817] = 1049024 ;
-ann_weights[5818] = 33 ;
-ann_weights[5819] = 1048920 ;
-ann_weights[5820] = 19 ;
-ann_weights[5821] = 1048716 ;
-ann_weights[5822] = 154 ;
-ann_weights[5823] = 1048679 ;
-ann_weights[5824] = 1048956 ;
-ann_weights[5825] = 298 ;
-ann_weights[5826] = 1048682 ;
-ann_weights[5827] = 1049235 ;
-ann_weights[5828] = 83 ;
-ann_weights[5829] = 1048878 ;
-ann_weights[5830] = 1048721 ;
-ann_weights[5831] = 1048718 ;
-ann_weights[5832] = 175 ;
-ann_weights[5833] = 1048677 ;
-ann_weights[5834] = 1049040 ;
-ann_weights[5835] = 170 ;
-ann_weights[5836] = 1048728 ;
-ann_weights[5837] = 1049211 ;
-ann_weights[5838] = 126 ;
-ann_weights[5839] = 1048815 ;
-ann_weights[5840] = 1048721 ;
-ann_weights[5841] = 36 ;
-ann_weights[5842] = 220 ;
-ann_weights[5843] = 1048864 ;
-ann_weights[5844] = 1048932 ;
-ann_weights[5845] = 49 ;
-ann_weights[5846] = 1048860 ;
-ann_weights[5847] = 1048776 ;
-ann_weights[5848] = 1048814 ;
-ann_weights[5849] = 106 ;
-ann_weights[5850] = 1049000 ;
-ann_weights[5851] = 118 ;
-ann_weights[5852] = 338 ;
-ann_weights[5853] = 1049330 ;
-ann_weights[5854] = 1049040 ;
-ann_weights[5855] = 76 ;
-ann_weights[5856] = 1048764 ;
-ann_weights[5857] = 1048998 ;
-ann_weights[5858] = 1049285 ;
-ann_weights[5859] = 157 ;
-ann_weights[5860] = 1048743 ;
-ann_weights[5861] = 136 ;
-ann_weights[5862] = 117 ;
-ann_weights[5863] = 1048633 ;
-ann_weights[5864] = 1048885 ;
-ann_weights[5865] = 1048916 ;
-ann_weights[5866] = 1048840 ;
-ann_weights[5867] = 1048635 ;
-ann_weights[5868] = 1048935 ;
-ann_weights[5869] = 1048760 ;
-ann_weights[5870] = 1048698 ;
-ann_weights[5871] = 109 ;
-ann_weights[5872] = 1048634 ;
-ann_weights[5873] = 1048734 ;
-ann_weights[5874] = 1048758 ;
-ann_weights[5875] = 130 ;
-ann_weights[5876] = 14 ;
-ann_weights[5877] = 1048620 ;
-ann_weights[5878] = 1048799 ;
-ann_weights[5879] = 1048615 ;
-ann_weights[5880] = 59 ;
-ann_weights[5881] = 145 ;
-ann_weights[5882] = 1048651 ;
-ann_weights[5883] = 1048653 ;
-ann_weights[5884] = 56 ;
-ann_weights[5885] = 9 ;
-ann_weights[5886] = 47 ;
-ann_weights[5887] = 1048706 ;
-ann_weights[5888] = 1048614 ;
-ann_weights[5889] = 31 ;
-ann_weights[5890] = 1048738 ;
-ann_weights[5891] = 93 ;
-ann_weights[5892] = 33 ;
-ann_weights[5893] = 42 ;
-ann_weights[5894] = 1048653 ;
-ann_weights[5895] = 1048707 ;
-ann_weights[5896] = 1048696 ;
-ann_weights[5897] = 1048873 ;
-ann_weights[5898] = 1048699 ;
-ann_weights[5899] = 1048790 ;
-ann_weights[5900] = 1048686 ;
-ann_weights[5901] = 1048624 ;
-ann_weights[5902] = 25 ;
-ann_weights[5903] = 180 ;
-ann_weights[5904] = 1048623 ;
-ann_weights[5905] = 1048867 ;
-ann_weights[5906] = 1048826 ;
-ann_weights[5907] = 1048974 ;
-ann_weights[5908] = 1048984 ;
-ann_weights[5909] = 1048920 ;
-ann_weights[5910] = 1048684 ;
-ann_weights[5911] = 1048632 ;
-ann_weights[5912] = 143 ;
-ann_weights[5913] = 265 ;
-ann_weights[5914] = 1048861 ;
-ann_weights[5915] = 1048599 ;
-ann_weights[5916] = 1048909 ;
-ann_weights[5917] = 1049149 ;
-ann_weights[5918] = 1049087 ;
-ann_weights[5919] = 1049082 ;
-ann_weights[5920] = 1048744 ;
-ann_weights[5921] = 49 ;
-ann_weights[5922] = 60 ;
-ann_weights[5923] = 179 ;
-ann_weights[5924] = 1049019 ;
-ann_weights[5925] = 110 ;
-ann_weights[5926] = 1049228 ;
-ann_weights[5927] = 1049003 ;
-ann_weights[5928] = 1048853 ;
-ann_weights[5929] = 1048898 ;
-ann_weights[5930] = 1048577 ;
-ann_weights[5931] = 200 ;
-ann_weights[5932] = 37 ;
-ann_weights[5933] = 24 ;
-ann_weights[5934] = 1048768 ;
-ann_weights[5935] = 1048644 ;
-ann_weights[5936] = 1049202 ;
-ann_weights[5937] = 1048910 ;
-ann_weights[5938] = 1048622 ;
-ann_weights[5939] = 1048619 ;
-ann_weights[5940] = 92 ;
-ann_weights[5941] = 244 ;
-ann_weights[5942] = 72 ;
-ann_weights[5943] = 110 ;
-ann_weights[5944] = 1049135 ;
-ann_weights[5945] = 6 ;
-ann_weights[5946] = 1049084 ;
-ann_weights[5947] = 1048982 ;
-ann_weights[5948] = 99 ;
-ann_weights[5949] = 1048805 ;
-ann_weights[5950] = 1048595 ;
-ann_weights[5951] = 49 ;
-ann_weights[5952] = 114 ;
-ann_weights[5953] = 35 ;
-ann_weights[5954] = 1049177 ;
-ann_weights[5955] = 24 ;
-ann_weights[5956] = 1048680 ;
-ann_weights[5957] = 1048909 ;
-ann_weights[5958] = 91 ;
-ann_weights[5959] = 1048815 ;
-ann_weights[5960] = 41 ;
-ann_weights[5961] = 39 ;
-ann_weights[5962] = 33 ;
-ann_weights[5963] = 78 ;
-ann_weights[5964] = 1048908 ;
-ann_weights[5965] = 114 ;
-ann_weights[5966] = 1048613 ;
-ann_weights[5967] = 1048743 ;
-ann_weights[5968] = 8 ;
-ann_weights[5969] = 1048810 ;
-ann_weights[5970] = 30 ;
-ann_weights[5971] = 15 ;
-ann_weights[5972] = 194 ;
-ann_weights[5973] = 1048626 ;
-ann_weights[5974] = 1048731 ;
-ann_weights[5975] = 101 ;
-ann_weights[5976] = 1048606 ;
-ann_weights[5977] = 1048762 ;
-ann_weights[5978] = 1048576 ;
-ann_weights[5979] = 1048718 ;
-ann_weights[5980] = 153 ;
-ann_weights[5981] = 173 ;
-ann_weights[5982] = 153 ;
-ann_weights[5983] = 1048642 ;
-ann_weights[5984] = 1048843 ;
-ann_weights[5985] = 121 ;
-ann_weights[5986] = 174 ;
-ann_weights[5987] = 1048718 ;
-ann_weights[5988] = 1048601 ;
-ann_weights[5989] = 1048832 ;
-ann_weights[5990] = 271 ;
-ann_weights[5991] = 1048686 ;
-ann_weights[5992] = 162 ;
-ann_weights[5993] = 1048681 ;
-ann_weights[5994] = 1048705 ;
-ann_weights[5995] = 70 ;
-ann_weights[5996] = 273 ;
-ann_weights[5997] = 1048700 ;
-ann_weights[5998] = 1048652 ;
-ann_weights[5999] = 1048894 ;
-ann_weights[6000] = 275 ;
-ann_weights[6001] = 1048773 ;
-ann_weights[6002] = 82 ;
-ann_weights[6003] = 1048672 ;
-ann_weights[6004] = 1048829 ;
-ann_weights[6005] = 59 ;
-ann_weights[6006] = 357 ;
-ann_weights[6007] = 1048577 ;
-ann_weights[6008] = 1048609 ;
-ann_weights[6009] = 1048830 ;
-ann_weights[6010] = 16 ;
-ann_weights[6011] = 1048716 ;
-ann_weights[6012] = 64 ;
-ann_weights[6013] = 1048699 ;
-ann_weights[6014] = 1048802 ;
-ann_weights[6015] = 70 ;
-ann_weights[6016] = 377 ;
-ann_weights[6017] = 1048705 ;
-ann_weights[6018] = 45 ;
-ann_weights[6019] = 1048850 ;
-ann_weights[6020] = 77 ;
-ann_weights[6021] = 1048654 ;
-ann_weights[6022] = 1048617 ;
-ann_weights[6023] = 1048612 ;
-ann_weights[6024] = 1048748 ;
-ann_weights[6025] = 35 ;
-ann_weights[6026] = 392 ;
-ann_weights[6027] = 1048616 ;
-ann_weights[6028] = 1048588 ;
-ann_weights[6029] = 1048753 ;
-ann_weights[6030] = 49 ;
-ann_weights[6031] = 41 ;
-ann_weights[6032] = 1048680 ;
-ann_weights[6033] = 20 ;
-ann_weights[6034] = 1048672 ;
-ann_weights[6035] = 78 ;
-ann_weights[6036] = 268 ;
-ann_weights[6037] = 1048634 ;
-ann_weights[6038] = 1048611 ;
-ann_weights[6039] = 1048698 ;
-ann_weights[6040] = 1048583 ;
-ann_weights[6041] = 16 ;
-ann_weights[6042] = 18 ;
-ann_weights[6043] = 43 ;
-ann_weights[6044] = 1048709 ;
-ann_weights[6045] = 25 ;
-ann_weights[6046] = 159 ;
-ann_weights[6047] = 1048775 ;
-ann_weights[6048] = 1048643 ;
-ann_weights[6049] = 1048696 ;
-ann_weights[6050] = 1048705 ;
-ann_weights[6051] = 205 ;
-ann_weights[6052] = 118 ;
-ann_weights[6053] = 79 ;
-ann_weights[6054] = 1048596 ;
-ann_weights[6055] = 119 ;
-ann_weights[6056] = 252 ;
-ann_weights[6057] = 1048854 ;
-ann_weights[6058] = 1048597 ;
-ann_weights[6059] = 1048761 ;
-ann_weights[6060] = 1048822 ;
-ann_weights[6061] = 207 ;
-ann_weights[6062] = 207 ;
-ann_weights[6063] = 148 ;
-ann_weights[6064] = 1048724 ;
-ann_weights[6065] = 1048586 ;
-ann_weights[6066] = 150 ;
-ann_weights[6067] = 1048976 ;
-ann_weights[6068] = 1048578 ;
-ann_weights[6069] = 1048799 ;
-ann_weights[6070] = 1048830 ;
-ann_weights[6071] = 229 ;
-ann_weights[6072] = 300 ;
-ann_weights[6073] = 228 ;
-ann_weights[6074] = 1048631 ;
-ann_weights[6075] = 59 ;
-ann_weights[6076] = 126 ;
-ann_weights[6077] = 1049001 ;
-ann_weights[6078] = 1048703 ;
-ann_weights[6079] = 1048828 ;
-ann_weights[6080] = 1048670 ;
-ann_weights[6081] = 185 ;
-ann_weights[6082] = 87 ;
-ann_weights[6083] = 1 ;
-ann_weights[6084] = 1048691 ;
-ann_weights[6085] = 97 ;
-ann_weights[6086] = 6 ;
-ann_weights[6087] = 1049002 ;
-ann_weights[6088] = 24 ;
-ann_weights[6089] = 1048746 ;
-ann_weights[6090] = 1048635 ;
-ann_weights[6091] = 162 ;
-ann_weights[6092] = 108 ;
-ann_weights[6093] = 1048727 ;
-ann_weights[6094] = 1048579 ;
-ann_weights[6095] = 136 ;
-ann_weights[6096] = 1048760 ;
-ann_weights[6097] = 1049083 ;
-ann_weights[6098] = 1048610 ;
-ann_weights[6099] = 1048750 ;
-ann_weights[6100] = 1048691 ;
-ann_weights[6101] = 1048851 ;
-ann_weights[6102] = 142 ;
-ann_weights[6103] = 1048682 ;
-ann_weights[6104] = 1048702 ;
-ann_weights[6105] = 252 ;
-ann_weights[6106] = 1048731 ;
-ann_weights[6107] = 1049148 ;
-ann_weights[6108] = 44 ;
-ann_weights[6109] = 1048806 ;
-ann_weights[6110] = 1048671 ;
-ann_weights[6111] = 1048761 ;
-ann_weights[6112] = 324 ;
-ann_weights[6113] = 1048849 ;
-ann_weights[6114] = 1048682 ;
-ann_weights[6115] = 132 ;
-ann_weights[6116] = 1048717 ;
-ann_weights[6117] = 1049227 ;
-ann_weights[6118] = 1048669 ;
-ann_weights[6119] = 1048721 ;
-ann_weights[6120] = 1048930 ;
-ann_weights[6121] = 13 ;
-ann_weights[6122] = 309 ;
-ann_weights[6123] = 1049060 ;
-ann_weights[6124] = 1048797 ;
-ann_weights[6125] = 115 ;
-ann_weights[6126] = 1048868 ;
-ann_weights[6127] = 1048850 ;
-ann_weights[6128] = 1049106 ;
-ann_weights[6129] = 165 ;
-ann_weights[6130] = 1048897 ;
-ann_weights[6131] = 151 ;
-ann_weights[6132] = 291 ;
-ann_weights[6133] = 1049380 ;
-ann_weights[6134] = 1048942 ;
-ann_weights[6135] = 7 ;
-ann_weights[6136] = 1048836 ;
-ann_weights[6137] = 1048743 ;
-ann_weights[6138] = 1049102 ;
-ann_weights[6139] = 1048611 ;
-ann_weights[6140] = 93 ;
-ann_weights[6141] = 1048639 ;
-ann_weights[6142] = 201 ;
-ann_weights[6143] = 1048697 ;
-ann_weights[6144] = 1048843 ;
-ann_weights[6145] = 19 ;
-ann_weights[6146] = 1048613 ;
-ann_weights[6147] = 1048856 ;
-ann_weights[6148] = 1048971 ;
-ann_weights[6149] = 1048714 ;
-ann_weights[6150] = 123 ;
-ann_weights[6151] = 1048647 ;
-ann_weights[6152] = 1048607 ;
-ann_weights[6153] = 1048581 ;
-ann_weights[6154] = 37 ;
-ann_weights[6155] = 1048657 ;
-ann_weights[6156] = 43 ;
-ann_weights[6157] = 60 ;
-ann_weights[6158] = 11 ;
-ann_weights[6159] = 36 ;
-ann_weights[6160] = 1048609 ;
-ann_weights[6161] = 153 ;
-ann_weights[6162] = 1048738 ;
-ann_weights[6163] = 1048706 ;
-ann_weights[6164] = 1048582 ;
-ann_weights[6165] = 1048629 ;
-ann_weights[6166] = 1048598 ;
-ann_weights[6167] = 21 ;
-ann_weights[6168] = 1048743 ;
-ann_weights[6169] = 30 ;
-ann_weights[6170] = 1048605 ;
-ann_weights[6171] = 41 ;
-ann_weights[6172] = 1048609 ;
-ann_weights[6173] = 136 ;
-ann_weights[6174] = 4 ;
-ann_weights[6175] = 1048765 ;
-ann_weights[6176] = 34 ;
-ann_weights[6177] = 1048698 ;
-ann_weights[6178] = 1048648 ;
-ann_weights[6179] = 4 ;
-ann_weights[6180] = 1048900 ;
-ann_weights[6181] = 1048693 ;
-ann_weights[6182] = 16 ;
-ann_weights[6183] = 182 ;
-ann_weights[6184] = 1048599 ;
-ann_weights[6185] = 1049102 ;
-ann_weights[6186] = 1048596 ;
-ann_weights[6187] = 1048975 ;
-ann_weights[6188] = 1048897 ;
-ann_weights[6189] = 1048845 ;
-ann_weights[6190] = 1048980 ;
-ann_weights[6191] = 16 ;
-ann_weights[6192] = 68 ;
-ann_weights[6193] = 346 ;
-ann_weights[6194] = 1048877 ;
-ann_weights[6195] = 48 ;
-ann_weights[6196] = 1048889 ;
-ann_weights[6197] = 1049126 ;
-ann_weights[6198] = 1048802 ;
-ann_weights[6199] = 1048836 ;
-ann_weights[6200] = 1048926 ;
-ann_weights[6201] = 179 ;
-ann_weights[6202] = 170 ;
-ann_weights[6203] = 146 ;
-ann_weights[6204] = 1049070 ;
-ann_weights[6205] = 123 ;
-ann_weights[6206] = 1049211 ;
-ann_weights[6207] = 1048914 ;
-ann_weights[6208] = 1048834 ;
-ann_weights[6209] = 1048786 ;
-ann_weights[6210] = 1048738 ;
-ann_weights[6211] = 603 ;
-ann_weights[6212] = 76 ;
-ann_weights[6213] = 88 ;
-ann_weights[6214] = 1049181 ;
-ann_weights[6215] = 1048665 ;
-ann_weights[6216] = 1049261 ;
-ann_weights[6217] = 5 ;
-ann_weights[6218] = 1048828 ;
-ann_weights[6219] = 1048892 ;
-ann_weights[6220] = 71 ;
-ann_weights[6221] = 261 ;
-ann_weights[6222] = 161 ;
-ann_weights[6223] = 60 ;
-ann_weights[6224] = 1049022 ;
-ann_weights[6225] = 1048758 ;
-ann_weights[6226] = 1049507 ;
-ann_weights[6227] = 1048630 ;
-ann_weights[6228] = 1048615 ;
-ann_weights[6229] = 1048783 ;
-ann_weights[6230] = 29 ;
-ann_weights[6231] = 112 ;
-ann_weights[6232] = 191 ;
-ann_weights[6233] = 143 ;
-ann_weights[6234] = 1048903 ;
-ann_weights[6235] = 1048614 ;
-ann_weights[6236] = 1048937 ;
-ann_weights[6237] = 5 ;
-ann_weights[6238] = 84 ;
-ann_weights[6239] = 1048738 ;
-ann_weights[6240] = 32 ;
-ann_weights[6241] = 49 ;
-ann_weights[6242] = 212 ;
-ann_weights[6243] = 1048633 ;
-ann_weights[6244] = 1048770 ;
-ann_weights[6245] = 1048608 ;
-ann_weights[6246] = 1048756 ;
-ann_weights[6247] = 1048686 ;
-ann_weights[6248] = 1048633 ;
-ann_weights[6249] = 1048578 ;
-ann_weights[6250] = 27 ;
-ann_weights[6251] = 72 ;
-ann_weights[6252] = 247 ;
-ann_weights[6253] = 39 ;
-ann_weights[6254] = 1048874 ;
-ann_weights[6255] = 1048579 ;
-ann_weights[6256] = 1048583 ;
-ann_weights[6257] = 1048699 ;
-ann_weights[6258] = 1048643 ;
-ann_weights[6259] = 1048592 ;
-ann_weights[6260] = 110 ;
-ann_weights[6261] = 1048683 ;
-ann_weights[6262] = 86 ;
-ann_weights[6263] = 1048610 ;
-ann_weights[6264] = 1048791 ;
-ann_weights[6265] = 1048606 ;
-ann_weights[6266] = 31 ;
-ann_weights[6267] = 1048672 ;
-ann_weights[6268] = 1048626 ;
-ann_weights[6269] = 1048585 ;
-ann_weights[6270] = 217 ;
-ann_weights[6271] = 1048824 ;
-ann_weights[6272] = 117 ;
-ann_weights[6273] = 62 ;
-ann_weights[6274] = 1048641 ;
-ann_weights[6275] = 80 ;
-ann_weights[6276] = 14 ;
-ann_weights[6277] = 1048645 ;
-ann_weights[6278] = 65 ;
-ann_weights[6279] = 1048609 ;
-ann_weights[6280] = 166 ;
-ann_weights[6281] = 1048983 ;
-ann_weights[6282] = 32 ;
-ann_weights[6283] = 1048633 ;
-ann_weights[6284] = 1048777 ;
-ann_weights[6285] = 189 ;
-ann_weights[6286] = 144 ;
-ann_weights[6287] = 1048674 ;
-ann_weights[6288] = 88 ;
-ann_weights[6289] = 1048646 ;
-ann_weights[6290] = 257 ;
-ann_weights[6291] = 1048944 ;
-ann_weights[6292] = 1048615 ;
-ann_weights[6293] = 1048605 ;
-ann_weights[6294] = 1048753 ;
-ann_weights[6295] = 118 ;
-ann_weights[6296] = 79 ;
-ann_weights[6297] = 1048785 ;
-ann_weights[6298] = 173 ;
-ann_weights[6299] = 1048711 ;
-ann_weights[6300] = 103 ;
-ann_weights[6301] = 1048660 ;
-ann_weights[6302] = 1048659 ;
-ann_weights[6303] = 1048648 ;
-ann_weights[6304] = 1048696 ;
-ann_weights[6305] = 112 ;
-ann_weights[6306] = 97 ;
-ann_weights[6307] = 1048744 ;
-ann_weights[6308] = 160 ;
-ann_weights[6309] = 1048649 ;
-ann_weights[6310] = 35 ;
-ann_weights[6311] = 21 ;
-ann_weights[6312] = 1048736 ;
-ann_weights[6313] = 86 ;
-ann_weights[6314] = 1048670 ;
-ann_weights[6315] = 61 ;
-ann_weights[6316] = 90 ;
-ann_weights[6317] = 33 ;
-ann_weights[6318] = 41 ;
-ann_weights[6319] = 1048824 ;
-ann_weights[6320] = 1048631 ;
-ann_weights[6321] = 23 ;
-ann_weights[6322] = 15 ;
-ann_weights[6323] = 50 ;
-ann_weights[6324] = 1048629 ;
-ann_weights[6325] = 71 ;
-ann_weights[6326] = 67 ;
-ann_weights[6327] = 1048698 ;
-ann_weights[6328] = 1048628 ;
-ann_weights[6329] = 1048755 ;
-ann_weights[6330] = 1048589 ;
-ann_weights[6331] = 178 ;
-ann_weights[6332] = 5 ;
-ann_weights[6333] = 74 ;
-ann_weights[6334] = 40 ;
-ann_weights[6335] = 33 ;
-ann_weights[6336] = 1048625 ;
-ann_weights[6337] = 1048730 ;
-ann_weights[6338] = 1048626 ;
-ann_weights[6339] = 1048811 ;
-ann_weights[6340] = 1048657 ;
-ann_weights[6341] = 195 ;
-ann_weights[6342] = 122 ;
-ann_weights[6343] = 21 ;
-ann_weights[6344] = 1048579 ;
-ann_weights[6345] = 56 ;
-ann_weights[6346] = 1048623 ;
-ann_weights[6347] = 1048836 ;
-ann_weights[6348] = 38 ;
-ann_weights[6349] = 1048841 ;
-ann_weights[6350] = 1048701 ;
-ann_weights[6351] = 175 ;
-ann_weights[6352] = 169 ;
-ann_weights[6353] = 73 ;
-ann_weights[6354] = 89 ;
-ann_weights[6355] = 121 ;
-ann_weights[6356] = 1048632 ;
-ann_weights[6357] = 1048846 ;
-ann_weights[6358] = 22 ;
-ann_weights[6359] = 1048908 ;
-ann_weights[6360] = 1048778 ;
-ann_weights[6361] = 196 ;
-ann_weights[6362] = 204 ;
-ann_weights[6363] = 107 ;
-ann_weights[6364] = 39 ;
-ann_weights[6365] = 76 ;
-ann_weights[6366] = 1048598 ;
-ann_weights[6367] = 1048942 ;
-ann_weights[6368] = 1048677 ;
-ann_weights[6369] = 1048666 ;
-ann_weights[6370] = 1048643 ;
-ann_weights[6371] = 1048634 ;
-ann_weights[6372] = 245 ;
-ann_weights[6373] = 1048688 ;
-ann_weights[6374] = 200 ;
-ann_weights[6375] = 88 ;
-ann_weights[6376] = 1048583 ;
-ann_weights[6377] = 1049116 ;
-ann_weights[6378] = 96 ;
-ann_weights[6379] = 1048714 ;
-ann_weights[6380] = 10 ;
-ann_weights[6381] = 1048876 ;
-ann_weights[6382] = 167 ;
-ann_weights[6383] = 1048705 ;
-ann_weights[6384] = 1048614 ;
-ann_weights[6385] = 51 ;
-ann_weights[6386] = 1048877 ;
-ann_weights[6387] = 1049155 ;
-ann_weights[6388] = 32 ;
-ann_weights[6389] = 63 ;
-ann_weights[6390] = 1048629 ;
-ann_weights[6391] = 1048757 ;
-ann_weights[6392] = 151 ;
-ann_weights[6393] = 1048823 ;
-ann_weights[6394] = 1048623 ;
-ann_weights[6395] = 257 ;
-ann_weights[6396] = 1049096 ;
-ann_weights[6397] = 1049189 ;
-ann_weights[6398] = 1048671 ;
-ann_weights[6399] = 144 ;
-ann_weights[6400] = 1048779 ;
-ann_weights[6401] = 1 ;
-ann_weights[6402] = 212 ;
-ann_weights[6403] = 1049126 ;
-ann_weights[6404] = 1048688 ;
-ann_weights[6405] = 80 ;
-ann_weights[6406] = 1049056 ;
-ann_weights[6407] = 1048872 ;
-ann_weights[6408] = 1048778 ;
-ann_weights[6409] = 279 ;
-ann_weights[6410] = 1048673 ;
-ann_weights[6411] = 180 ;
-ann_weights[6412] = 190 ;
-ann_weights[6413] = 1048919 ;
-ann_weights[6414] = 1048769 ;
-ann_weights[6415] = 88 ;
-ann_weights[6416] = 1048838 ;
-ann_weights[6417] = 1048727 ;
-ann_weights[6418] = 1048865 ;
-ann_weights[6419] = 1048583 ;
-ann_weights[6420] = 196 ;
-ann_weights[6421] = 227 ;
-ann_weights[6422] = 1048677 ;
-ann_weights[6423] = 1048654 ;
-ann_weights[6424] = 155 ;
-ann_weights[6425] = 74 ;
-ann_weights[6426] = 28 ;
-ann_weights[6427] = 1048811 ;
-ann_weights[6428] = 1048861 ;
-ann_weights[6429] = 1048812 ;
-ann_weights[6430] = 1048589 ;
-ann_weights[6431] = 1048663 ;
-ann_weights[6432] = 1048664 ;
-ann_weights[6433] = 1048631 ;
-ann_weights[6434] = 1048644 ;
-ann_weights[6435] = 1048690 ;
-ann_weights[6436] = 1048587 ;
-ann_weights[6437] = 50 ;
-ann_weights[6438] = 1048659 ;
-ann_weights[6439] = 1048660 ;
-ann_weights[6440] = 35 ;
-ann_weights[6441] = 42 ;
-ann_weights[6442] = 67 ;
-ann_weights[6443] = 1048615 ;
-ann_weights[6444] = 28 ;
-ann_weights[6445] = 1048628 ;
-ann_weights[6446] = 1048620 ;
-ann_weights[6447] = 30 ;
-ann_weights[6448] = 1048596 ;
-ann_weights[6449] = 45 ;
-ann_weights[6450] = 1048654 ;
-ann_weights[6451] = 1048643 ;
-ann_weights[6452] = 1048581 ;
-ann_weights[6453] = 1048638 ;
-ann_weights[6454] = 1048607 ;
-ann_weights[6455] = 1048611 ;
-ann_weights[6456] = 1048619 ;
-ann_weights[6457] = 68 ;
-ann_weights[6458] = 37 ;
-ann_weights[6459] = 1048620 ;
-ann_weights[6460] = 1048762 ;
-ann_weights[6461] = 1048823 ;
-ann_weights[6462] = 1048725 ;
-ann_weights[6463] = 377 ;
-ann_weights[6464] = 1048615 ;
-ann_weights[6465] = 1048686 ;
-ann_weights[6466] = 1048618 ;
-ann_weights[6467] = 1048882 ;
-ann_weights[6468] = 1048830 ;
-ann_weights[6469] = 1048925 ;
-ann_weights[6470] = 1048930 ;
-ann_weights[6471] = 1048849 ;
-ann_weights[6472] = 1048749 ;
-ann_weights[6473] = 527 ;
-ann_weights[6474] = 1048835 ;
-ann_weights[6475] = 143 ;
-ann_weights[6476] = 1048702 ;
-ann_weights[6477] = 1048997 ;
-ann_weights[6478] = 1048721 ;
-ann_weights[6479] = 1048799 ;
-ann_weights[6480] = 1049047 ;
-ann_weights[6481] = 1048718 ;
-ann_weights[6482] = 1048677 ;
-ann_weights[6483] = 363 ;
-ann_weights[6484] = 1049034 ;
-ann_weights[6485] = 218 ;
-ann_weights[6486] = 1048937 ;
-ann_weights[6487] = 121 ;
-ann_weights[6488] = 1048921 ;
-ann_weights[6489] = 1048889 ;
-ann_weights[6490] = 1048820 ;
-ann_weights[6491] = 318 ;
-ann_weights[6492] = 1048647 ;
-ann_weights[6493] = 144 ;
-ann_weights[6494] = 1048991 ;
-ann_weights[6495] = 81 ;
-ann_weights[6496] = 1049114 ;
-ann_weights[6497] = 200 ;
-ann_weights[6498] = 1048992 ;
-ann_weights[6499] = 1048778 ;
-ann_weights[6500] = 1048609 ;
-ann_weights[6501] = 297 ;
-ann_weights[6502] = 128 ;
-ann_weights[6503] = 271 ;
-ann_weights[6504] = 1048783 ;
-ann_weights[6505] = 1048697 ;
-ann_weights[6506] = 1049284 ;
-ann_weights[6507] = 218 ;
-ann_weights[6508] = 1048848 ;
-ann_weights[6509] = 1048723 ;
-ann_weights[6510] = 2 ;
-ann_weights[6511] = 5 ;
-ann_weights[6512] = 14 ;
-ann_weights[6513] = 239 ;
-ann_weights[6514] = 1048651 ;
-ann_weights[6515] = 1048672 ;
-ann_weights[6516] = 1049202 ;
-ann_weights[6517] = 185 ;
-ann_weights[6518] = 1048692 ;
-ann_weights[6519] = 1048721 ;
-ann_weights[6520] = 1048584 ;
-ann_weights[6521] = 1048683 ;
-ann_weights[6522] = 50 ;
-ann_weights[6523] = 1048623 ;
-ann_weights[6524] = 1048667 ;
-ann_weights[6525] = 1048579 ;
-ann_weights[6526] = 1049081 ;
-ann_weights[6527] = 1048634 ;
-ann_weights[6528] = 1048594 ;
-ann_weights[6529] = 32 ;
-ann_weights[6530] = 202 ;
-ann_weights[6531] = 1048585 ;
-ann_weights[6532] = 94 ;
-ann_weights[6533] = 106 ;
-ann_weights[6534] = 1048601 ;
-ann_weights[6535] = 173 ;
-ann_weights[6536] = 1048968 ;
-ann_weights[6537] = 1048613 ;
-ann_weights[6538] = 31 ;
-ann_weights[6539] = 1048726 ;
-ann_weights[6540] = 229 ;
-ann_weights[6541] = 1048687 ;
-ann_weights[6542] = 29 ;
-ann_weights[6543] = 136 ;
-ann_weights[6544] = 1048672 ;
-ann_weights[6545] = 111 ;
-ann_weights[6546] = 1048994 ;
-ann_weights[6547] = 1048719 ;
-ann_weights[6548] = 1048632 ;
-ann_weights[6549] = 1048685 ;
-ann_weights[6550] = 310 ;
-ann_weights[6551] = 1048792 ;
-ann_weights[6552] = 28 ;
-ann_weights[6553] = 129 ;
-ann_weights[6554] = 11 ;
-ann_weights[6555] = 155 ;
-ann_weights[6556] = 1048886 ;
-ann_weights[6557] = 1048669 ;
-ann_weights[6558] = 104 ;
-ann_weights[6559] = 1048614 ;
-ann_weights[6560] = 202 ;
-ann_weights[6561] = 1048682 ;
-ann_weights[6562] = 19 ;
-ann_weights[6563] = 1048580 ;
-ann_weights[6564] = 1048771 ;
-ann_weights[6565] = 177 ;
-ann_weights[6566] = 1048743 ;
-ann_weights[6567] = 1048766 ;
-ann_weights[6568] = 219 ;
-ann_weights[6569] = 1048675 ;
-ann_weights[6570] = 283 ;
-ann_weights[6571] = 1048769 ;
-ann_weights[6572] = 1048640 ;
-ann_weights[6573] = 1048591 ;
-ann_weights[6574] = 1048749 ;
-ann_weights[6575] = 1048609 ;
-ann_weights[6576] = 1048737 ;
-ann_weights[6577] = 1048752 ;
-ann_weights[6578] = 247 ;
-ann_weights[6579] = 1048744 ;
-ann_weights[6580] = 107 ;
-ann_weights[6581] = 1048713 ;
-ann_weights[6582] = 1048678 ;
-ann_weights[6583] = 1048577 ;
-ann_weights[6584] = 1048668 ;
-ann_weights[6585] = 130 ;
-ann_weights[6586] = 1048633 ;
-ann_weights[6587] = 1048634 ;
-ann_weights[6588] = 144 ;
-ann_weights[6589] = 1048713 ;
-ann_weights[6590] = 117 ;
-ann_weights[6591] = 49 ;
-ann_weights[6592] = 1048619 ;
-ann_weights[6593] = 1048655 ;
-ann_weights[6594] = 1048612 ;
-ann_weights[6595] = 98 ;
-ann_weights[6596] = 1048645 ;
-ann_weights[6597] = 1048619 ;
-ann_weights[6598] = 270 ;
-ann_weights[6599] = 1048675 ;
-ann_weights[6600] = 27 ;
-ann_weights[6601] = 74 ;
-ann_weights[6602] = 1048657 ;
-ann_weights[6603] = 1048641 ;
-ann_weights[6604] = 1048618 ;
-ann_weights[6605] = 78 ;
-ann_weights[6606] = 1048690 ;
-ann_weights[6607] = 1048644 ;
-ann_weights[6608] = 179 ;
-ann_weights[6609] = 1048755 ;
-ann_weights[6610] = 16 ;
-ann_weights[6611] = 304 ;
-ann_weights[6612] = 1048597 ;
-ann_weights[6613] = 23 ;
-ann_weights[6614] = 58 ;
-ann_weights[6615] = 61 ;
-ann_weights[6616] = 1048744 ;
-ann_weights[6617] = 1048788 ;
-ann_weights[6618] = 58 ;
-ann_weights[6619] = 1048654 ;
-ann_weights[6620] = 1048824 ;
-ann_weights[6621] = 128 ;
-ann_weights[6622] = 242 ;
-ann_weights[6623] = 153 ;
-ann_weights[6624] = 142 ;
-ann_weights[6625] = 1048670 ;
-ann_weights[6626] = 1048634 ;
-ann_weights[6627] = 1048798 ;
-ann_weights[6628] = 83 ;
-ann_weights[6629] = 1048692 ;
-ann_weights[6630] = 1048820 ;
-ann_weights[6631] = 96 ;
-ann_weights[6632] = 262 ;
-ann_weights[6633] = 1048577 ;
-ann_weights[6634] = 171 ;
-ann_weights[6635] = 1048660 ;
-ann_weights[6636] = 1048638 ;
-ann_weights[6637] = 1048914 ;
-ann_weights[6638] = 50 ;
-ann_weights[6639] = 1048591 ;
-ann_weights[6640] = 1048875 ;
-ann_weights[6641] = 1048678 ;
-ann_weights[6642] = 173 ;
-ann_weights[6643] = 1048597 ;
-ann_weights[6644] = 168 ;
-ann_weights[6645] = 114 ;
-ann_weights[6646] = 1048650 ;
-ann_weights[6647] = 1048980 ;
-ann_weights[6648] = 80 ;
-ann_weights[6649] = 1048601 ;
-ann_weights[6650] = 1048903 ;
-ann_weights[6651] = 1048835 ;
-ann_weights[6652] = 258 ;
-ann_weights[6653] = 1048754 ;
-ann_weights[6654] = 65 ;
-ann_weights[6655] = 1048607 ;
-ann_weights[6656] = 1048799 ;
-ann_weights[6657] = 1049161 ;
-ann_weights[6658] = 64 ;
-ann_weights[6659] = 66 ;
-ann_weights[6660] = 1048765 ;
-ann_weights[6661] = 1048839 ;
-ann_weights[6662] = 242 ;
-ann_weights[6663] = 1048780 ;
-ann_weights[6664] = 1048759 ;
-ann_weights[6665] = 6 ;
-ann_weights[6666] = 1048946 ;
-ann_weights[6667] = 1048964 ;
-ann_weights[6668] = 1048598 ;
-ann_weights[6669] = 233 ;
-ann_weights[6670] = 1048951 ;
-ann_weights[6671] = 1049051 ;
-ann_weights[6672] = 160 ;
-ann_weights[6673] = 1048916 ;
-ann_weights[6674] = 1048746 ;
-ann_weights[6675] = 169 ;
-ann_weights[6676] = 1049084 ;
-ann_weights[6677] = 1049236 ;
-ann_weights[6678] = 25 ;
-ann_weights[6679] = 148 ;
-ann_weights[6680] = 1048847 ;
-ann_weights[6681] = 1048864 ;
-ann_weights[6682] = 274 ;
-ann_weights[6683] = 1048791 ;
-ann_weights[6684] = 1048865 ;
-ann_weights[6685] = 30 ;
-ann_weights[6686] = 1049144 ;
-ann_weights[6687] = 1048952 ;
-ann_weights[6688] = 1048893 ;
-ann_weights[6689] = 116 ;
-ann_weights[6690] = 1048763 ;
-ann_weights[6691] = 1048613 ;
-ann_weights[6692] = 80 ;
-ann_weights[6693] = 1048825 ;
-ann_weights[6694] = 17 ;
-ann_weights[6695] = 55 ;
-ann_weights[6696] = 1048792 ;
-ann_weights[6697] = 1048911 ;
-ann_weights[6698] = 1048803 ;
-ann_weights[6699] = 1048679 ;
-ann_weights[6700] = 1048710 ;
-ann_weights[6701] = 137 ;
-ann_weights[6702] = 1048780 ;
-ann_weights[6703] = 29 ;
-ann_weights[6704] = 146 ;
-ann_weights[6705] = 47 ;
-ann_weights[6706] = 1048777 ;
-ann_weights[6707] = 1048758 ;
-ann_weights[6708] = 1048779 ;
-ann_weights[6709] = 1048759 ;
-ann_weights[6710] = 1048611 ;
-ann_weights[6711] = 1048655 ;
-ann_weights[6712] = 12 ;
-ann_weights[6713] = 1048630 ;
-ann_weights[6714] = 23 ;
-ann_weights[6715] = 60 ;
-ann_weights[6716] = 25 ;
-ann_weights[6717] = 1048603 ;
-ann_weights[6718] = 56 ;
-ann_weights[6719] = 72 ;
-ann_weights[6720] = 72 ;
-ann_weights[6721] = 87 ;
-ann_weights[6722] = 1048643 ;
-ann_weights[6723] = 1048576 ;
-ann_weights[6724] = 15 ;
-ann_weights[6725] = 15 ;
-ann_weights[6726] = 1048601 ;
-ann_weights[6727] = 27 ;
-ann_weights[6728] = 1048578 ;
-ann_weights[6729] = 33 ;
-ann_weights[6730] = 83 ;
-ann_weights[6731] = 8 ;
-ann_weights[6732] = 37 ;
-ann_weights[6733] = 1048617 ;
-ann_weights[6734] = 1048597 ;
-ann_weights[6735] = 1048608 ;
-ann_weights[6736] = 52 ;
-ann_weights[6737] = 17 ;
-ann_weights[6738] = 47 ;
-ann_weights[6739] = 1048577 ;
-ann_weights[6740] = 1048666 ;
-ann_weights[6741] = 1048605 ;
-ann_weights[6742] = 1048779 ;
-ann_weights[6743] = 82 ;
-ann_weights[6744] = 16 ;
-ann_weights[6745] = 1048809 ;
-ann_weights[6746] = 46 ;
-ann_weights[6747] = 1048631 ;
-ann_weights[6748] = 1048615 ;
-ann_weights[6749] = 1048852 ;
-ann_weights[6750] = 1048738 ;
-ann_weights[6751] = 1048871 ;
-ann_weights[6752] = 1048931 ;
-ann_weights[6753] = 303 ;
-ann_weights[6754] = 1048645 ;
-ann_weights[6755] = 74 ;
-ann_weights[6756] = 1048701 ;
-ann_weights[6757] = 69 ;
-ann_weights[6758] = 1048872 ;
-ann_weights[6759] = 1049040 ;
-ann_weights[6760] = 1048784 ;
-ann_weights[6761] = 1049033 ;
-ann_weights[6762] = 1048972 ;
-ann_weights[6763] = 501 ;
-ann_weights[6764] = 1049072 ;
-ann_weights[6765] = 20 ;
-ann_weights[6766] = 1048685 ;
-ann_weights[6767] = 182 ;
-ann_weights[6768] = 1049189 ;
-ann_weights[6769] = 1048677 ;
-ann_weights[6770] = 1048815 ;
-ann_weights[6771] = 1048673 ;
-ann_weights[6772] = 1049121 ;
-ann_weights[6773] = 252 ;
-ann_weights[6774] = 1048762 ;
-ann_weights[6775] = 28 ;
-ann_weights[6776] = 1048938 ;
-ann_weights[6777] = 488 ;
-ann_weights[6778] = 1049168 ;
-ann_weights[6779] = 1048596 ;
-ann_weights[6780] = 1048922 ;
-ann_weights[6781] = 56 ;
-ann_weights[6782] = 1048962 ;
-ann_weights[6783] = 360 ;
-ann_weights[6784] = 1048645 ;
-ann_weights[6785] = 1048602 ;
-ann_weights[6786] = 1049186 ;
-ann_weights[6787] = 392 ;
-ann_weights[6788] = 1049042 ;
-ann_weights[6789] = 29 ;
-ann_weights[6790] = 1048789 ;
-ann_weights[6791] = 1048751 ;
-ann_weights[6792] = 1048868 ;
-ann_weights[6793] = 385 ;
-ann_weights[6794] = 1048700 ;
-ann_weights[6795] = 21 ;
-ann_weights[6796] = 1049167 ;
-ann_weights[6797] = 332 ;
-ann_weights[6798] = 1048815 ;
-ann_weights[6799] = 166 ;
-ann_weights[6800] = 1048675 ;
-ann_weights[6801] = 1048856 ;
-ann_weights[6802] = 1048837 ;
-ann_weights[6803] = 240 ;
-ann_weights[6804] = 1048645 ;
-ann_weights[6805] = 1048582 ;
-ann_weights[6806] = 1049437 ;
-ann_weights[6807] = 155 ;
-ann_weights[6808] = 42 ;
-ann_weights[6809] = 31 ;
-ann_weights[6810] = 1048614 ;
-ann_weights[6811] = 1048756 ;
-ann_weights[6812] = 1048794 ;
-ann_weights[6813] = 167 ;
-ann_weights[6814] = 1048626 ;
-ann_weights[6815] = 137 ;
-ann_weights[6816] = 1049532 ;
-ann_weights[6817] = 1048592 ;
-ann_weights[6818] = 1048628 ;
-ann_weights[6819] = 1048684 ;
-ann_weights[6820] = 1048682 ;
-ann_weights[6821] = 1048933 ;
-ann_weights[6822] = 1048758 ;
-ann_weights[6823] = 299 ;
-ann_weights[6824] = 1048612 ;
-ann_weights[6825] = 207 ;
-ann_weights[6826] = 1049653 ;
-ann_weights[6827] = 83 ;
-ann_weights[6828] = 80 ;
-ann_weights[6829] = 1048580 ;
-ann_weights[6830] = 1048593 ;
-ann_weights[6831] = 1048863 ;
-ann_weights[6832] = 1048781 ;
-ann_weights[6833] = 215 ;
-ann_weights[6834] = 1048619 ;
-ann_weights[6835] = 95 ;
-ann_weights[6836] = 1049381 ;
-ann_weights[6837] = 73 ;
-ann_weights[6838] = 162 ;
-ann_weights[6839] = 1048674 ;
-ann_weights[6840] = 142 ;
-ann_weights[6841] = 1048848 ;
-ann_weights[6842] = 1048611 ;
-ann_weights[6843] = 161 ;
-ann_weights[6844] = 1048753 ;
-ann_weights[6845] = 125 ;
-ann_weights[6846] = 1049258 ;
-ann_weights[6847] = 1048625 ;
-ann_weights[6848] = 73 ;
-ann_weights[6849] = 1048772 ;
-ann_weights[6850] = 111 ;
-ann_weights[6851] = 1049011 ;
-ann_weights[6852] = 1048644 ;
-ann_weights[6853] = 185 ;
-ann_weights[6854] = 1048743 ;
-ann_weights[6855] = 190 ;
-ann_weights[6856] = 1049265 ;
-ann_weights[6857] = 89 ;
-ann_weights[6858] = 130 ;
-ann_weights[6859] = 1048782 ;
-ann_weights[6860] = 93 ;
-ann_weights[6861] = 1048907 ;
-ann_weights[6862] = 60 ;
-ann_weights[6863] = 162 ;
-ann_weights[6864] = 1048685 ;
-ann_weights[6865] = 211 ;
-ann_weights[6866] = 1049120 ;
-ann_weights[6867] = 93 ;
-ann_weights[6868] = 155 ;
-ann_weights[6869] = 1048768 ;
-ann_weights[6870] = 1048618 ;
-ann_weights[6871] = 1048895 ;
-ann_weights[6872] = 1048681 ;
-ann_weights[6873] = 88 ;
-ann_weights[6874] = 1048674 ;
-ann_weights[6875] = 147 ;
-ann_weights[6876] = 1048991 ;
-ann_weights[6877] = 16 ;
-ann_weights[6878] = 166 ;
-ann_weights[6879] = 1048718 ;
-ann_weights[6880] = 1048753 ;
-ann_weights[6881] = 1049072 ;
-ann_weights[6882] = 1048591 ;
-ann_weights[6883] = 29 ;
-ann_weights[6884] = 1048658 ;
-ann_weights[6885] = 68 ;
-ann_weights[6886] = 1048916 ;
-ann_weights[6887] = 9 ;
-ann_weights[6888] = 240 ;
-ann_weights[6889] = 1048656 ;
-ann_weights[6890] = 1048781 ;
-ann_weights[6891] = 1048632 ;
-ann_weights[6892] = 1048625 ;
-ann_weights[6893] = 154 ;
-ann_weights[6894] = 1048579 ;
-ann_weights[6895] = 135 ;
-ann_weights[6896] = 1048929 ;
-ann_weights[6897] = 1048638 ;
-ann_weights[6898] = 20 ;
-ann_weights[6899] = 72 ;
-ann_weights[6900] = 1048850 ;
-ann_weights[6901] = 1048589 ;
-ann_weights[6902] = 214 ;
-ann_weights[6903] = 1048717 ;
-ann_weights[6904] = 1048607 ;
-ann_weights[6905] = 136 ;
-ann_weights[6906] = 1048999 ;
-ann_weights[6907] = 1048828 ;
-ann_weights[6908] = 137 ;
-ann_weights[6909] = 1048588 ;
-ann_weights[6910] = 1049095 ;
-ann_weights[6911] = 1048588 ;
-ann_weights[6912] = 1048634 ;
-ann_weights[6913] = 1048679 ;
-ann_weights[6914] = 47 ;
-ann_weights[6915] = 50 ;
-ann_weights[6916] = 1049189 ;
-ann_weights[6917] = 1048822 ;
-ann_weights[6918] = 336 ;
-ann_weights[6919] = 11 ;
-ann_weights[6920] = 1049140 ;
-ann_weights[6921] = 1048700 ;
-ann_weights[6922] = 41 ;
-ann_weights[6923] = 1048776 ;
-ann_weights[6924] = 36 ;
-ann_weights[6925] = 1048611 ;
-ann_weights[6926] = 1049124 ;
-ann_weights[6927] = 1048764 ;
-ann_weights[6928] = 44 ;
-ann_weights[6929] = 288 ;
-ann_weights[6930] = 1049096 ;
-ann_weights[6931] = 1048698 ;
-ann_weights[6932] = 115 ;
-ann_weights[6933] = 1048691 ;
-ann_weights[6934] = 18 ;
-ann_weights[6935] = 5 ;
-ann_weights[6936] = 1049398 ;
-ann_weights[6937] = 1048840 ;
-ann_weights[6938] = 1048655 ;
-ann_weights[6939] = 206 ;
-ann_weights[6940] = 1048973 ;
-ann_weights[6941] = 1048864 ;
-ann_weights[6942] = 1048582 ;
-ann_weights[6943] = 1048779 ;
-ann_weights[6944] = 24 ;
-ann_weights[6945] = 173 ;
-ann_weights[6946] = 1049221 ;
-ann_weights[6947] = 1048983 ;
-ann_weights[6948] = 1048779 ;
-ann_weights[6949] = 374 ;
-ann_weights[6950] = 1049093 ;
-ann_weights[6951] = 1048916 ;
-ann_weights[6952] = 119 ;
-ann_weights[6953] = 1048762 ;
-ann_weights[6954] = 1048638 ;
-ann_weights[6955] = 175 ;
-ann_weights[6956] = 1049069 ;
-ann_weights[6957] = 1049318 ;
-ann_weights[6958] = 1048682 ;
-ann_weights[6959] = 335 ;
-ann_weights[6960] = 1048894 ;
-ann_weights[6961] = 1048738 ;
-ann_weights[6962] = 499 ;
-ann_weights[6963] = 1048917 ;
-ann_weights[6964] = 1048990 ;
-ann_weights[6965] = 116 ;
-ann_weights[6966] = 1048760 ;
-ann_weights[6967] = 1048928 ;
-ann_weights[6968] = 1048905 ;
-ann_weights[6969] = 1048712 ;
-ann_weights[6970] = 1048758 ;
-ann_weights[6971] = 149 ;
-ann_weights[6972] = 284 ;
-ann_weights[6973] = 1048803 ;
-ann_weights[6974] = 30 ;
-ann_weights[6975] = 1048971 ;
-ann_weights[6976] = 1048585 ;
-ann_weights[6977] = 1048817 ;
-ann_weights[6978] = 1048902 ;
-ann_weights[6979] = 1048817 ;
-ann_weights[6980] = 28 ;
-ann_weights[6981] = 207 ;
-ann_weights[6982] = 154 ;
-ann_weights[6983] = 1048601 ;
-ann_weights[6984] = 1048602 ;
-ann_weights[6985] = 1048657 ;
-ann_weights[6986] = 1048687 ;
-ann_weights[6987] = 1048607 ;
-ann_weights[6988] = 1048752 ;
-ann_weights[6989] = 1048699 ;
-ann_weights[6990] = 1048662 ;
-ann_weights[6991] = 1048611 ;
-ann_weights[6992] = 72 ;
-ann_weights[6993] = 12 ;
-ann_weights[6994] = 1048605 ;
-ann_weights[6995] = 1048636 ;
-ann_weights[6996] = 49 ;
-ann_weights[6997] = 22 ;
-ann_weights[6998] = 17 ;
-ann_weights[6999] = 1048648 ;
-ann_weights[7000] = 27 ;
-ann_weights[7001] = 1048603 ;
-ann_weights[7002] = 17 ;
-ann_weights[7003] = 34 ;
-ann_weights[7004] = 1048614 ;
-ann_weights[7005] = 88 ;
-ann_weights[7006] = 13 ;
-ann_weights[7007] = 1048601 ;
-ann_weights[7008] = 16 ;
-ann_weights[7009] = 1048654 ;
-ann_weights[7010] = 34 ;
-ann_weights[7011] = 64 ;
-ann_weights[7012] = 1048610 ;
-ann_weights[7013] = 1048650 ;
-ann_weights[7014] = 87 ;
-ann_weights[7015] = 0 ;
-ann_weights[7016] = 45 ;
-ann_weights[7017] = 49 ;
-ann_weights[7018] = 56 ;
-ann_weights[7019] = 1048615 ;
-ann_weights[7020] = 1048667 ;
-ann_weights[7021] = 18 ;
-ann_weights[7022] = 1048744 ;
-ann_weights[7023] = 265 ;
-ann_weights[7024] = 1048793 ;
-ann_weights[7025] = 1048683 ;
-ann_weights[7026] = 1048681 ;
-ann_weights[7027] = 1048836 ;
-ann_weights[7028] = 1048679 ;
-ann_weights[7029] = 31 ;
-ann_weights[7030] = 1048685 ;
-ann_weights[7031] = 1048860 ;
-ann_weights[7032] = 1048861 ;
-ann_weights[7033] = 1048630 ;
-ann_weights[7034] = 1048690 ;
-ann_weights[7035] = 76 ;
-ann_weights[7036] = 2 ;
-ann_weights[7037] = 248 ;
-ann_weights[7038] = 1048747 ;
-ann_weights[7039] = 1049066 ;
-ann_weights[7040] = 1048843 ;
-ann_weights[7041] = 1049014 ;
-ann_weights[7042] = 1048992 ;
-ann_weights[7043] = 1048687 ;
-ann_weights[7044] = 1048694 ;
-ann_weights[7045] = 45 ;
-ann_weights[7046] = 1048769 ;
-ann_weights[7047] = 249 ;
-ann_weights[7048] = 1049141 ;
-ann_weights[7049] = 32 ;
-ann_weights[7050] = 1049012 ;
-ann_weights[7051] = 1049072 ;
-ann_weights[7052] = 1049252 ;
-ann_weights[7053] = 210 ;
-ann_weights[7054] = 1048751 ;
-ann_weights[7055] = 1048674 ;
-ann_weights[7056] = 1048787 ;
-ann_weights[7057] = 235 ;
-ann_weights[7058] = 1049252 ;
-ann_weights[7059] = 402 ;
-ann_weights[7060] = 1049116 ;
-ann_weights[7061] = 1049157 ;
-ann_weights[7062] = 1048957 ;
-ann_weights[7063] = 376 ;
-ann_weights[7064] = 1048835 ;
-ann_weights[7065] = 1048629 ;
-ann_weights[7066] = 1048894 ;
-ann_weights[7067] = 99 ;
-ann_weights[7068] = 1048939 ;
-ann_weights[7069] = 245 ;
-ann_weights[7070] = 1049150 ;
-ann_weights[7071] = 1049238 ;
-ann_weights[7072] = 1049177 ;
-ann_weights[7073] = 470 ;
-ann_weights[7074] = 1049072 ;
-ann_weights[7075] = 1048690 ;
-ann_weights[7076] = 1048910 ;
-ann_weights[7077] = 174 ;
-ann_weights[7078] = 1048966 ;
-ann_weights[7079] = 204 ;
-ann_weights[7080] = 1049203 ;
-ann_weights[7081] = 1049030 ;
-ann_weights[7082] = 1049335 ;
-ann_weights[7083] = 506 ;
-ann_weights[7084] = 1049034 ;
-ann_weights[7085] = 1048734 ;
-ann_weights[7086] = 1048997 ;
-ann_weights[7087] = 289 ;
-ann_weights[7088] = 1049035 ;
-ann_weights[7089] = 174 ;
-ann_weights[7090] = 1049298 ;
-ann_weights[7091] = 1049225 ;
-ann_weights[7092] = 1049551 ;
-ann_weights[7093] = 532 ;
-ann_weights[7094] = 1048970 ;
-ann_weights[7095] = 83 ;
-ann_weights[7096] = 1049057 ;
-ann_weights[7097] = 271 ;
-ann_weights[7098] = 1048825 ;
-ann_weights[7099] = 138 ;
-ann_weights[7100] = 1049375 ;
-ann_weights[7101] = 1049471 ;
-ann_weights[7102] = 1049377 ;
-ann_weights[7103] = 513 ;
-ann_weights[7104] = 1048846 ;
-ann_weights[7105] = 82 ;
-ann_weights[7106] = 1049141 ;
-ann_weights[7107] = 220 ;
-ann_weights[7108] = 1048730 ;
-ann_weights[7109] = 139 ;
-ann_weights[7110] = 1049272 ;
-ann_weights[7111] = 1049587 ;
-ann_weights[7112] = 1049167 ;
-ann_weights[7113] = 389 ;
-ann_weights[7114] = 1048899 ;
-ann_weights[7115] = 45 ;
-ann_weights[7116] = 1048989 ;
-ann_weights[7117] = 269 ;
-ann_weights[7118] = 1048749 ;
-ann_weights[7119] = 73 ;
-ann_weights[7120] = 1049374 ;
-ann_weights[7121] = 1049230 ;
-ann_weights[7122] = 1049040 ;
-ann_weights[7123] = 518 ;
-ann_weights[7124] = 1049078 ;
-ann_weights[7125] = 202 ;
-ann_weights[7126] = 1048825 ;
-ann_weights[7127] = 259 ;
-ann_weights[7128] = 1048719 ;
-ann_weights[7129] = 71 ;
-ann_weights[7130] = 1049345 ;
-ann_weights[7131] = 1049231 ;
-ann_weights[7132] = 1048938 ;
-ann_weights[7133] = 458 ;
-ann_weights[7134] = 1048925 ;
-ann_weights[7135] = 228 ;
-ann_weights[7136] = 1049364 ;
-ann_weights[7137] = 161 ;
-ann_weights[7138] = 1048790 ;
-ann_weights[7139] = 68 ;
-ann_weights[7140] = 1049383 ;
-ann_weights[7141] = 1049172 ;
-ann_weights[7142] = 1048641 ;
-ann_weights[7143] = 174 ;
-ann_weights[7144] = 1048894 ;
-ann_weights[7145] = 97 ;
-ann_weights[7146] = 1049414 ;
-ann_weights[7147] = 154 ;
-ann_weights[7148] = 57 ;
-ann_weights[7149] = 108 ;
-ann_weights[7150] = 1049405 ;
-ann_weights[7151] = 1049207 ;
-ann_weights[7152] = 1048691 ;
-ann_weights[7153] = 123 ;
-ann_weights[7154] = 1048927 ;
-ann_weights[7155] = 267 ;
-ann_weights[7156] = 1049372 ;
-ann_weights[7157] = 198 ;
-ann_weights[7158] = 149 ;
-ann_weights[7159] = 122 ;
-ann_weights[7160] = 1049447 ;
-ann_weights[7161] = 1049675 ;
-ann_weights[7162] = 1048696 ;
-ann_weights[7163] = 141 ;
-ann_weights[7164] = 1048915 ;
-ann_weights[7165] = 258 ;
-ann_weights[7166] = 1049383 ;
-ann_weights[7167] = 167 ;
-ann_weights[7168] = 102 ;
-ann_weights[7169] = 155 ;
-ann_weights[7170] = 1049225 ;
-ann_weights[7171] = 1049499 ;
-ann_weights[7172] = 1048795 ;
-ann_weights[7173] = 1048581 ;
-ann_weights[7174] = 1049120 ;
-ann_weights[7175] = 229 ;
-ann_weights[7176] = 1049521 ;
-ann_weights[7177] = 172 ;
-ann_weights[7178] = 34 ;
-ann_weights[7179] = 142 ;
-ann_weights[7180] = 1049271 ;
-ann_weights[7181] = 1049426 ;
-ann_weights[7182] = 1048872 ;
-ann_weights[7183] = 8 ;
-ann_weights[7184] = 1048975 ;
-ann_weights[7185] = 139 ;
-ann_weights[7186] = 1049481 ;
-ann_weights[7187] = 106 ;
-ann_weights[7188] = 1048615 ;
-ann_weights[7189] = 233 ;
-ann_weights[7190] = 1049444 ;
-ann_weights[7191] = 1049279 ;
-ann_weights[7192] = 1049060 ;
-ann_weights[7193] = 84 ;
-ann_weights[7194] = 1049079 ;
-ann_weights[7195] = 79 ;
-ann_weights[7196] = 1049276 ;
-ann_weights[7197] = 21 ;
-ann_weights[7198] = 40 ;
-ann_weights[7199] = 341 ;
-ann_weights[7200] = 1049101 ;
-ann_weights[7201] = 1049076 ;
-ann_weights[7202] = 1048832 ;
-ann_weights[7203] = 1048616 ;
-ann_weights[7204] = 1048914 ;
-ann_weights[7205] = 1048617 ;
-ann_weights[7206] = 1049064 ;
-ann_weights[7207] = 1048777 ;
-ann_weights[7208] = 1048706 ;
-ann_weights[7209] = 410 ;
-ann_weights[7210] = 1049136 ;
-ann_weights[7211] = 1048954 ;
-ann_weights[7212] = 1048856 ;
-ann_weights[7213] = 1048824 ;
-ann_weights[7214] = 1048978 ;
-ann_weights[7215] = 240 ;
-ann_weights[7216] = 1048906 ;
-ann_weights[7217] = 26 ;
-ann_weights[7218] = 1048935 ;
-ann_weights[7219] = 444 ;
-ann_weights[7220] = 1048942 ;
-ann_weights[7221] = 1048834 ;
-ann_weights[7222] = 1049009 ;
-ann_weights[7223] = 1048694 ;
-ann_weights[7224] = 1048813 ;
-ann_weights[7225] = 319 ;
-ann_weights[7226] = 1048880 ;
-ann_weights[7227] = 1048600 ;
-ann_weights[7228] = 1049243 ;
-ann_weights[7229] = 174 ;
-ann_weights[7230] = 1048832 ;
-ann_weights[7231] = 1048777 ;
-ann_weights[7232] = 1049000 ;
-ann_weights[7233] = 1048947 ;
-ann_weights[7234] = 1048636 ;
-ann_weights[7235] = 242 ;
-ann_weights[7236] = 1048772 ;
-ann_weights[7237] = 1048876 ;
-ann_weights[7238] = 1048793 ;
-ann_weights[7239] = 128 ;
-ann_weights[7240] = 1048888 ;
-ann_weights[7241] = 1048746 ;
-ann_weights[7242] = 1048815 ;
-ann_weights[7243] = 1048814 ;
-ann_weights[7244] = 1048865 ;
-ann_weights[7245] = 291 ;
-ann_weights[7246] = 1048630 ;
-ann_weights[7247] = 1048691 ;
-ann_weights[7248] = 1048968 ;
-ann_weights[7249] = 1048699 ;
-ann_weights[7250] = 33 ;
-ann_weights[7251] = 1048662 ;
-ann_weights[7252] = 39 ;
-ann_weights[7253] = 1048609 ;
-ann_weights[7254] = 1048777 ;
-ann_weights[7255] = 1048700 ;
-ann_weights[7256] = 1048578 ;
-ann_weights[7257] = 1048706 ;
-ann_weights[7258] = 1048704 ;
-ann_weights[7259] = 1048669 ;
-ann_weights[7260] = 28 ;
-ann_weights[7261] = 12 ;
-ann_weights[7262] = 157 ;
-ann_weights[7263] = 1048637 ;
-ann_weights[7264] = 0 ;
-ann_weights[7265] = 5 ;
-ann_weights[7266] = 19 ;
-ann_weights[7267] = 1048647 ;
-ann_weights[7268] = 1048668 ;
-ann_weights[7269] = 1048711 ;
-ann_weights[7270] = 1048623 ;
-ann_weights[7271] = 1048628 ;
-ann_weights[7272] = 16 ;
-ann_weights[7273] = 81 ;
-ann_weights[7274] = 39 ;
-ann_weights[7275] = 8 ;
-ann_weights[7276] = 64 ;
-ann_weights[7277] = 72 ;
-ann_weights[7278] = 1048630 ;
-ann_weights[7279] = 1048627 ;
-ann_weights[7280] = 60 ;
-ann_weights[7281] = 71 ;
-ann_weights[7282] = 61 ;
-ann_weights[7283] = 39 ;
-ann_weights[7284] = 26 ;
-ann_weights[7285] = 1048606 ;
-ann_weights[7286] = 1048618 ;
-ann_weights[7287] = 38 ;
-ann_weights[7288] = 1048606 ;
-ann_weights[7289] = 32 ;
-ann_weights[7290] = 57 ;
-ann_weights[7291] = 50 ;
-ann_weights[7292] = 69 ;
-ann_weights[7293] = 1048591 ;
-ann_weights[7294] = 1048613 ;
-ann_weights[7295] = 1048659 ;
-ann_weights[7296] = 38 ;
-ann_weights[7297] = 1048613 ;
-ann_weights[7298] = 1048645 ;
-ann_weights[7299] = 1048643 ;
-ann_weights[7300] = 0 ;
-ann_weights[7301] = 1048611 ;
-ann_weights[7302] = 1048576 ;
-ann_weights[7303] = 1048600 ;
-ann_weights[7304] = 1048584 ;
-ann_weights[7305] = 11 ;
-ann_weights[7306] = 1048587 ;
-ann_weights[7307] = 1048615 ;
-ann_weights[7308] = 1048600 ;
-ann_weights[7309] = 23 ;
-ann_weights[7310] = 1048576 ;
-ann_weights[7311] = 1048741 ;
-ann_weights[7312] = 1048716 ;
-ann_weights[7313] = 1048650 ;
-ann_weights[7314] = 1048653 ;
-ann_weights[7315] = 1048616 ;
-ann_weights[7316] = 39 ;
-ann_weights[7317] = 1048733 ;
-ann_weights[7318] = 1048754 ;
-ann_weights[7319] = 197 ;
-ann_weights[7320] = 1048644 ;
-ann_weights[7321] = 1048861 ;
-ann_weights[7322] = 1048845 ;
-ann_weights[7323] = 1048687 ;
-ann_weights[7324] = 1048592 ;
-ann_weights[7325] = 1048673 ;
-ann_weights[7326] = 3 ;
-ann_weights[7327] = 1048957 ;
-ann_weights[7328] = 1048820 ;
-ann_weights[7329] = 321 ;
-ann_weights[7330] = 1048837 ;
-ann_weights[7331] = 1048902 ;
-ann_weights[7332] = 1048837 ;
-ann_weights[7333] = 49 ;
-ann_weights[7334] = 1048715 ;
-ann_weights[7335] = 1048842 ;
-ann_weights[7336] = 1048705 ;
-ann_weights[7337] = 1048664 ;
-ann_weights[7338] = 1048910 ;
-ann_weights[7339] = 351 ;
-ann_weights[7340] = 1048966 ;
-ann_weights[7341] = 1048944 ;
-ann_weights[7342] = 1048824 ;
-ann_weights[7343] = 73 ;
-ann_weights[7344] = 1048810 ;
-ann_weights[7345] = 1049206 ;
-ann_weights[7346] = 1048710 ;
-ann_weights[7347] = 1048784 ;
-ann_weights[7348] = 1049158 ;
-ann_weights[7349] = 553 ;
-ann_weights[7350] = 1049000 ;
-ann_weights[7351] = 1048819 ;
-ann_weights[7352] = 1049044 ;
-ann_weights[7353] = 28 ;
-ann_weights[7354] = 1049177 ;
-ann_weights[7355] = 1049089 ;
-ann_weights[7356] = 1048684 ;
-ann_weights[7357] = 60 ;
-ann_weights[7358] = 1048784 ;
-ann_weights[7359] = 457 ;
-ann_weights[7360] = 1049035 ;
-ann_weights[7361] = 1049003 ;
-ann_weights[7362] = 1049026 ;
-ann_weights[7363] = 1048690 ;
-ann_weights[7364] = 1049315 ;
-ann_weights[7365] = 1049131 ;
-ann_weights[7366] = 1048719 ;
-ann_weights[7367] = 237 ;
-ann_weights[7368] = 1048827 ;
-ann_weights[7369] = 350 ;
-ann_weights[7370] = 1049303 ;
-ann_weights[7371] = 1049234 ;
-ann_weights[7372] = 1049154 ;
-ann_weights[7373] = 1048758 ;
-ann_weights[7374] = 1049533 ;
-ann_weights[7375] = 1048943 ;
-ann_weights[7376] = 1048785 ;
-ann_weights[7377] = 175 ;
-ann_weights[7378] = 1048998 ;
-ann_weights[7379] = 354 ;
-ann_weights[7380] = 1049269 ;
-ann_weights[7381] = 1049026 ;
-ann_weights[7382] = 1049288 ;
-ann_weights[7383] = 1048674 ;
-ann_weights[7384] = 1049327 ;
-ann_weights[7385] = 1048767 ;
-ann_weights[7386] = 1048761 ;
-ann_weights[7387] = 160 ;
-ann_weights[7388] = 1049127 ;
-ann_weights[7389] = 385 ;
-ann_weights[7390] = 1049171 ;
-ann_weights[7391] = 1049235 ;
-ann_weights[7392] = 1048956 ;
-ann_weights[7393] = 1048604 ;
-ann_weights[7394] = 1049564 ;
-ann_weights[7395] = 69 ;
-ann_weights[7396] = 1048871 ;
-ann_weights[7397] = 214 ;
-ann_weights[7398] = 1048982 ;
-ann_weights[7399] = 318 ;
-ann_weights[7400] = 1049243 ;
-ann_weights[7401] = 1049318 ;
-ann_weights[7402] = 1049213 ;
-ann_weights[7403] = 1048790 ;
-ann_weights[7404] = 1049413 ;
-ann_weights[7405] = 11 ;
-ann_weights[7406] = 1048954 ;
-ann_weights[7407] = 97 ;
-ann_weights[7408] = 1048913 ;
-ann_weights[7409] = 431 ;
-ann_weights[7410] = 1049101 ;
-ann_weights[7411] = 1049316 ;
-ann_weights[7412] = 1049264 ;
-ann_weights[7413] = 1048726 ;
-ann_weights[7414] = 1049684 ;
-ann_weights[7415] = 1048674 ;
-ann_weights[7416] = 1048954 ;
-ann_weights[7417] = 287 ;
-ann_weights[7418] = 1049070 ;
-ann_weights[7419] = 407 ;
-ann_weights[7420] = 1049015 ;
-ann_weights[7421] = 1049210 ;
-ann_weights[7422] = 1049483 ;
-ann_weights[7423] = 1048748 ;
-ann_weights[7424] = 1049803 ;
-ann_weights[7425] = 1048830 ;
-ann_weights[7426] = 1048906 ;
-ann_weights[7427] = 238 ;
-ann_weights[7428] = 1049131 ;
-ann_weights[7429] = 512 ;
-ann_weights[7430] = 1049286 ;
-ann_weights[7431] = 1048952 ;
-ann_weights[7432] = 1049388 ;
-ann_weights[7433] = 1048777 ;
-ann_weights[7434] = 1049582 ;
-ann_weights[7435] = 1048636 ;
-ann_weights[7436] = 1049078 ;
-ann_weights[7437] = 354 ;
-ann_weights[7438] = 1049685 ;
-ann_weights[7439] = 264 ;
-ann_weights[7440] = 1049218 ;
-ann_weights[7441] = 1048976 ;
-ann_weights[7442] = 1049186 ;
-ann_weights[7443] = 14 ;
-ann_weights[7444] = 1049677 ;
-ann_weights[7445] = 1048591 ;
-ann_weights[7446] = 1048957 ;
-ann_weights[7447] = 334 ;
-ann_weights[7448] = 1049715 ;
-ann_weights[7449] = 299 ;
-ann_weights[7450] = 1049108 ;
-ann_weights[7451] = 1049298 ;
-ann_weights[7452] = 1049072 ;
-ann_weights[7453] = 1048640 ;
-ann_weights[7454] = 1049436 ;
-ann_weights[7455] = 1048712 ;
-ann_weights[7456] = 1049060 ;
-ann_weights[7457] = 300 ;
-ann_weights[7458] = 1049137 ;
-ann_weights[7459] = 305 ;
-ann_weights[7460] = 1049118 ;
-ann_weights[7461] = 1048906 ;
-ann_weights[7462] = 1049300 ;
-ann_weights[7463] = 1048607 ;
-ann_weights[7464] = 1049629 ;
-ann_weights[7465] = 1048939 ;
-ann_weights[7466] = 1049027 ;
-ann_weights[7467] = 386 ;
-ann_weights[7468] = 1049074 ;
-ann_weights[7469] = 275 ;
-ann_weights[7470] = 1048924 ;
-ann_weights[7471] = 1049001 ;
-ann_weights[7472] = 1049208 ;
-ann_weights[7473] = 1048606 ;
-ann_weights[7474] = 1049428 ;
-ann_weights[7475] = 1048761 ;
-ann_weights[7476] = 1048882 ;
-ann_weights[7477] = 272 ;
-ann_weights[7478] = 1049387 ;
-ann_weights[7479] = 130 ;
-ann_weights[7480] = 1048868 ;
-ann_weights[7481] = 1048912 ;
-ann_weights[7482] = 1049116 ;
-ann_weights[7483] = 35 ;
-ann_weights[7484] = 1049403 ;
-ann_weights[7485] = 26 ;
-ann_weights[7486] = 1048869 ;
-ann_weights[7487] = 24 ;
-ann_weights[7488] = 1049247 ;
-ann_weights[7489] = 372 ;
-ann_weights[7490] = 1048860 ;
-ann_weights[7491] = 1048740 ;
-ann_weights[7492] = 1049096 ;
-ann_weights[7493] = 1048622 ;
-ann_weights[7494] = 1049201 ;
-ann_weights[7495] = 127 ;
-ann_weights[7496] = 1048883 ;
-ann_weights[7497] = 153 ;
-ann_weights[7498] = 1048970 ;
-ann_weights[7499] = 204 ;
-ann_weights[7500] = 1048747 ;
-ann_weights[7501] = 1048804 ;
-ann_weights[7502] = 1048907 ;
-ann_weights[7503] = 1048649 ;
-ann_weights[7504] = 1049146 ;
-ann_weights[7505] = 70 ;
-ann_weights[7506] = 1048782 ;
-ann_weights[7507] = 206 ;
-ann_weights[7508] = 1048825 ;
-ann_weights[7509] = 10 ;
-ann_weights[7510] = 1048742 ;
-ann_weights[7511] = 1048680 ;
-ann_weights[7512] = 1048814 ;
-ann_weights[7513] = 1048924 ;
-ann_weights[7514] = 1048674 ;
-ann_weights[7515] = 1048662 ;
-ann_weights[7516] = 1048699 ;
-ann_weights[7517] = 85 ;
-ann_weights[7518] = 28 ;
-ann_weights[7519] = 94 ;
-ann_weights[7520] = 1048593 ;
-ann_weights[7521] = 1048611 ;
-ann_weights[7522] = 21 ;
-ann_weights[7523] = 67 ;
-ann_weights[7524] = 1048670 ;
-ann_weights[7525] = 1048705 ;
-ann_weights[7526] = 26 ;
-ann_weights[7527] = 1048686 ;
-ann_weights[7528] = 1048765 ;
-ann_weights[7529] = 52 ;
-ann_weights[7530] = 77 ;
-ann_weights[7531] = 19 ;
-ann_weights[7532] = 1048686 ;
-ann_weights[7533] = 59 ;
-ann_weights[7534] = 1048618 ;
-ann_weights[7535] = 1048665 ;
-ann_weights[7536] = 1048659 ;
-ann_weights[7537] = 98 ;
-ann_weights[7538] = 1048611 ;
-ann_weights[7539] = 1048763 ;
-ann_weights[7540] = 27 ;
-ann_weights[7541] = 37 ;
-ann_weights[7542] = 5 ;
-ann_weights[7543] = 15 ;
-ann_weights[7544] = 68 ;
-ann_weights[7545] = 82 ;
-ann_weights[7546] = 1048628 ;
-ann_weights[7547] = 26 ;
-ann_weights[7548] = 26 ;
-ann_weights[7549] = 1048586 ;
-ann_weights[7550] = 46 ;
-ann_weights[7551] = 17 ;
-ann_weights[7552] = 4 ;
-ann_weights[7553] = 1048588 ;
-ann_weights[7554] = 49 ;
-ann_weights[7555] = 1048663 ;
-ann_weights[7556] = 1048639 ;
-ann_weights[7557] = 1048604 ;
-ann_weights[7558] = 1048637 ;
-ann_weights[7559] = 1048621 ;
-ann_weights[7560] = 65 ;
-ann_weights[7561] = 1048646 ;
-ann_weights[7562] = 9 ;
-ann_weights[7563] = 1048638 ;
-ann_weights[7564] = 1048594 ;
-ann_weights[7565] = 57 ;
-ann_weights[7566] = 1048599 ;
-ann_weights[7567] = 1048632 ;
-ann_weights[7568] = 5 ;
-ann_weights[7569] = 66 ;
-ann_weights[7570] = 61 ;
-ann_weights[7571] = 1048619 ;
-ann_weights[7572] = 20 ;
-ann_weights[7573] = 1048635 ;
-ann_weights[7574] = 1048632 ;
-ann_weights[7575] = 21 ;
-ann_weights[7576] = 39 ;
-ann_weights[7577] = 1048598 ;
-ann_weights[7578] = 1048658 ;
-ann_weights[7579] = 1048588 ;
-ann_weights[7580] = 1048592 ;
-ann_weights[7581] = 36 ;
-ann_weights[7582] = 53 ;
-ann_weights[7583] = 1048629 ;
-ann_weights[7584] = 62 ;
-ann_weights[7585] = 26 ;
-ann_weights[7586] = 0 ;
-ann_weights[7587] = 21 ;
-ann_weights[7588] = 69 ;
-ann_weights[7589] = 1048659 ;
-ann_weights[7590] = 1048660 ;
-ann_weights[7591] = 1048578 ;
-ann_weights[7592] = 71 ;
-ann_weights[7593] = 33 ;
-ann_weights[7594] = 73 ;
-ann_weights[7595] = 23 ;
-ann_weights[7596] = 54 ;
-ann_weights[7597] = 25 ;
-ann_weights[7598] = 1048638 ;
-ann_weights[7599] = 1048638 ;
-ann_weights[7600] = 27 ;
-ann_weights[7601] = 47 ;
-ann_weights[7602] = 1048620 ;
-ann_weights[7603] = 1048656 ;
-ann_weights[7604] = 1048576 ;
-ann_weights[7605] = 55 ;
-ann_weights[7606] = 1048622 ;
-ann_weights[7607] = 246 ;
-ann_weights[7608] = 1048745 ;
-ann_weights[7609] = 1048827 ;
-ann_weights[7610] = 1048658 ;
-ann_weights[7611] = 41 ;
-ann_weights[7612] = 1048670 ;
-ann_weights[7613] = 1048627 ;
-ann_weights[7614] = 1048725 ;
-ann_weights[7615] = 1048705 ;
-ann_weights[7616] = 1048642 ;
-ann_weights[7617] = 281 ;
-ann_weights[7618] = 1048799 ;
-ann_weights[7619] = 1048874 ;
-ann_weights[7620] = 1048617 ;
-ann_weights[7621] = 1048645 ;
-ann_weights[7622] = 1048789 ;
-ann_weights[7623] = 1048757 ;
-ann_weights[7624] = 1048807 ;
-ann_weights[7625] = 1048778 ;
-ann_weights[7626] = 1048579 ;
-ann_weights[7627] = 258 ;
-ann_weights[7628] = 1048828 ;
-ann_weights[7629] = 28 ;
-ann_weights[7630] = 1048629 ;
-ann_weights[7631] = 1048588 ;
-ann_weights[7632] = 1048660 ;
-ann_weights[7633] = 1048673 ;
-ann_weights[7634] = 1048751 ;
-ann_weights[7635] = 1048701 ;
-ann_weights[7636] = 1 ;
-ann_weights[7637] = 96 ;
-ann_weights[7638] = 1048854 ;
-ann_weights[7639] = 107 ;
-ann_weights[7640] = 1048658 ;
-ann_weights[7641] = 1048678 ;
-ann_weights[7642] = 1048698 ;
-ann_weights[7643] = 1048907 ;
-ann_weights[7644] = 1048869 ;
-ann_weights[7645] = 1048910 ;
-ann_weights[7646] = 1048660 ;
-ann_weights[7647] = 153 ;
-ann_weights[7648] = 1048885 ;
-ann_weights[7649] = 1048667 ;
-ann_weights[7650] = 1048807 ;
-ann_weights[7651] = 1048705 ;
-ann_weights[7652] = 1048824 ;
-ann_weights[7653] = 1048911 ;
-ann_weights[7654] = 1048997 ;
-ann_weights[7655] = 1048840 ;
-ann_weights[7656] = 16 ;
-ann_weights[7657] = 178 ;
-ann_weights[7658] = 1048841 ;
-ann_weights[7659] = 54 ;
-ann_weights[7660] = 1048726 ;
-ann_weights[7661] = 1048684 ;
-ann_weights[7662] = 1048753 ;
-ann_weights[7663] = 1048936 ;
-ann_weights[7664] = 1048911 ;
-ann_weights[7665] = 19 ;
-ann_weights[7666] = 1048679 ;
-ann_weights[7667] = 315 ;
-ann_weights[7668] = 1048767 ;
-ann_weights[7669] = 1048651 ;
-ann_weights[7670] = 1048692 ;
-ann_weights[7671] = 1048844 ;
-ann_weights[7672] = 1048885 ;
-ann_weights[7673] = 1049015 ;
-ann_weights[7674] = 1048976 ;
-ann_weights[7675] = 1048612 ;
-ann_weights[7676] = 1048662 ;
-ann_weights[7677] = 145 ;
-ann_weights[7678] = 1048964 ;
-ann_weights[7679] = 1048663 ;
-ann_weights[7680] = 1048828 ;
-ann_weights[7681] = 1048773 ;
-ann_weights[7682] = 1048997 ;
-ann_weights[7683] = 1049033 ;
-ann_weights[7684] = 1048919 ;
-ann_weights[7685] = 1048674 ;
-ann_weights[7686] = 1048635 ;
-ann_weights[7687] = 115 ;
-ann_weights[7688] = 1048906 ;
-ann_weights[7689] = 1048627 ;
-ann_weights[7690] = 1048777 ;
-ann_weights[7691] = 1048781 ;
-ann_weights[7692] = 1048777 ;
-ann_weights[7693] = 1049129 ;
-ann_weights[7694] = 1049174 ;
-ann_weights[7695] = 1048712 ;
-ann_weights[7696] = 1048734 ;
-ann_weights[7697] = 594 ;
-ann_weights[7698] = 1048980 ;
-ann_weights[7699] = 1049141 ;
-ann_weights[7700] = 1048928 ;
-ann_weights[7701] = 1048765 ;
-ann_weights[7702] = 1048733 ;
-ann_weights[7703] = 1049099 ;
-ann_weights[7704] = 1049169 ;
-ann_weights[7705] = 1049065 ;
-ann_weights[7706] = 1048642 ;
-ann_weights[7707] = 292 ;
-ann_weights[7708] = 1049070 ;
-ann_weights[7709] = 1048661 ;
-ann_weights[7710] = 1048812 ;
-ann_weights[7711] = 1048719 ;
-ann_weights[7712] = 1048784 ;
-ann_weights[7713] = 1049163 ;
-ann_weights[7714] = 1048880 ;
-ann_weights[7715] = 1049076 ;
-ann_weights[7716] = 1048635 ;
-ann_weights[7717] = 247 ;
-ann_weights[7718] = 1048928 ;
-ann_weights[7719] = 1048646 ;
-ann_weights[7720] = 1048769 ;
-ann_weights[7721] = 1048639 ;
-ann_weights[7722] = 1048755 ;
-ann_weights[7723] = 1049148 ;
-ann_weights[7724] = 1049055 ;
-ann_weights[7725] = 1049209 ;
-ann_weights[7726] = 1048717 ;
-ann_weights[7727] = 321 ;
-ann_weights[7728] = 1048931 ;
-ann_weights[7729] = 1048875 ;
-ann_weights[7730] = 1048673 ;
-ann_weights[7731] = 1048825 ;
-ann_weights[7732] = 1048880 ;
-ann_weights[7733] = 1049130 ;
-ann_weights[7734] = 1049034 ;
-ann_weights[7735] = 1048986 ;
-ann_weights[7736] = 13 ;
-ann_weights[7737] = 555 ;
-ann_weights[7738] = 1048942 ;
-ann_weights[7739] = 1049006 ;
-ann_weights[7740] = 1048727 ;
-ann_weights[7741] = 1048740 ;
-ann_weights[7742] = 1048874 ;
-ann_weights[7743] = 1049014 ;
-ann_weights[7744] = 1048974 ;
-ann_weights[7745] = 1048830 ;
-ann_weights[7746] = 1048795 ;
-ann_weights[7747] = 329 ;
-ann_weights[7748] = 1048917 ;
-ann_weights[7749] = 1048779 ;
-ann_weights[7750] = 1048799 ;
-ann_weights[7751] = 1048821 ;
-ann_weights[7752] = 1048750 ;
-ann_weights[7753] = 1048966 ;
-ann_weights[7754] = 1048914 ;
-ann_weights[7755] = 1049000 ;
-ann_weights[7756] = 1048686 ;
-ann_weights[7757] = 326 ;
-ann_weights[7758] = 1048958 ;
-ann_weights[7759] = 1048749 ;
-ann_weights[7760] = 1048677 ;
-ann_weights[7761] = 1048610 ;
-ann_weights[7762] = 1048836 ;
-ann_weights[7763] = 1048879 ;
-ann_weights[7764] = 1048984 ;
-ann_weights[7765] = 1048718 ;
-ann_weights[7766] = 23 ;
-ann_weights[7767] = 78 ;
-ann_weights[7768] = 1048757 ;
-ann_weights[7769] = 1048578 ;
-ann_weights[7770] = 1048788 ;
-ann_weights[7771] = 1048647 ;
-ann_weights[7772] = 1048777 ;
-ann_weights[7773] = 1048961 ;
-ann_weights[7774] = 1048822 ;
-ann_weights[7775] = 1048803 ;
-ann_weights[7776] = 1048710 ;
-ann_weights[7777] = 246 ;
-ann_weights[7778] = 1048937 ;
-ann_weights[7779] = 1048671 ;
-ann_weights[7780] = 1048664 ;
-ann_weights[7781] = 1048614 ;
-ann_weights[7782] = 1048741 ;
-ann_weights[7783] = 1048790 ;
-ann_weights[7784] = 1048759 ;
-ann_weights[7785] = 1048760 ;
-ann_weights[7786] = 1048618 ;
-ann_weights[7787] = 230 ;
-ann_weights[7788] = 1048814 ;
-ann_weights[7789] = 1048670 ;
-ann_weights[7790] = 1048812 ;
-ann_weights[7791] = 50 ;
-ann_weights[7792] = 1048736 ;
-ann_weights[7793] = 1048672 ;
-ann_weights[7794] = 1048729 ;
-ann_weights[7795] = 1048784 ;
-ann_weights[7796] = 1048643 ;
-ann_weights[7797] = 300 ;
-ann_weights[7798] = 1048713 ;
-ann_weights[7799] = 1048913 ;
-ann_weights[7800] = 1048634 ;
-ann_weights[7801] = 31 ;
-ann_weights[7802] = 25 ;
-ann_weights[7803] = 1048584 ;
-ann_weights[7804] = 78 ;
-ann_weights[7805] = 51 ;
-ann_weights[7806] = 1 ;
-ann_weights[7807] = 82 ;
-ann_weights[7808] = 1048610 ;
-ann_weights[7809] = 47 ;
-ann_weights[7810] = 1048632 ;
-ann_weights[7811] = 27 ;
-ann_weights[7812] = 56 ;
-ann_weights[7813] = 70 ;
-ann_weights[7814] = 1048606 ;
-ann_weights[7815] = 1048577 ;
-ann_weights[7816] = 6 ;
-ann_weights[7817] = 44 ;
-ann_weights[7818] = 1048657 ;
-ann_weights[7819] = 45 ;
-ann_weights[7820] = 1048602 ;
-ann_weights[7821] = 1048645 ;
-ann_weights[7822] = 1048580 ;
-ann_weights[7823] = 1048617 ;
-ann_weights[7824] = 7 ;
-ann_weights[7825] = 3 ;
-ann_weights[7826] = 70 ;
-ann_weights[7827] = 1048613 ;
-ann_weights[7828] = 1048652 ;
-ann_weights[7829] = 1048647 ;
-ann_weights[7830] = 1048641 ;
-ann_weights[7831] = 1048623 ;
-ann_weights[7832] = 44 ;
-ann_weights[7833] = 1048617 ;
-ann_weights[7834] = 1048641 ;
-ann_weights[7835] = 0 ;
-ann_weights[7836] = 83 ;
-ann_weights[7837] = 1048619 ;
-ann_weights[7838] = 1048640 ;
-ann_weights[7839] = 1048645 ;
+ 
+ann_weights[0] = 21'b000000000000000100111;
 
+ann_weights[1] = 21'b000000000000001000111;
+
+ann_weights[2] = 21'b000000000000000110110;
+
+ann_weights[3] = 21'b000000000000000110101;
+
+ann_weights[4] = 21'b100000000000000101110;
+
+ann_weights[5] = 21'b000000000000000001001;
+
+ann_weights[6] = 21'b000000000000001011000;
+
+ann_weights[7] = 21'b000000000000001000000;
+
+ann_weights[8] = 21'b100000000000000101010;
+
+ann_weights[9] = 21'b100000000000000000000;
+
+ann_weights[10] = 21'b100000000000000000001;
+
+ann_weights[11] = 21'b100000000000000011101;
+
+ann_weights[12] = 21'b100000000000000111011;
+
+ann_weights[13] = 21'b000000000000001000110;
+
+ann_weights[14] = 21'b100000000000000001100;
+
+ann_weights[15] = 21'b000000000000000100000;
+
+ann_weights[16] = 21'b100000000000000010110;
+
+ann_weights[17] = 21'b000000000000000111011;
+
+ann_weights[18] = 21'b000000000000000101110;
+
+ann_weights[19] = 21'b100000000000000001100;
+
+ann_weights[20] = 21'b100000000000000001000;
+
+ann_weights[21] = 21'b100000000000000101110;
+
+ann_weights[22] = 21'b000000000000000011101;
+
+ann_weights[23] = 21'b000000000000000111010;
+
+ann_weights[24] = 21'b100000000000001000111;
+
+ann_weights[25] = 21'b100000000000000010011;
+
+ann_weights[26] = 21'b100000000000000010100;
+
+ann_weights[27] = 21'b100000000000000010001;
+
+ann_weights[28] = 21'b100000000000000010011;
+
+ann_weights[29] = 21'b000000000000000110100;
+
+ann_weights[30] = 21'b100000000000001010011;
+
+ann_weights[31] = 21'b000000000000001000110;
+
+ann_weights[32] = 21'b000000000000001001110;
+
+ann_weights[33] = 21'b000000000000000111100;
+
+ann_weights[34] = 21'b100000000000001010001;
+
+ann_weights[35] = 21'b100000000000000010111;
+
+ann_weights[36] = 21'b100000000000000000111;
+
+ann_weights[37] = 21'b000000000000001010011;
+
+ann_weights[38] = 21'b100000000000001000000;
+
+ann_weights[39] = 21'b100000000000000011100;
+
+ann_weights[40] = 21'b100000000000000010110;
+
+ann_weights[41] = 21'b000000000000001010001;
+
+ann_weights[42] = 21'b100000000000000001011;
+
+ann_weights[43] = 21'b000000000000000000100;
+
+ann_weights[44] = 21'b100000000000000001100;
+
+ann_weights[45] = 21'b100000000000000101110;
+
+ann_weights[46] = 21'b100000000000000010110;
+
+ann_weights[47] = 21'b000000000000000110010;
+
+ann_weights[48] = 21'b100000000000000110001;
+
+ann_weights[49] = 21'b100000000000000001010;
+
+ann_weights[50] = 21'b000000000000000011100;
+
+ann_weights[51] = 21'b000000000000000111011;
+
+ann_weights[52] = 21'b100000000000000011111;
+
+ann_weights[53] = 21'b000000000000000011101;
+
+ann_weights[54] = 21'b100000000000000010001;
+
+ann_weights[55] = 21'b100000000000001000001;
+
+ann_weights[56] = 21'b100000000000000000111;
+
+ann_weights[57] = 21'b100000000000000001000;
+
+ann_weights[58] = 21'b000000000000000101011;
+
+ann_weights[59] = 21'b100000000000001010011;
+
+ann_weights[60] = 21'b100000000000000000001;
+
+ann_weights[61] = 21'b000000000000001001111;
+
+ann_weights[62] = 21'b100000000000000100001;
+
+ann_weights[63] = 21'b000000000000000111000;
+
+ann_weights[64] = 21'b000000000000000001010;
+
+ann_weights[65] = 21'b000000000000000010010;
+
+ann_weights[66] = 21'b100000000000001001000;
+
+ann_weights[67] = 21'b000000000000000011111;
+
+ann_weights[68] = 21'b000000000000000100011;
+
+ann_weights[69] = 21'b000000000000000011101;
+
+ann_weights[70] = 21'b100000000000000010100;
+
+ann_weights[71] = 21'b000000000000000000010;
+
+ann_weights[72] = 21'b100000000000001000100;
+
+ann_weights[73] = 21'b000000000000000111101;
+
+ann_weights[74] = 21'b100000000000000111001;
+
+ann_weights[75] = 21'b000000000000000001000;
+
+ann_weights[76] = 21'b000000000000001001010;
+
+ann_weights[77] = 21'b000000000000000010101;
+
+ann_weights[78] = 21'b000000000000000000011;
+
+ann_weights[79] = 21'b000000000000000011001;
+
+ann_weights[80] = 21'b000000000000000010011;
+
+ann_weights[81] = 21'b100000000000000111110;
+
+ann_weights[82] = 21'b100000000000001010101;
+
+ann_weights[83] = 21'b000000000000000111100;
+
+ann_weights[84] = 21'b100000000000001001100;
+
+ann_weights[85] = 21'b100000000000001000011;
+
+ann_weights[86] = 21'b000000000000000010001;
+
+ann_weights[87] = 21'b000000000000001000110;
+
+ann_weights[88] = 21'b100000000000001000010;
+
+ann_weights[89] = 21'b100000000000000101001;
+
+ann_weights[90] = 21'b000000000000000010101;
+
+ann_weights[91] = 21'b100000000000001000000;
+
+ann_weights[92] = 21'b100000000000000110111;
+
+ann_weights[93] = 21'b100000000000001001101;
+
+ann_weights[94] = 21'b000000000000000100010;
+
+ann_weights[95] = 21'b000000000000000011010;
+
+ann_weights[96] = 21'b100000000000000110100;
+
+ann_weights[97] = 21'b100000000000000110110;
+
+ann_weights[98] = 21'b000000000000000101001;
+
+ann_weights[99] = 21'b100000000000000101111;
+
+ann_weights[100] = 21'b000000000000000010000;
+
+ann_weights[101] = 21'b100000000000001000110;
+
+ann_weights[102] = 21'b100000000000000100011;
+
+ann_weights[103] = 21'b100000000000000100000;
+
+ann_weights[104] = 21'b000000000000000001000;
+
+ann_weights[105] = 21'b100000000000001000010;
+
+ann_weights[106] = 21'b000000000000000011000;
+
+ann_weights[107] = 21'b000000000000001001000;
+
+ann_weights[108] = 21'b100000000000000011101;
+
+ann_weights[109] = 21'b000000000000001001110;
+
+ann_weights[110] = 21'b000000000000000010010;
+
+ann_weights[111] = 21'b100000000000000001001;
+
+ann_weights[112] = 21'b000000000000001001101;
+
+ann_weights[113] = 21'b100000000000000001000;
+
+ann_weights[114] = 21'b100000000000000101111;
+
+ann_weights[115] = 21'b000000000000000010111;
+
+ann_weights[116] = 21'b000000000000000101010;
+
+ann_weights[117] = 21'b100000000000001010001;
+
+ann_weights[118] = 21'b100000000000000000100;
+
+ann_weights[119] = 21'b100000000000001001110;
+
+ann_weights[120] = 21'b100000000000000010010;
+
+ann_weights[121] = 21'b100000000000001011101;
+
+ann_weights[122] = 21'b100000000000010101010;
+
+ann_weights[123] = 21'b100000000000010001001;
+
+ann_weights[124] = 21'b100000000000001001001;
+
+ann_weights[125] = 21'b100000000000000011000;
+
+ann_weights[126] = 21'b000000000000001101100;
+
+ann_weights[127] = 21'b000000000000000110011;
+
+ann_weights[128] = 21'b100000000000000000010;
+
+ann_weights[129] = 21'b100000000000001110011;
+
+ann_weights[130] = 21'b100000000000000110100;
+
+ann_weights[131] = 21'b100000000000000010111;
+
+ann_weights[132] = 21'b100000000000000110011;
+
+ann_weights[133] = 21'b100000000000000000101;
+
+ann_weights[134] = 21'b100000000000001110101;
+
+ann_weights[135] = 21'b100000000000010110010;
+
+ann_weights[136] = 21'b000000000000001110001;
+
+ann_weights[137] = 21'b100000000000000110001;
+
+ann_weights[138] = 21'b100000000000010000001;
+
+ann_weights[139] = 21'b100000000000000111100;
+
+ann_weights[140] = 21'b100000000000000101011;
+
+ann_weights[141] = 21'b100000000000001010111;
+
+ann_weights[142] = 21'b100000000000000001110;
+
+ann_weights[143] = 21'b100000000000010011101;
+
+ann_weights[144] = 21'b000000000000000100110;
+
+ann_weights[145] = 21'b100000000000000101101;
+
+ann_weights[146] = 21'b100000000000001000111;
+
+ann_weights[147] = 21'b000000000000000110101;
+
+ann_weights[148] = 21'b100000000000001000100;
+
+ann_weights[149] = 21'b000000000000000011110;
+
+ann_weights[150] = 21'b100000000000001001011;
+
+ann_weights[151] = 21'b000000000000000110111;
+
+ann_weights[152] = 21'b100000000000000100010;
+
+ann_weights[153] = 21'b000000000000000110100;
+
+ann_weights[154] = 21'b100000000000000110100;
+
+ann_weights[155] = 21'b100000000000000100010;
+
+ann_weights[156] = 21'b100000000000000101001;
+
+ann_weights[157] = 21'b100000000000000100101;
+
+ann_weights[158] = 21'b000000000000000111011;
+
+ann_weights[159] = 21'b000000000000000000111;
+
+ann_weights[160] = 21'b000000000000001001010;
+
+ann_weights[161] = 21'b100000000000001010010;
+
+ann_weights[162] = 21'b100000000000000011000;
+
+ann_weights[163] = 21'b000000000000000011101;
+
+ann_weights[164] = 21'b100000000000001010010;
+
+ann_weights[165] = 21'b000000000000001010001;
+
+ann_weights[166] = 21'b100000000000001000110;
+
+ann_weights[167] = 21'b100000000000000101010;
+
+ann_weights[168] = 21'b000000000000000010111;
+
+ann_weights[169] = 21'b100000000000000100110;
+
+ann_weights[170] = 21'b100000000000000101111;
+
+ann_weights[171] = 21'b000000000000000111111;
+
+ann_weights[172] = 21'b100000000000001000110;
+
+ann_weights[173] = 21'b000000000000000100111;
+
+ann_weights[174] = 21'b000000000000000111100;
+
+ann_weights[175] = 21'b000000000000001000011;
+
+ann_weights[176] = 21'b100000000000000011101;
+
+ann_weights[177] = 21'b000000000000000101001;
+
+ann_weights[178] = 21'b100000000000000001000;
+
+ann_weights[179] = 21'b000000000000001000011;
+
+ann_weights[180] = 21'b000000000000000010110;
+
+ann_weights[181] = 21'b000000000000000010111;
+
+ann_weights[182] = 21'b000000000000000100100;
+
+ann_weights[183] = 21'b000000000000000011010;
+
+ann_weights[184] = 21'b100000000000001000000;
+
+ann_weights[185] = 21'b100000000000000100010;
+
+ann_weights[186] = 21'b100000000000000110000;
+
+ann_weights[187] = 21'b100000000000000110010;
+
+ann_weights[188] = 21'b000000000000000101111;
+
+ann_weights[189] = 21'b100000000000000010011;
+
+ann_weights[190] = 21'b000000000000000000000;
+
+ann_weights[191] = 21'b100000000000001000001;
+
+ann_weights[192] = 21'b100000000000001001000;
+
+ann_weights[193] = 21'b100000000000000100011;
+
+ann_weights[194] = 21'b000000000000000101011;
+
+ann_weights[195] = 21'b000000000000000111001;
+
+ann_weights[196] = 21'b000000000000000100010;
+
+ann_weights[197] = 21'b100000000000000100010;
+
+ann_weights[198] = 21'b100000000000000011110;
+
+ann_weights[199] = 21'b100000000000000110110;
+
+ann_weights[200] = 21'b100000000000000111100;
+
+ann_weights[201] = 21'b000000000000000011000;
+
+ann_weights[202] = 21'b100000000000000110000;
+
+ann_weights[203] = 21'b000000000000000110001;
+
+ann_weights[204] = 21'b100000000000000100110;
+
+ann_weights[205] = 21'b100000000000000110010;
+
+ann_weights[206] = 21'b000000000000000011100;
+
+ann_weights[207] = 21'b100000000000000010010;
+
+ann_weights[208] = 21'b000000000000000011011;
+
+ann_weights[209] = 21'b000000000000000100100;
+
+ann_weights[210] = 21'b100000000000000000110;
+
+ann_weights[211] = 21'b100000000000000000100;
+
+ann_weights[212] = 21'b000000000000000011111;
+
+ann_weights[213] = 21'b000000000000000100001;
+
+ann_weights[214] = 21'b000000000000000111010;
+
+ann_weights[215] = 21'b000000000000000010010;
+
+ann_weights[216] = 21'b000000000000000100101;
+
+ann_weights[217] = 21'b000000000000000100101;
+
+ann_weights[218] = 21'b100000000000000000010;
+
+ann_weights[219] = 21'b100000000000000101100;
+
+ann_weights[220] = 21'b000000000000000010011;
+
+ann_weights[221] = 21'b100000000000000010001;
+
+ann_weights[222] = 21'b000000000000000000011;
+
+ann_weights[223] = 21'b000000000000000000111;
+
+ann_weights[224] = 21'b100000000000000100010;
+
+ann_weights[225] = 21'b100000000000000011100;
+
+ann_weights[226] = 21'b000000000000001010100;
+
+ann_weights[227] = 21'b100000000000001001010;
+
+ann_weights[228] = 21'b100000000000000000000;
+
+ann_weights[229] = 21'b100000000000001001000;
+
+ann_weights[230] = 21'b100000000000000010000;
+
+ann_weights[231] = 21'b000000000000001001011;
+
+ann_weights[232] = 21'b000000000000000111001;
+
+ann_weights[233] = 21'b000000000000000000001;
+
+ann_weights[234] = 21'b100000000000000100101;
+
+ann_weights[235] = 21'b100000000000000000010;
+
+ann_weights[236] = 21'b000000000000000000010;
+
+ann_weights[237] = 21'b000000000000001010001;
+
+ann_weights[238] = 21'b100000000000000001000;
+
+ann_weights[239] = 21'b000000000000000000001;
+
+ann_weights[240] = 21'b000000000000000010101;
+
+ann_weights[241] = 21'b000000000000001010100;
+
+ann_weights[242] = 21'b000000000000000000111;
+
+ann_weights[243] = 21'b000000000000000110101;
+
+ann_weights[244] = 21'b100000000000000110010;
+
+ann_weights[245] = 21'b100000000000000101110;
+
+ann_weights[246] = 21'b000000000000000010010;
+
+ann_weights[247] = 21'b100000000000001001010;
+
+ann_weights[248] = 21'b000000000000000110101;
+
+ann_weights[249] = 21'b000000000000001010010;
+
+ann_weights[250] = 21'b100000000000000101001;
+
+ann_weights[251] = 21'b000000000000001000111;
+
+ann_weights[252] = 21'b100000000000000101011;
+
+ann_weights[253] = 21'b000000000000001000000;
+
+ann_weights[254] = 21'b100000000000000110101;
+
+ann_weights[255] = 21'b100000000000000110101;
+
+ann_weights[256] = 21'b100000000000001001110;
+
+ann_weights[257] = 21'b100000000000000100001;
+
+ann_weights[258] = 21'b100000000000001000000;
+
+ann_weights[259] = 21'b100000000000000000001;
+
+ann_weights[260] = 21'b000000000000000110000;
+
+ann_weights[261] = 21'b000000000000001001011;
+
+ann_weights[262] = 21'b000000000000001010011;
+
+ann_weights[263] = 21'b100000000000000110010;
+
+ann_weights[264] = 21'b000000000000001010100;
+
+ann_weights[265] = 21'b000000000000000111101;
+
+ann_weights[266] = 21'b000000000000000101111;
+
+ann_weights[267] = 21'b000000000000001010101;
+
+ann_weights[268] = 21'b000000000000000001110;
+
+ann_weights[269] = 21'b100000000000001000100;
+
+ann_weights[270] = 21'b100000000000000100101;
+
+ann_weights[271] = 21'b000000000000000101110;
+
+ann_weights[272] = 21'b100000000000001010110;
+
+ann_weights[273] = 21'b100000000000000011100;
+
+ann_weights[274] = 21'b100000000000000100000;
+
+ann_weights[275] = 21'b100000000000000100010;
+
+ann_weights[276] = 21'b100000000000001001001;
+
+ann_weights[277] = 21'b100000000000000100111;
+
+ann_weights[278] = 21'b000000000000001011000;
+
+ann_weights[279] = 21'b000000000000000000000;
+
+ann_weights[280] = 21'b100000000000000000101;
+
+ann_weights[281] = 21'b000000000000001001000;
+
+ann_weights[282] = 21'b100000000000000101001;
+
+ann_weights[283] = 21'b100000000000001001010;
+
+ann_weights[284] = 21'b100000000000000010101;
+
+ann_weights[285] = 21'b100000000000000101111;
+
+ann_weights[286] = 21'b000000000000001000000;
+
+ann_weights[287] = 21'b000000000000000100101;
+
+ann_weights[288] = 21'b000000000000000101001;
+
+ann_weights[289] = 21'b000000000000001001011;
+
+ann_weights[290] = 21'b000000000000000011011;
+
+ann_weights[291] = 21'b100000000000000010100;
+
+ann_weights[292] = 21'b100000000000000111001;
+
+ann_weights[293] = 21'b000000000000001000111;
+
+ann_weights[294] = 21'b000000000000000100100;
+
+ann_weights[295] = 21'b000000000000000111110;
+
+ann_weights[296] = 21'b100000000000001010110;
+
+ann_weights[297] = 21'b000000000000000100110;
+
+ann_weights[298] = 21'b000000000000000100011;
+
+ann_weights[299] = 21'b000000000000000001110;
+
+ann_weights[300] = 21'b100000000000000001001;
+
+ann_weights[301] = 21'b000000000000000110101;
+
+ann_weights[302] = 21'b000000000000000010000;
+
+ann_weights[303] = 21'b000000000000000010110;
+
+ann_weights[304] = 21'b100000000000000110101;
+
+ann_weights[305] = 21'b100000000000000000111;
+
+ann_weights[306] = 21'b000000000000000101110;
+
+ann_weights[307] = 21'b000000000000000011010;
+
+ann_weights[308] = 21'b000000000000000000101;
+
+ann_weights[309] = 21'b100000000000001001001;
+
+ann_weights[310] = 21'b000000000000000011001;
+
+ann_weights[311] = 21'b100000000000000000111;
+
+ann_weights[312] = 21'b000000000000000111001;
+
+ann_weights[313] = 21'b100000000000001001011;
+
+ann_weights[314] = 21'b000000000000001000100;
+
+ann_weights[315] = 21'b100000000000001001101;
+
+ann_weights[316] = 21'b000000000000000110101;
+
+ann_weights[317] = 21'b100000000000001000000;
+
+ann_weights[318] = 21'b100000000000000111111;
+
+ann_weights[319] = 21'b100000000000000100001;
+
+ann_weights[320] = 21'b100000000000000101011;
+
+ann_weights[321] = 21'b000000000000000101100;
+
+ann_weights[322] = 21'b100000000000001101010;
+
+ann_weights[323] = 21'b100000000000000001110;
+
+ann_weights[324] = 21'b000000000000000000000;
+
+ann_weights[325] = 21'b100000000000001010010;
+
+ann_weights[326] = 21'b000000000000001111001;
+
+ann_weights[327] = 21'b100000000000000011100;
+
+ann_weights[328] = 21'b000000000000000011100;
+
+ann_weights[329] = 21'b100000000000001010101;
+
+ann_weights[330] = 21'b000000000000000111111;
+
+ann_weights[331] = 21'b100000000000000010010;
+
+ann_weights[332] = 21'b100000000000010100101;
+
+ann_weights[333] = 21'b100000000000000111000;
+
+ann_weights[334] = 21'b100000000000011100001;
+
+ann_weights[335] = 21'b100000000000000101000;
+
+ann_weights[336] = 21'b000000000000001111110;
+
+ann_weights[337] = 21'b000000000000001000000;
+
+ann_weights[338] = 21'b000000000000000111100;
+
+ann_weights[339] = 21'b100000000000001000101;
+
+ann_weights[340] = 21'b100000000000000001100;
+
+ann_weights[341] = 21'b000000000000000010000;
+
+ann_weights[342] = 21'b100000000000011010101;
+
+ann_weights[343] = 21'b100000000000000101000;
+
+ann_weights[344] = 21'b100000000000011111110;
+
+ann_weights[345] = 21'b100000000000001001000;
+
+ann_weights[346] = 21'b000000000000101101101;
+
+ann_weights[347] = 21'b100000000000011001110;
+
+ann_weights[348] = 21'b100000000000001001101;
+
+ann_weights[349] = 21'b100000000000001111101;
+
+ann_weights[350] = 21'b100000000000010010011;
+
+ann_weights[351] = 21'b100000000000001000010;
+
+ann_weights[352] = 21'b100000000000010001010;
+
+ann_weights[353] = 21'b100000000000001101001;
+
+ann_weights[354] = 21'b100000000000100111100;
+
+ann_weights[355] = 21'b100000000000000101011;
+
+ann_weights[356] = 21'b000000000000110010011;
+
+ann_weights[357] = 21'b100000000000010101010;
+
+ann_weights[358] = 21'b100000000000010011110;
+
+ann_weights[359] = 21'b100000000000010001100;
+
+ann_weights[360] = 21'b100000000000001101001;
+
+ann_weights[361] = 21'b100000000000010010001;
+
+ann_weights[362] = 21'b100000000000000111010;
+
+ann_weights[363] = 21'b100000000000001110001;
+
+ann_weights[364] = 21'b100000000000110000100;
+
+ann_weights[365] = 21'b100000000000000100100;
+
+ann_weights[366] = 21'b000000000000100100110;
+
+ann_weights[367] = 21'b100000000000010011111;
+
+ann_weights[368] = 21'b100000000000010001000;
+
+ann_weights[369] = 21'b100000000000010100101;
+
+ann_weights[370] = 21'b100000000000001111000;
+
+ann_weights[371] = 21'b100000000000001000000;
+
+ann_weights[372] = 21'b100000000000001010111;
+
+ann_weights[373] = 21'b100000000000000001110;
+
+ann_weights[374] = 21'b100000000000111000111;
+
+ann_weights[375] = 21'b100000000000001001001;
+
+ann_weights[376] = 21'b000000000000101100010;
+
+ann_weights[377] = 21'b100000000000011100111;
+
+ann_weights[378] = 21'b100000000000011111000;
+
+ann_weights[379] = 21'b100000000000010000101;
+
+ann_weights[380] = 21'b100000000000011011111;
+
+ann_weights[381] = 21'b100000000000001111011;
+
+ann_weights[382] = 21'b100000000000001110101;
+
+ann_weights[383] = 21'b100000000000001000111;
+
+ann_weights[384] = 21'b100000000000110011000;
+
+ann_weights[385] = 21'b100000000000010010101;
+
+ann_weights[386] = 21'b000000000000100100111;
+
+ann_weights[387] = 21'b100000000000010000110;
+
+ann_weights[388] = 21'b100000000000011010011;
+
+ann_weights[389] = 21'b100000000000010000000;
+
+ann_weights[390] = 21'b000000000000001110110;
+
+ann_weights[391] = 21'b100000000000010000111;
+
+ann_weights[392] = 21'b100000000000101101111;
+
+ann_weights[393] = 21'b100000000000010010000;
+
+ann_weights[394] = 21'b100000000000111010011;
+
+ann_weights[395] = 21'b100000000000001101100;
+
+ann_weights[396] = 21'b000000000000101000001;
+
+ann_weights[397] = 21'b100000000000010111100;
+
+ann_weights[398] = 21'b100000000000011111010;
+
+ann_weights[399] = 21'b100000000000100011110;
+
+ann_weights[400] = 21'b000000000000001111001;
+
+ann_weights[401] = 21'b100000000000011011101;
+
+ann_weights[402] = 21'b100000000000101110001;
+
+ann_weights[403] = 21'b100000000000010101001;
+
+ann_weights[404] = 21'b100000000000111101111;
+
+ann_weights[405] = 21'b100000000000011011101;
+
+ann_weights[406] = 21'b000000000000111000001;
+
+ann_weights[407] = 21'b100000000000011010111;
+
+ann_weights[408] = 21'b100000000000010001111;
+
+ann_weights[409] = 21'b100000000000101101010;
+
+ann_weights[410] = 21'b000000000000000001011;
+
+ann_weights[411] = 21'b100000000000001011110;
+
+ann_weights[412] = 21'b100000000000101010101;
+
+ann_weights[413] = 21'b100000000000010000111;
+
+ann_weights[414] = 21'b100000000001000011110;
+
+ann_weights[415] = 21'b100000000000100011110;
+
+ann_weights[416] = 21'b000000000000100001111;
+
+ann_weights[417] = 21'b100000000000001100100;
+
+ann_weights[418] = 21'b100000000000011111100;
+
+ann_weights[419] = 21'b100000000000101100000;
+
+ann_weights[420] = 21'b100000000000010011101;
+
+ann_weights[421] = 21'b000000000000010111100;
+
+ann_weights[422] = 21'b000000000000000000001;
+
+ann_weights[423] = 21'b100000000000011010000;
+
+ann_weights[424] = 21'b100000000000000110000;
+
+ann_weights[425] = 21'b100000000000100101110;
+
+ann_weights[426] = 21'b000000000000001001101;
+
+ann_weights[427] = 21'b000000000000000000110;
+
+ann_weights[428] = 21'b100000000000011110100;
+
+ann_weights[429] = 21'b100000000000011100111;
+
+ann_weights[430] = 21'b000000000000000001100;
+
+ann_weights[431] = 21'b000000000000001000001;
+
+ann_weights[432] = 21'b000000000000010001001;
+
+ann_weights[433] = 21'b100000000000011101110;
+
+ann_weights[434] = 21'b100000000000100111111;
+
+ann_weights[435] = 21'b100000000000101001001;
+
+ann_weights[436] = 21'b000000000000011110110;
+
+ann_weights[437] = 21'b100000000000010100111;
+
+ann_weights[438] = 21'b100000000000010100101;
+
+ann_weights[439] = 21'b100000000000011011111;
+
+ann_weights[440] = 21'b000000000000001111111;
+
+ann_weights[441] = 21'b100000000000011110111;
+
+ann_weights[442] = 21'b000000000000101011100;
+
+ann_weights[443] = 21'b100000000000011101001;
+
+ann_weights[444] = 21'b100000000000110101001;
+
+ann_weights[445] = 21'b100000000000111001011;
+
+ann_weights[446] = 21'b000000000000000000100;
+
+ann_weights[447] = 21'b100000000000011110010;
+
+ann_weights[448] = 21'b100000000000100101011;
+
+ann_weights[449] = 21'b100000000000100111001;
+
+ann_weights[450] = 21'b000000000000000110011;
+
+ann_weights[451] = 21'b100000000000100100101;
+
+ann_weights[452] = 21'b000000000000001000101;
+
+ann_weights[453] = 21'b100000000000011010011;
+
+ann_weights[454] = 21'b100000000001000010110;
+
+ann_weights[455] = 21'b100000000000101010001;
+
+ann_weights[456] = 21'b000000000000100100100;
+
+ann_weights[457] = 21'b100000000000001101110;
+
+ann_weights[458] = 21'b100000000000100010001;
+
+ann_weights[459] = 21'b100000000000101100011;
+
+ann_weights[460] = 21'b100000000000010001100;
+
+ann_weights[461] = 21'b100000000000011010010;
+
+ann_weights[462] = 21'b100000000000100100100;
+
+ann_weights[463] = 21'b100000000000011110101;
+
+ann_weights[464] = 21'b100000000001001011010;
+
+ann_weights[465] = 21'b100000000000100011100;
+
+ann_weights[466] = 21'b000000000001000000111;
+
+ann_weights[467] = 21'b100000000000011111111;
+
+ann_weights[468] = 21'b100000000000101001010;
+
+ann_weights[469] = 21'b100000000000111000011;
+
+ann_weights[470] = 21'b100000000000010101100;
+
+ann_weights[471] = 21'b100000000000000010000;
+
+ann_weights[472] = 21'b100000000000110100010;
+
+ann_weights[473] = 21'b100000000000001010010;
+
+ann_weights[474] = 21'b100000000000010111010;
+
+ann_weights[475] = 21'b100000000000011101001;
+
+ann_weights[476] = 21'b000000000000100010110;
+
+ann_weights[477] = 21'b100000000000001010011;
+
+ann_weights[478] = 21'b100000000000100101110;
+
+ann_weights[479] = 21'b100000000000010010001;
+
+ann_weights[480] = 21'b100000000000001010001;
+
+ann_weights[481] = 21'b100000000000000101001;
+
+ann_weights[482] = 21'b100000000000011101010;
+
+ann_weights[483] = 21'b100000000000001011111;
+
+ann_weights[484] = 21'b100000000000101001000;
+
+ann_weights[485] = 21'b100000000000100010011;
+
+ann_weights[486] = 21'b000000000000100001110;
+
+ann_weights[487] = 21'b100000000000000010101;
+
+ann_weights[488] = 21'b100000000000011010111;
+
+ann_weights[489] = 21'b100000000000011111010;
+
+ann_weights[490] = 21'b000000000000000000010;
+
+ann_weights[491] = 21'b100000000000001100001;
+
+ann_weights[492] = 21'b100000000000010001001;
+
+ann_weights[493] = 21'b100000000000001001011;
+
+ann_weights[494] = 21'b100000000000100100001;
+
+ann_weights[495] = 21'b100000000000010010000;
+
+ann_weights[496] = 21'b000000000000010010101;
+
+ann_weights[497] = 21'b100000000000000011101;
+
+ann_weights[498] = 21'b100000000000001011110;
+
+ann_weights[499] = 21'b100000000000010110001;
+
+ann_weights[500] = 21'b000000000000000010111;
+
+ann_weights[501] = 21'b100000000000000101001;
+
+ann_weights[502] = 21'b100000000000000101010;
+
+ann_weights[503] = 21'b100000000000001100100;
+
+ann_weights[504] = 21'b100000000000001111011;
+
+ann_weights[505] = 21'b100000000000000111010;
+
+ann_weights[506] = 21'b000000000000011100001;
+
+ann_weights[507] = 21'b000000000000000011101;
+
+ann_weights[508] = 21'b100000000000010010001;
+
+ann_weights[509] = 21'b100000000000010100100;
+
+ann_weights[510] = 21'b100000000000000000001;
+
+ann_weights[511] = 21'b000000000000001000011;
+
+ann_weights[512] = 21'b100000000000000100100;
+
+ann_weights[513] = 21'b000000000000000011000;
+
+ann_weights[514] = 21'b100000000000011101000;
+
+ann_weights[515] = 21'b100000000000000000010;
+
+ann_weights[516] = 21'b000000000000011101011;
+
+ann_weights[517] = 21'b100000000000000100100;
+
+ann_weights[518] = 21'b100000000000001110010;
+
+ann_weights[519] = 21'b100000000000000110110;
+
+ann_weights[520] = 21'b100000000000000001010;
+
+ann_weights[521] = 21'b000000000000000000100;
+
+ann_weights[522] = 21'b000000000000000011100;
+
+ann_weights[523] = 21'b100000000000000001011;
+
+ann_weights[524] = 21'b000000000000000101001;
+
+ann_weights[525] = 21'b000000000000001010100;
+
+ann_weights[526] = 21'b000000000000001010111;
+
+ann_weights[527] = 21'b100000000000001001100;
+
+ann_weights[528] = 21'b100000000000000101101;
+
+ann_weights[529] = 21'b000000000000000001011;
+
+ann_weights[530] = 21'b100000000000000101000;
+
+ann_weights[531] = 21'b100000000000001000110;
+
+ann_weights[532] = 21'b000000000000000101011;
+
+ann_weights[533] = 21'b000000000000001010011;
+
+ann_weights[534] = 21'b000000000000000001011;
+
+ann_weights[535] = 21'b100000000000000101011;
+
+ann_weights[536] = 21'b000000000000001001101;
+
+ann_weights[537] = 21'b000000000000000111001;
+
+ann_weights[538] = 21'b000000000000000101100;
+
+ann_weights[539] = 21'b000000000000001000000;
+
+ann_weights[540] = 21'b000000000000000101110;
+
+ann_weights[541] = 21'b100000000000000000001;
+
+ann_weights[542] = 21'b000000000000001001111;
+
+ann_weights[543] = 21'b100000000000000001101;
+
+ann_weights[544] = 21'b100000000000000100110;
+
+ann_weights[545] = 21'b000000000000000010101;
+
+ann_weights[546] = 21'b100000000000000101011;
+
+ann_weights[547] = 21'b000000000000001000000;
+
+ann_weights[548] = 21'b100000000000000000011;
+
+ann_weights[549] = 21'b000000000000001000000;
+
+ann_weights[550] = 21'b000000000000000000110;
+
+ann_weights[551] = 21'b100000000000000011010;
+
+ann_weights[552] = 21'b100000000000000001101;
+
+ann_weights[553] = 21'b000000000000000101001;
+
+ann_weights[554] = 21'b100000000000000000111;
+
+ann_weights[555] = 21'b100000000000001000011;
+
+ann_weights[556] = 21'b100000000000000110010;
+
+ann_weights[557] = 21'b100000000000000001101;
+
+ann_weights[558] = 21'b100000000000000011101;
+
+ann_weights[559] = 21'b100000000000001001000;
+
+ann_weights[560] = 21'b000000000000001001111;
+
+ann_weights[561] = 21'b000000000000000110111;
+
+ann_weights[562] = 21'b100000000000000001101;
+
+ann_weights[563] = 21'b000000000000000001111;
+
+ann_weights[564] = 21'b100000000000000111110;
+
+ann_weights[565] = 21'b100000000000000111011;
+
+ann_weights[566] = 21'b000000000000001000000;
+
+ann_weights[567] = 21'b000000000000000000001;
+
+ann_weights[568] = 21'b000000000000000011011;
+
+ann_weights[569] = 21'b100000000000000111001;
+
+ann_weights[570] = 21'b100000000000000011000;
+
+ann_weights[571] = 21'b100000000000000101110;
+
+ann_weights[572] = 21'b000000000000000100111;
+
+ann_weights[573] = 21'b000000000000001001010;
+
+ann_weights[574] = 21'b000000000000000010100;
+
+ann_weights[575] = 21'b100000000000000000011;
+
+ann_weights[576] = 21'b100000000000000001111;
+
+ann_weights[577] = 21'b100000000000000010001;
+
+ann_weights[578] = 21'b000000000000000000010;
+
+ann_weights[579] = 21'b000000000000000011010;
+
+ann_weights[580] = 21'b000000000000000110000;
+
+ann_weights[581] = 21'b000000000000000000101;
+
+ann_weights[582] = 21'b100000000000000010100;
+
+ann_weights[583] = 21'b100000000000000000000;
+
+ann_weights[584] = 21'b100000000000000101011;
+
+ann_weights[585] = 21'b000000000000000010000;
+
+ann_weights[586] = 21'b100000000000001000111;
+
+ann_weights[587] = 21'b000000000000000101011;
+
+ann_weights[588] = 21'b100000000000001001011;
+
+ann_weights[589] = 21'b100000000000001000010;
+
+ann_weights[590] = 21'b000000000000000111011;
+
+ann_weights[591] = 21'b100000000000000011101;
+
+ann_weights[592] = 21'b100000000000000010010;
+
+ann_weights[593] = 21'b100000000000001101101;
+
+ann_weights[594] = 21'b100000000000001101111;
+
+ann_weights[595] = 21'b100000000000001101111;
+
+ann_weights[596] = 21'b000000000000010010000;
+
+ann_weights[597] = 21'b100000000000001110001;
+
+ann_weights[598] = 21'b100000000000000001111;
+
+ann_weights[599] = 21'b100000000000010000000;
+
+ann_weights[600] = 21'b000000000000000101010;
+
+ann_weights[601] = 21'b000000000000000010010;
+
+ann_weights[602] = 21'b100000000000001001110;
+
+ann_weights[603] = 21'b100000000000001100001;
+
+ann_weights[604] = 21'b100000000000101000001;
+
+ann_weights[605] = 21'b100000000000000101001;
+
+ann_weights[606] = 21'b000000000000010010111;
+
+ann_weights[607] = 21'b100000000000001111111;
+
+ann_weights[608] = 21'b100000000000001111011;
+
+ann_weights[609] = 21'b100000000000001000010;
+
+ann_weights[610] = 21'b100000000000010011100;
+
+ann_weights[611] = 21'b100000000000001001010;
+
+ann_weights[612] = 21'b100000000000000100011;
+
+ann_weights[613] = 21'b100000000000010101011;
+
+ann_weights[614] = 21'b100000000000010111101;
+
+ann_weights[615] = 21'b000000000000000000000;
+
+ann_weights[616] = 21'b000000000000011101100;
+
+ann_weights[617] = 21'b100000000000000001011;
+
+ann_weights[618] = 21'b100000000000000110000;
+
+ann_weights[619] = 21'b100000000000001011101;
+
+ann_weights[620] = 21'b100000000000010000110;
+
+ann_weights[621] = 21'b000000000000000000101;
+
+ann_weights[622] = 21'b100000000000000111110;
+
+ann_weights[623] = 21'b100000000000010101101;
+
+ann_weights[624] = 21'b100000000000101010000;
+
+ann_weights[625] = 21'b000000000000000011100;
+
+ann_weights[626] = 21'b000000000000101010110;
+
+ann_weights[627] = 21'b100000000000000111110;
+
+ann_weights[628] = 21'b100000000000001110100;
+
+ann_weights[629] = 21'b100000000000001010011;
+
+ann_weights[630] = 21'b100000000000010101101;
+
+ann_weights[631] = 21'b100000000000010110011;
+
+ann_weights[632] = 21'b100000000000010011011;
+
+ann_weights[633] = 21'b100000000000100100110;
+
+ann_weights[634] = 21'b100000000000101111001;
+
+ann_weights[635] = 21'b100000000000011010111;
+
+ann_weights[636] = 21'b000000000001000010100;
+
+ann_weights[637] = 21'b100000000000010001110;
+
+ann_weights[638] = 21'b100000000000011010111;
+
+ann_weights[639] = 21'b100000000000011111000;
+
+ann_weights[640] = 21'b100000000000101011110;
+
+ann_weights[641] = 21'b100000000000100101001;
+
+ann_weights[642] = 21'b100000000000000111101;
+
+ann_weights[643] = 21'b100000000000101010101;
+
+ann_weights[644] = 21'b100000000001001000101;
+
+ann_weights[645] = 21'b100000000000100111101;
+
+ann_weights[646] = 21'b000000000001000010011;
+
+ann_weights[647] = 21'b100000000000011011011;
+
+ann_weights[648] = 21'b100000000000100110011;
+
+ann_weights[649] = 21'b100000000000100010110;
+
+ann_weights[650] = 21'b100000000001000010000;
+
+ann_weights[651] = 21'b100000000000010111111;
+
+ann_weights[652] = 21'b000000000000001101001;
+
+ann_weights[653] = 21'b100000000000111001110;
+
+ann_weights[654] = 21'b100000000001010001001;
+
+ann_weights[655] = 21'b100000000000110001101;
+
+ann_weights[656] = 21'b000000000000100100010;
+
+ann_weights[657] = 21'b100000000000101110111;
+
+ann_weights[658] = 21'b100000000000111001110;
+
+ann_weights[659] = 21'b100000000000101101000;
+
+ann_weights[660] = 21'b100000000001010100001;
+
+ann_weights[661] = 21'b100000000000111101010;
+
+ann_weights[662] = 21'b000000000000010000101;
+
+ann_weights[663] = 21'b100000000000001110000;
+
+ann_weights[664] = 21'b100000000001011100100;
+
+ann_weights[665] = 21'b100000000000100111100;
+
+ann_weights[666] = 21'b000000000000111100000;
+
+ann_weights[667] = 21'b100000000000110110110;
+
+ann_weights[668] = 21'b100000000001010011110;
+
+ann_weights[669] = 21'b100000000000110100100;
+
+ann_weights[670] = 21'b100000000000100100100;
+
+ann_weights[671] = 21'b100000000000101011000;
+
+ann_weights[672] = 21'b000000000000001010110;
+
+ann_weights[673] = 21'b100000000000000000110;
+
+ann_weights[674] = 21'b100000000001111001011;
+
+ann_weights[675] = 21'b100000000000110100011;
+
+ann_weights[676] = 21'b000000000001000111110;
+
+ann_weights[677] = 21'b100000000001000001001;
+
+ann_weights[678] = 21'b100000000001011000100;
+
+ann_weights[679] = 21'b100000000001010000110;
+
+ann_weights[680] = 21'b100000000000011010100;
+
+ann_weights[681] = 21'b100000000000010001000;
+
+ann_weights[682] = 21'b000000000000010010101;
+
+ann_weights[683] = 21'b100000000000010001111;
+
+ann_weights[684] = 21'b100000000001101011101;
+
+ann_weights[685] = 21'b100000000001000100110;
+
+ann_weights[686] = 21'b000000000000110011111;
+
+ann_weights[687] = 21'b100000000000110011011;
+
+ann_weights[688] = 21'b100000000001100011011;
+
+ann_weights[689] = 21'b100000000000111001110;
+
+ann_weights[690] = 21'b100000000000101010000;
+
+ann_weights[691] = 21'b000000000000010010010;
+
+ann_weights[692] = 21'b100000000000000000110;
+
+ann_weights[693] = 21'b100000000000001111001;
+
+ann_weights[694] = 21'b100000000001000011000;
+
+ann_weights[695] = 21'b100000000001100000100;
+
+ann_weights[696] = 21'b000000000000100100100;
+
+ann_weights[697] = 21'b100000000000110110001;
+
+ann_weights[698] = 21'b100000000001100011110;
+
+ann_weights[699] = 21'b100000000001011101101;
+
+ann_weights[700] = 21'b100000000001001000000;
+
+ann_weights[701] = 21'b000000000000001111101;
+
+ann_weights[702] = 21'b000000000000001010101;
+
+ann_weights[703] = 21'b100000000000001110100;
+
+ann_weights[704] = 21'b100000000000101110110;
+
+ann_weights[705] = 21'b100000000001111110010;
+
+ann_weights[706] = 21'b000000000000100010010;
+
+ann_weights[707] = 21'b100000000000101010101;
+
+ann_weights[708] = 21'b100000000010000100011;
+
+ann_weights[709] = 21'b100000000001100001101;
+
+ann_weights[710] = 21'b100000000001101111001;
+
+ann_weights[711] = 21'b000000000000100100100;
+
+ann_weights[712] = 21'b000000000000001100101;
+
+ann_weights[713] = 21'b100000000000011111000;
+
+ann_weights[714] = 21'b100000000001000100110;
+
+ann_weights[715] = 21'b100000000000110010001;
+
+ann_weights[716] = 21'b000000000000100001101;
+
+ann_weights[717] = 21'b100000000000101001001;
+
+ann_weights[718] = 21'b100000000010010001010;
+
+ann_weights[719] = 21'b100000000001011001000;
+
+ann_weights[720] = 21'b100000000000111100101;
+
+ann_weights[721] = 21'b000000000000011010011;
+
+ann_weights[722] = 21'b000000000000010100010;
+
+ann_weights[723] = 21'b100000000000001110111;
+
+ann_weights[724] = 21'b100000000001000010001;
+
+ann_weights[725] = 21'b100000000000001000010;
+
+ann_weights[726] = 21'b000000000000011011001;
+
+ann_weights[727] = 21'b100000000000110100101;
+
+ann_weights[728] = 21'b100000000010000111011;
+
+ann_weights[729] = 21'b100000000001001011010;
+
+ann_weights[730] = 21'b100000000001010000110;
+
+ann_weights[731] = 21'b100000000000000000010;
+
+ann_weights[732] = 21'b000000000000000001100;
+
+ann_weights[733] = 21'b100000000000001110010;
+
+ann_weights[734] = 21'b100000000000111010101;
+
+ann_weights[735] = 21'b000000000000000011001;
+
+ann_weights[736] = 21'b000000000000010100100;
+
+ann_weights[737] = 21'b100000000000011001110;
+
+ann_weights[738] = 21'b100000000001000100101;
+
+ann_weights[739] = 21'b100000000001001000100;
+
+ann_weights[740] = 21'b100000000001011101100;
+
+ann_weights[741] = 21'b100000000000000110101;
+
+ann_weights[742] = 21'b100000000000010001001;
+
+ann_weights[743] = 21'b100000000000100011001;
+
+ann_weights[744] = 21'b100000000001101011101;
+
+ann_weights[745] = 21'b100000000000000111001;
+
+ann_weights[746] = 21'b000000000000100110110;
+
+ann_weights[747] = 21'b100000000000010111000;
+
+ann_weights[748] = 21'b100000000000011101100;
+
+ann_weights[749] = 21'b100000000000110001111;
+
+ann_weights[750] = 21'b100000000001000110100;
+
+ann_weights[751] = 21'b100000000000000111011;
+
+ann_weights[752] = 21'b100000000000100001110;
+
+ann_weights[753] = 21'b100000000000101101101;
+
+ann_weights[754] = 21'b100000000001000111011;
+
+ann_weights[755] = 21'b100000000000000111101;
+
+ann_weights[756] = 21'b000000000000100101100;
+
+ann_weights[757] = 21'b100000000000010011110;
+
+ann_weights[758] = 21'b100000000001011101100;
+
+ann_weights[759] = 21'b100000000000101000100;
+
+ann_weights[760] = 21'b100000000001010100010;
+
+ann_weights[761] = 21'b100000000000010011000;
+
+ann_weights[762] = 21'b100000000000011100000;
+
+ann_weights[763] = 21'b100000000000100100111;
+
+ann_weights[764] = 21'b100000000001000011011;
+
+ann_weights[765] = 21'b100000000000010111110;
+
+ann_weights[766] = 21'b000000000000110001011;
+
+ann_weights[767] = 21'b100000000000000010010;
+
+ann_weights[768] = 21'b100000000001000110110;
+
+ann_weights[769] = 21'b100000000000010101101;
+
+ann_weights[770] = 21'b100000000001000001111;
+
+ann_weights[771] = 21'b100000000000100101101;
+
+ann_weights[772] = 21'b100000000000011010101;
+
+ann_weights[773] = 21'b100000000000101110000;
+
+ann_weights[774] = 21'b100000000000110101111;
+
+ann_weights[775] = 21'b100000000000011001001;
+
+ann_weights[776] = 21'b000000000000111001011;
+
+ann_weights[777] = 21'b100000000000000111001;
+
+ann_weights[778] = 21'b100000000001000010011;
+
+ann_weights[779] = 21'b100000000000100011011;
+
+ann_weights[780] = 21'b100000000000100111101;
+
+ann_weights[781] = 21'b100000000000011000010;
+
+ann_weights[782] = 21'b100000000000101000000;
+
+ann_weights[783] = 21'b100000000000100111101;
+
+ann_weights[784] = 21'b100000000000011110110;
+
+ann_weights[785] = 21'b100000000000010000100;
+
+ann_weights[786] = 21'b000000000000110101101;
+
+ann_weights[787] = 21'b100000000000010100011;
+
+ann_weights[788] = 21'b100000000000011101010;
+
+ann_weights[789] = 21'b100000000000011111010;
+
+ann_weights[790] = 21'b100000000000100111110;
+
+ann_weights[791] = 21'b100000000000011101100;
+
+ann_weights[792] = 21'b100000000000000011011;
+
+ann_weights[793] = 21'b100000000000011100111;
+
+ann_weights[794] = 21'b100000000000110101100;
+
+ann_weights[795] = 21'b100000000000011010111;
+
+ann_weights[796] = 21'b000000000000101101101;
+
+ann_weights[797] = 21'b100000000000001010001;
+
+ann_weights[798] = 21'b100000000000100100010;
+
+ann_weights[799] = 21'b100000000000001010100;
+
+ann_weights[800] = 21'b100000000000010100100;
+
+ann_weights[801] = 21'b100000000000010010110;
+
+ann_weights[802] = 21'b000000000000000100111;
+
+ann_weights[803] = 21'b100000000000001101011;
+
+ann_weights[804] = 21'b100000000000011010100;
+
+ann_weights[805] = 21'b100000000000011101010;
+
+ann_weights[806] = 21'b000000000000000110101;
+
+ann_weights[807] = 21'b000000000000001000011;
+
+ann_weights[808] = 21'b100000000000101010111;
+
+ann_weights[809] = 21'b100000000000000000001;
+
+ann_weights[810] = 21'b100000000000001000011;
+
+ann_weights[811] = 21'b100000000000001010110;
+
+ann_weights[812] = 21'b000000000000000111000;
+
+ann_weights[813] = 21'b000000000000000010100;
+
+ann_weights[814] = 21'b100000000000000100100;
+
+ann_weights[815] = 21'b100000000000010001100;
+
+ann_weights[816] = 21'b100000000000001110110;
+
+ann_weights[817] = 21'b000000000000000011010;
+
+ann_weights[818] = 21'b100000000000001001111;
+
+ann_weights[819] = 21'b100000000000000010101;
+
+ann_weights[820] = 21'b100000000000001001110;
+
+ann_weights[821] = 21'b100000000000000100110;
+
+ann_weights[822] = 21'b100000000000000000011;
+
+ann_weights[823] = 21'b100000000000001001101;
+
+ann_weights[824] = 21'b000000000000000011100;
+
+ann_weights[825] = 21'b100000000000001001100;
+
+ann_weights[826] = 21'b000000000000000111100;
+
+ann_weights[827] = 21'b100000000000000011011;
+
+ann_weights[828] = 21'b100000000000000100110;
+
+ann_weights[829] = 21'b100000000000000110000;
+
+ann_weights[830] = 21'b000000000000001010111;
+
+ann_weights[831] = 21'b000000000000000110011;
+
+ann_weights[832] = 21'b100000000000001001110;
+
+ann_weights[833] = 21'b000000000000000111111;
+
+ann_weights[834] = 21'b100000000000001010011;
+
+ann_weights[835] = 21'b000000000000001010001;
+
+ann_weights[836] = 21'b100000000000000000010;
+
+ann_weights[837] = 21'b100000000000000010000;
+
+ann_weights[838] = 21'b000000000000000110110;
+
+ann_weights[839] = 21'b100000000000000111001;
+
+ann_weights[840] = 21'b100000000000000011010;
+
+ann_weights[841] = 21'b000000000000000010010;
+
+ann_weights[842] = 21'b100000000000000110001;
+
+ann_weights[843] = 21'b000000000000001010000;
+
+ann_weights[844] = 21'b100000000000001001010;
+
+ann_weights[845] = 21'b100000000000001001010;
+
+ann_weights[846] = 21'b100000000000000110011;
+
+ann_weights[847] = 21'b100000000000000000001;
+
+ann_weights[848] = 21'b100000000000001001011;
+
+ann_weights[849] = 21'b000000000000000110000;
+
+ann_weights[850] = 21'b100000000000001010110;
+
+ann_weights[851] = 21'b000000000000000110111;
+
+ann_weights[852] = 21'b100000000000000101101;
+
+ann_weights[853] = 21'b100000000000001001101;
+
+ann_weights[854] = 21'b000000000000000010010;
+
+ann_weights[855] = 21'b100000000000000010111;
+
+ann_weights[856] = 21'b100000000000001010001;
+
+ann_weights[857] = 21'b100000000000001000100;
+
+ann_weights[858] = 21'b000000000000000001111;
+
+ann_weights[859] = 21'b000000000000000110101;
+
+ann_weights[860] = 21'b000000000000000100001;
+
+ann_weights[861] = 21'b000000000000010001110;
+
+ann_weights[862] = 21'b100000000000000110101;
+
+ann_weights[863] = 21'b000000000000000000110;
+
+ann_weights[864] = 21'b000000000000000101000;
+
+ann_weights[865] = 21'b100000000000001010001;
+
+ann_weights[866] = 21'b100000000000001100101;
+
+ann_weights[867] = 21'b000000000000001001110;
+
+ann_weights[868] = 21'b100000000000001101010;
+
+ann_weights[869] = 21'b000000000000001010000;
+
+ann_weights[870] = 21'b000000000000000101010;
+
+ann_weights[871] = 21'b000000000000001100010;
+
+ann_weights[872] = 21'b100000000000010110111;
+
+ann_weights[873] = 21'b100000000000001001001;
+
+ann_weights[874] = 21'b100000000000100101110;
+
+ann_weights[875] = 21'b000000000000000100010;
+
+ann_weights[876] = 21'b000000000000001100011;
+
+ann_weights[877] = 21'b100000000000011010100;
+
+ann_weights[878] = 21'b100000000000011110011;
+
+ann_weights[879] = 21'b100000000000011000001;
+
+ann_weights[880] = 21'b100000000000001111110;
+
+ann_weights[881] = 21'b100000000000001100111;
+
+ann_weights[882] = 21'b100000000000100011000;
+
+ann_weights[883] = 21'b100000000000001111011;
+
+ann_weights[884] = 21'b100000000000110000101;
+
+ann_weights[885] = 21'b100000000000000100000;
+
+ann_weights[886] = 21'b000000000000000111101;
+
+ann_weights[887] = 21'b100000000000001101101;
+
+ann_weights[888] = 21'b100000000000010001001;
+
+ann_weights[889] = 21'b100000000000011011001;
+
+ann_weights[890] = 21'b100000000000011100010;
+
+ann_weights[891] = 21'b100000000000011101111;
+
+ann_weights[892] = 21'b100000000000010010001;
+
+ann_weights[893] = 21'b000000000000011010110;
+
+ann_weights[894] = 21'b100000000000100001111;
+
+ann_weights[895] = 21'b100000000000011101000;
+
+ann_weights[896] = 21'b000000000000011100001;
+
+ann_weights[897] = 21'b100000000000001101110;
+
+ann_weights[898] = 21'b100000000000100000010;
+
+ann_weights[899] = 21'b100000000000011010011;
+
+ann_weights[900] = 21'b100000000000101011111;
+
+ann_weights[901] = 21'b100000000000100001110;
+
+ann_weights[902] = 21'b100000000000001001000;
+
+ann_weights[903] = 21'b000000000000001100110;
+
+ann_weights[904] = 21'b100000000000101011101;
+
+ann_weights[905] = 21'b100000000000011001110;
+
+ann_weights[906] = 21'b000000000000100011001;
+
+ann_weights[907] = 21'b100000000000100001011;
+
+ann_weights[908] = 21'b100000000000100000000;
+
+ann_weights[909] = 21'b100000000000011000101;
+
+ann_weights[910] = 21'b100000000000011110010;
+
+ann_weights[911] = 21'b100000000000110101000;
+
+ann_weights[912] = 21'b000000000000010000001;
+
+ann_weights[913] = 21'b000000000000010111111;
+
+ann_weights[914] = 21'b100000000000101011000;
+
+ann_weights[915] = 21'b100000000000111011000;
+
+ann_weights[916] = 21'b000000000000011101010;
+
+ann_weights[917] = 21'b100000000000110101000;
+
+ann_weights[918] = 21'b100000000000111001000;
+
+ann_weights[919] = 21'b100000000000011100000;
+
+ann_weights[920] = 21'b100000000000010110110;
+
+ann_weights[921] = 21'b100000000000111010100;
+
+ann_weights[922] = 21'b000000000000001010011;
+
+ann_weights[923] = 21'b000000000000010111100;
+
+ann_weights[924] = 21'b100000000001000010010;
+
+ann_weights[925] = 21'b100000000000010111010;
+
+ann_weights[926] = 21'b000000000000100101000;
+
+ann_weights[927] = 21'b100000000000110101010;
+
+ann_weights[928] = 21'b100000000000101000101;
+
+ann_weights[929] = 21'b100000000000111010110;
+
+ann_weights[930] = 21'b100000000000011110001;
+
+ann_weights[931] = 21'b100000000000100101010;
+
+ann_weights[932] = 21'b000000000000100111101;
+
+ann_weights[933] = 21'b000000000000000011001;
+
+ann_weights[934] = 21'b100000000001010001111;
+
+ann_weights[935] = 21'b100000000000010011000;
+
+ann_weights[936] = 21'b000000000000011001000;
+
+ann_weights[937] = 21'b100000000001010011010;
+
+ann_weights[938] = 21'b100000000000100111111;
+
+ann_weights[939] = 21'b100000000001000010111;
+
+ann_weights[940] = 21'b100000000000010010111;
+
+ann_weights[941] = 21'b100000000001000101110;
+
+ann_weights[942] = 21'b000000000000011111101;
+
+ann_weights[943] = 21'b000000000000001100000;
+
+ann_weights[944] = 21'b100000000001011110111;
+
+ann_weights[945] = 21'b100000000000010011000;
+
+ann_weights[946] = 21'b000000000000010100111;
+
+ann_weights[947] = 21'b100000000001001010001;
+
+ann_weights[948] = 21'b100000000000100000110;
+
+ann_weights[949] = 21'b100000000001101001101;
+
+ann_weights[950] = 21'b100000000000001111111;
+
+ann_weights[951] = 21'b100000000001010011100;
+
+ann_weights[952] = 21'b000000000000100010101;
+
+ann_weights[953] = 21'b000000000000100100101;
+
+ann_weights[954] = 21'b100000000001100000010;
+
+ann_weights[955] = 21'b100000000000100101001;
+
+ann_weights[956] = 21'b000000000000011001010;
+
+ann_weights[957] = 21'b100000000001010001000;
+
+ann_weights[958] = 21'b100000000000101100001;
+
+ann_weights[959] = 21'b100000000001111110111;
+
+ann_weights[960] = 21'b100000000000011001010;
+
+ann_weights[961] = 21'b100000000000100101001;
+
+ann_weights[962] = 21'b000000000000101101000;
+
+ann_weights[963] = 21'b000000000000100011100;
+
+ann_weights[964] = 21'b100000000001110011001;
+
+ann_weights[965] = 21'b100000000000001101100;
+
+ann_weights[966] = 21'b000000000000010010110;
+
+ann_weights[967] = 21'b100000000001001000011;
+
+ann_weights[968] = 21'b100000000000110001011;
+
+ann_weights[969] = 21'b100000000010010010111;
+
+ann_weights[970] = 21'b000000000000000101010;
+
+ann_weights[971] = 21'b100000000000011001000;
+
+ann_weights[972] = 21'b000000000000101010001;
+
+ann_weights[973] = 21'b000000000000011100111;
+
+ann_weights[974] = 21'b100000000001110111101;
+
+ann_weights[975] = 21'b100000000000001101100;
+
+ann_weights[976] = 21'b000000000000010110111;
+
+ann_weights[977] = 21'b100000000001001010010;
+
+ann_weights[978] = 21'b100000000000100011100;
+
+ann_weights[979] = 21'b100000000010001110010;
+
+ann_weights[980] = 21'b100000000000001110110;
+
+ann_weights[981] = 21'b100000000000010000011;
+
+ann_weights[982] = 21'b000000000000010101010;
+
+ann_weights[983] = 21'b000000000000011110000;
+
+ann_weights[984] = 21'b100000000001011111000;
+
+ann_weights[985] = 21'b100000000000001000010;
+
+ann_weights[986] = 21'b000000000000010111110;
+
+ann_weights[987] = 21'b100000000001001001110;
+
+ann_weights[988] = 21'b100000000000110010010;
+
+ann_weights[989] = 21'b100000000010100100000;
+
+ann_weights[990] = 21'b100000000000001100100;
+
+ann_weights[991] = 21'b100000000000000101010;
+
+ann_weights[992] = 21'b000000000000001111011;
+
+ann_weights[993] = 21'b000000000000100011001;
+
+ann_weights[994] = 21'b100000000001001111100;
+
+ann_weights[995] = 21'b100000000000000000010;
+
+ann_weights[996] = 21'b000000000000010010011;
+
+ann_weights[997] = 21'b100000000001010010000;
+
+ann_weights[998] = 21'b100000000000100001011;
+
+ann_weights[999] = 21'b100000000010011110001;
+
+ann_weights[1000] = 21'b100000000000000000111;
+
+ann_weights[1001] = 21'b100000000000001010011;
+
+ann_weights[1002] = 21'b000000000000001110101;
+
+ann_weights[1003] = 21'b000000000000001100001;
+
+ann_weights[1004] = 21'b100000000000111011000;
+
+ann_weights[1005] = 21'b100000000000000110001;
+
+ann_weights[1006] = 21'b000000000000000100100;
+
+ann_weights[1007] = 21'b100000000001000001001;
+
+ann_weights[1008] = 21'b100000000000100101001;
+
+ann_weights[1009] = 21'b100000000010010100001;
+
+ann_weights[1010] = 21'b100000000000010001010;
+
+ann_weights[1011] = 21'b100000000000010010100;
+
+ann_weights[1012] = 21'b000000000000000101101;
+
+ann_weights[1013] = 21'b000000000000010100010;
+
+ann_weights[1014] = 21'b100000000000110101010;
+
+ann_weights[1015] = 21'b000000000000001011001;
+
+ann_weights[1016] = 21'b000000000000001000101;
+
+ann_weights[1017] = 21'b100000000001000110001;
+
+ann_weights[1018] = 21'b100000000000100000001;
+
+ann_weights[1019] = 21'b100000000001101011010;
+
+ann_weights[1020] = 21'b100000000000101101110;
+
+ann_weights[1021] = 21'b100000000000110010001;
+
+ann_weights[1022] = 21'b100000000000011010100;
+
+ann_weights[1023] = 21'b000000000000011101011;
+
+ann_weights[1024] = 21'b100000000000110101100;
+
+ann_weights[1025] = 21'b000000000000001011000;
+
+ann_weights[1026] = 21'b000000000000010101010;
+
+ann_weights[1027] = 21'b100000000000110011100;
+
+ann_weights[1028] = 21'b100000000000010010010;
+
+ann_weights[1029] = 21'b100000000000100001111;
+
+ann_weights[1030] = 21'b100000000000100010010;
+
+ann_weights[1031] = 21'b100000000000100000111;
+
+ann_weights[1032] = 21'b100000000000010101110;
+
+ann_weights[1033] = 21'b000000000000001001110;
+
+ann_weights[1034] = 21'b100000000000011001110;
+
+ann_weights[1035] = 21'b000000000000010011101;
+
+ann_weights[1036] = 21'b000000000000010110001;
+
+ann_weights[1037] = 21'b100000000000011111111;
+
+ann_weights[1038] = 21'b100000000000101100101;
+
+ann_weights[1039] = 21'b100000000001010010011;
+
+ann_weights[1040] = 21'b100000000000101001010;
+
+ann_weights[1041] = 21'b100000000000110000111;
+
+ann_weights[1042] = 21'b100000000000100010010;
+
+ann_weights[1043] = 21'b000000000000010101111;
+
+ann_weights[1044] = 21'b100000000000001001100;
+
+ann_weights[1045] = 21'b000000000000010011001;
+
+ann_weights[1046] = 21'b000000000000000111001;
+
+ann_weights[1047] = 21'b100000000000100110001;
+
+ann_weights[1048] = 21'b100000000000100000100;
+
+ann_weights[1049] = 21'b100000000001001101010;
+
+ann_weights[1050] = 21'b100000000000100100000;
+
+ann_weights[1051] = 21'b100000000000100000010;
+
+ann_weights[1052] = 21'b100000000000011111101;
+
+ann_weights[1053] = 21'b100000000000011000101;
+
+ann_weights[1054] = 21'b100000000000001011110;
+
+ann_weights[1055] = 21'b000000000000100000000;
+
+ann_weights[1056] = 21'b000000000000011001111;
+
+ann_weights[1057] = 21'b100000000000011110110;
+
+ann_weights[1058] = 21'b100000000000010111011;
+
+ann_weights[1059] = 21'b100000000001000000111;
+
+ann_weights[1060] = 21'b100000000000101011100;
+
+ann_weights[1061] = 21'b100000000000110001010;
+
+ann_weights[1062] = 21'b100000000000101110100;
+
+ann_weights[1063] = 21'b100000000000110110011;
+
+ann_weights[1064] = 21'b100000000000000111000;
+
+ann_weights[1065] = 21'b000000000000001001010;
+
+ann_weights[1066] = 21'b000000000000010111010;
+
+ann_weights[1067] = 21'b100000000000011011100;
+
+ann_weights[1068] = 21'b100000000000000000010;
+
+ann_weights[1069] = 21'b100000000000110000001;
+
+ann_weights[1070] = 21'b100000000000101000100;
+
+ann_weights[1071] = 21'b100000000001000000101;
+
+ann_weights[1072] = 21'b100000000001011000010;
+
+ann_weights[1073] = 21'b100000000001000001010;
+
+ann_weights[1074] = 21'b000000000000000010100;
+
+ann_weights[1075] = 21'b100000000000000011000;
+
+ann_weights[1076] = 21'b000000000000101100001;
+
+ann_weights[1077] = 21'b100000000000001010011;
+
+ann_weights[1078] = 21'b000000000000010000000;
+
+ann_weights[1079] = 21'b100000000000010010010;
+
+ann_weights[1080] = 21'b100000000000010111100;
+
+ann_weights[1081] = 21'b100000000000111110100;
+
+ann_weights[1082] = 21'b100000000000000100110;
+
+ann_weights[1083] = 21'b100000000000101010001;
+
+ann_weights[1084] = 21'b100000000000010000010;
+
+ann_weights[1085] = 21'b000000000000000110110;
+
+ann_weights[1086] = 21'b000000000000011000111;
+
+ann_weights[1087] = 21'b000000000000000010111;
+
+ann_weights[1088] = 21'b100000000000000011110;
+
+ann_weights[1089] = 21'b000000000000000000111;
+
+ann_weights[1090] = 21'b100000000000001110010;
+
+ann_weights[1091] = 21'b100000000000011101010;
+
+ann_weights[1092] = 21'b000000000000010010100;
+
+ann_weights[1093] = 21'b100000000000001111110;
+
+ann_weights[1094] = 21'b100000000000011011000;
+
+ann_weights[1095] = 21'b000000000000000001101;
+
+ann_weights[1096] = 21'b100000000000010111011;
+
+ann_weights[1097] = 21'b000000000000000101110;
+
+ann_weights[1098] = 21'b100000000000001010110;
+
+ann_weights[1099] = 21'b000000000000000001101;
+
+ann_weights[1100] = 21'b100000000000001011100;
+
+ann_weights[1101] = 21'b100000000000001011111;
+
+ann_weights[1102] = 21'b100000000000000101110;
+
+ann_weights[1103] = 21'b100000000000000111111;
+
+ann_weights[1104] = 21'b100000000000011000011;
+
+ann_weights[1105] = 21'b000000000000000011111;
+
+ann_weights[1106] = 21'b000000000000000010001;
+
+ann_weights[1107] = 21'b000000000000000000111;
+
+ann_weights[1108] = 21'b100000000000010001001;
+
+ann_weights[1109] = 21'b100000000000001111011;
+
+ann_weights[1110] = 21'b100000000000000110001;
+
+ann_weights[1111] = 21'b100000000000001001011;
+
+ann_weights[1112] = 21'b000000000000000111010;
+
+ann_weights[1113] = 21'b100000000000001000010;
+
+ann_weights[1114] = 21'b000000000000001000110;
+
+ann_weights[1115] = 21'b000000000000000111010;
+
+ann_weights[1116] = 21'b100000000000000111110;
+
+ann_weights[1117] = 21'b000000000000000000111;
+
+ann_weights[1118] = 21'b100000000000001010110;
+
+ann_weights[1119] = 21'b100000000000000000000;
+
+ann_weights[1120] = 21'b000000000000000000011;
+
+ann_weights[1121] = 21'b000000000000001001101;
+
+ann_weights[1122] = 21'b000000000000001000100;
+
+ann_weights[1123] = 21'b100000000000001010111;
+
+ann_weights[1124] = 21'b100000000000001010100;
+
+ann_weights[1125] = 21'b100000000000000110101;
+
+ann_weights[1126] = 21'b100000000000000111011;
+
+ann_weights[1127] = 21'b000000000000000011000;
+
+ann_weights[1128] = 21'b000000000000000111010;
+
+ann_weights[1129] = 21'b000000000000000110000;
+
+ann_weights[1130] = 21'b000000000000000100101;
+
+ann_weights[1131] = 21'b000000000000000011111;
+
+ann_weights[1132] = 21'b100000000000010011100;
+
+ann_weights[1133] = 21'b000000000000001101110;
+
+ann_weights[1134] = 21'b100000000000000010110;
+
+ann_weights[1135] = 21'b100000000000000100110;
+
+ann_weights[1136] = 21'b000000000000000111110;
+
+ann_weights[1137] = 21'b000000000000000011010;
+
+ann_weights[1138] = 21'b000000000000000101001;
+
+ann_weights[1139] = 21'b100000000000001001111;
+
+ann_weights[1140] = 21'b100000000000001110100;
+
+ann_weights[1141] = 21'b000000000000001101011;
+
+ann_weights[1142] = 21'b100000000000010100111;
+
+ann_weights[1143] = 21'b000000000000000100010;
+
+ann_weights[1144] = 21'b000000000000000010010;
+
+ann_weights[1145] = 21'b100000000000011100100;
+
+ann_weights[1146] = 21'b100000000000001011010;
+
+ann_weights[1147] = 21'b000000000000001000000;
+
+ann_weights[1148] = 21'b000000000000001011010;
+
+ann_weights[1149] = 21'b100000000000010000101;
+
+ann_weights[1150] = 21'b100000000000000001110;
+
+ann_weights[1151] = 21'b000000000000000000000;
+
+ann_weights[1152] = 21'b100000000000001001111;
+
+ann_weights[1153] = 21'b000000000000010111101;
+
+ann_weights[1154] = 21'b100000000000010111111;
+
+ann_weights[1155] = 21'b100000000000010101010;
+
+ann_weights[1156] = 21'b100000000000000000010;
+
+ann_weights[1157] = 21'b000000000000001000101;
+
+ann_weights[1158] = 21'b100000000000100010010;
+
+ann_weights[1159] = 21'b100000000000011111110;
+
+ann_weights[1160] = 21'b100000000000011101110;
+
+ann_weights[1161] = 21'b000000000000000011001;
+
+ann_weights[1162] = 21'b100000000000100000001;
+
+ann_weights[1163] = 21'b000000000000100000011;
+
+ann_weights[1164] = 21'b000000000000001001010;
+
+ann_weights[1165] = 21'b100000000000110000101;
+
+ann_weights[1166] = 21'b000000000000001111010;
+
+ann_weights[1167] = 21'b100000000000100010000;
+
+ann_weights[1168] = 21'b100000000000110111001;
+
+ann_weights[1169] = 21'b100000000000100111110;
+
+ann_weights[1170] = 21'b100000000000100110001;
+
+ann_weights[1171] = 21'b000000000000000110111;
+
+ann_weights[1172] = 21'b100000000000001000010;
+
+ann_weights[1173] = 21'b000000000000101010101;
+
+ann_weights[1174] = 21'b100000000000000010111;
+
+ann_weights[1175] = 21'b100000000000110110110;
+
+ann_weights[1176] = 21'b000000000000000001101;
+
+ann_weights[1177] = 21'b100000000000101011010;
+
+ann_weights[1178] = 21'b100000000001001100010;
+
+ann_weights[1179] = 21'b100000000000011101001;
+
+ann_weights[1180] = 21'b100000000000100001101;
+
+ann_weights[1181] = 21'b100000000000001101001;
+
+ann_weights[1182] = 21'b000000000000100101000;
+
+ann_weights[1183] = 21'b000000000000101011111;
+
+ann_weights[1184] = 21'b100000000000100100010;
+
+ann_weights[1185] = 21'b100000000000101100111;
+
+ann_weights[1186] = 21'b000000000000000001001;
+
+ann_weights[1187] = 21'b100000000000111111001;
+
+ann_weights[1188] = 21'b100000000000110111001;
+
+ann_weights[1189] = 21'b100000000000101000111;
+
+ann_weights[1190] = 21'b100000000000001111100;
+
+ann_weights[1191] = 21'b100000000000001111111;
+
+ann_weights[1192] = 21'b000000000000001100110;
+
+ann_weights[1193] = 21'b000000000000011100110;
+
+ann_weights[1194] = 21'b100000000000010001010;
+
+ann_weights[1195] = 21'b100000000000011111111;
+
+ann_weights[1196] = 21'b100000000000001000100;
+
+ann_weights[1197] = 21'b100000000001010010010;
+
+ann_weights[1198] = 21'b100000000000010100111;
+
+ann_weights[1199] = 21'b100000000000111111101;
+
+ann_weights[1200] = 21'b100000000000000110110;
+
+ann_weights[1201] = 21'b100000000000000100100;
+
+ann_weights[1202] = 21'b000000000000010001100;
+
+ann_weights[1203] = 21'b000000000000011101000;
+
+ann_weights[1204] = 21'b100000000000100011100;
+
+ann_weights[1205] = 21'b100000000000111001100;
+
+ann_weights[1206] = 21'b000000000000000110001;
+
+ann_weights[1207] = 21'b100000000001011010001;
+
+ann_weights[1208] = 21'b000000000000000000000;
+
+ann_weights[1209] = 21'b100000000001001110110;
+
+ann_weights[1210] = 21'b000000000000000100111;
+
+ann_weights[1211] = 21'b100000000000001111101;
+
+ann_weights[1212] = 21'b000000000000100001100;
+
+ann_weights[1213] = 21'b000000000000011101011;
+
+ann_weights[1214] = 21'b100000000000101110111;
+
+ann_weights[1215] = 21'b100000000000100001001;
+
+ann_weights[1216] = 21'b100000000000000111011;
+
+ann_weights[1217] = 21'b100000000001100101001;
+
+ann_weights[1218] = 21'b100000000000001010100;
+
+ann_weights[1219] = 21'b100000000010001010101;
+
+ann_weights[1220] = 21'b100000000000001010011;
+
+ann_weights[1221] = 21'b100000000000010110011;
+
+ann_weights[1222] = 21'b000000000000010100001;
+
+ann_weights[1223] = 21'b000000000000011011000;
+
+ann_weights[1224] = 21'b100000000000111101011;
+
+ann_weights[1225] = 21'b100000000000001101100;
+
+ann_weights[1226] = 21'b000000000000001101111;
+
+ann_weights[1227] = 21'b100000000001101110011;
+
+ann_weights[1228] = 21'b000000000000000001110;
+
+ann_weights[1229] = 21'b100000000000111111011;
+
+ann_weights[1230] = 21'b000000000000000011101;
+
+ann_weights[1231] = 21'b100000000000011011001;
+
+ann_weights[1232] = 21'b000000000000011100101;
+
+ann_weights[1233] = 21'b000000000000100101110;
+
+ann_weights[1234] = 21'b100000000000110110110;
+
+ann_weights[1235] = 21'b100000000000000110111;
+
+ann_weights[1236] = 21'b100000000000010111010;
+
+ann_weights[1237] = 21'b100000000001010000010;
+
+ann_weights[1238] = 21'b000000000000000100001;
+
+ann_weights[1239] = 21'b100000000000111011011;
+
+ann_weights[1240] = 21'b100000000000010100111;
+
+ann_weights[1241] = 21'b100000000000000111100;
+
+ann_weights[1242] = 21'b000000000000100000110;
+
+ann_weights[1243] = 21'b000000000000100001110;
+
+ann_weights[1244] = 21'b100000000000100101101;
+
+ann_weights[1245] = 21'b100000000000000011011;
+
+ann_weights[1246] = 21'b100000000000011001100;
+
+ann_weights[1247] = 21'b100000000001001111101;
+
+ann_weights[1248] = 21'b000000000000001101000;
+
+ann_weights[1249] = 21'b100000000000111001010;
+
+ann_weights[1250] = 21'b000000000000000100011;
+
+ann_weights[1251] = 21'b000000000000000111011;
+
+ann_weights[1252] = 21'b000000000000010100101;
+
+ann_weights[1253] = 21'b000000000000011111100;
+
+ann_weights[1254] = 21'b100000000000011010000;
+
+ann_weights[1255] = 21'b100000000000011011011;
+
+ann_weights[1256] = 21'b100000000000001100101;
+
+ann_weights[1257] = 21'b100000000000111111011;
+
+ann_weights[1258] = 21'b000000000000001001100;
+
+ann_weights[1259] = 21'b100000000000101100010;
+
+ann_weights[1260] = 21'b100000000000001010011;
+
+ann_weights[1261] = 21'b000000000000000010100;
+
+ann_weights[1262] = 21'b000000000000001111010;
+
+ann_weights[1263] = 21'b000000000000010011010;
+
+ann_weights[1264] = 21'b100000000000110011101;
+
+ann_weights[1265] = 21'b100000000000010110010;
+
+ann_weights[1266] = 21'b100000000000010010100;
+
+ann_weights[1267] = 21'b100000000001001100111;
+
+ann_weights[1268] = 21'b000000000000010000100;
+
+ann_weights[1269] = 21'b100000000000111100100;
+
+ann_weights[1270] = 21'b000000000000001001101;
+
+ann_weights[1271] = 21'b000000000000000101111;
+
+ann_weights[1272] = 21'b000000000000001000011;
+
+ann_weights[1273] = 21'b000000000000001000010;
+
+ann_weights[1274] = 21'b100000000000110011000;
+
+ann_weights[1275] = 21'b000000000000001010011;
+
+ann_weights[1276] = 21'b100000000000010100100;
+
+ann_weights[1277] = 21'b100000000001010001111;
+
+ann_weights[1278] = 21'b000000000000010110001;
+
+ann_weights[1279] = 21'b100000000000111111011;
+
+ann_weights[1280] = 21'b100000000000001111110;
+
+ann_weights[1281] = 21'b100000000000000000110;
+
+ann_weights[1282] = 21'b000000000000000011111;
+
+ann_weights[1283] = 21'b000000000000010010001;
+
+ann_weights[1284] = 21'b100000000000011111100;
+
+ann_weights[1285] = 21'b000000000000001011110;
+
+ann_weights[1286] = 21'b000000000000000000110;
+
+ann_weights[1287] = 21'b100000000001110001011;
+
+ann_weights[1288] = 21'b000000000000001000001;
+
+ann_weights[1289] = 21'b100000000001010010110;
+
+ann_weights[1290] = 21'b000000000000001011011;
+
+ann_weights[1291] = 21'b100000000000001111100;
+
+ann_weights[1292] = 21'b000000000000001000010;
+
+ann_weights[1293] = 21'b000000000000001110110;
+
+ann_weights[1294] = 21'b100000000000001111001;
+
+ann_weights[1295] = 21'b000000000000001100000;
+
+ann_weights[1296] = 21'b000000000000000011100;
+
+ann_weights[1297] = 21'b100000000010000011100;
+
+ann_weights[1298] = 21'b000000000000000110011;
+
+ann_weights[1299] = 21'b100000000001000010111;
+
+ann_weights[1300] = 21'b100000000000000001101;
+
+ann_weights[1301] = 21'b100000000000010000101;
+
+ann_weights[1302] = 21'b100000000000000110001;
+
+ann_weights[1303] = 21'b000000000000001101000;
+
+ann_weights[1304] = 21'b100000000000011000110;
+
+ann_weights[1305] = 21'b000000000000001111110;
+
+ann_weights[1306] = 21'b000000000000000010010;
+
+ann_weights[1307] = 21'b100000000001111000010;
+
+ann_weights[1308] = 21'b100000000000000001010;
+
+ann_weights[1309] = 21'b100000000001000011000;
+
+ann_weights[1310] = 21'b100000000000001101011;
+
+ann_weights[1311] = 21'b000000000000000110100;
+
+ann_weights[1312] = 21'b100000000000010111011;
+
+ann_weights[1313] = 21'b000000000000000101010;
+
+ann_weights[1314] = 21'b000000000000001100000;
+
+ann_weights[1315] = 21'b000000000000010000100;
+
+ann_weights[1316] = 21'b000000000000010100100;
+
+ann_weights[1317] = 21'b100000000001100010011;
+
+ann_weights[1318] = 21'b000000000000000100101;
+
+ann_weights[1319] = 21'b100000000001010010001;
+
+ann_weights[1320] = 21'b100000000000001011001;
+
+ann_weights[1321] = 21'b000000000000001001100;
+
+ann_weights[1322] = 21'b100000000000001110101;
+
+ann_weights[1323] = 21'b100000000000001111110;
+
+ann_weights[1324] = 21'b000000000000101000000;
+
+ann_weights[1325] = 21'b100000000000001111011;
+
+ann_weights[1326] = 21'b000000000000011100010;
+
+ann_weights[1327] = 21'b100000000001010010111;
+
+ann_weights[1328] = 21'b000000000000000010010;
+
+ann_weights[1329] = 21'b100000000001000100010;
+
+ann_weights[1330] = 21'b100000000000010001101;
+
+ann_weights[1331] = 21'b000000000000000011110;
+
+ann_weights[1332] = 21'b100000000000101001100;
+
+ann_weights[1333] = 21'b100000000000100010111;
+
+ann_weights[1334] = 21'b000000000000100010110;
+
+ann_weights[1335] = 21'b000000000000001111010;
+
+ann_weights[1336] = 21'b000000000000100000100;
+
+ann_weights[1337] = 21'b100000000000011100000;
+
+ann_weights[1338] = 21'b000000000000000110110;
+
+ann_weights[1339] = 21'b100000000010001011001;
+
+ann_weights[1340] = 21'b100000000000001111110;
+
+ann_weights[1341] = 21'b100000000000010010100;
+
+ann_weights[1342] = 21'b100000000000111010100;
+
+ann_weights[1343] = 21'b100000000000011001101;
+
+ann_weights[1344] = 21'b000000000000101001010;
+
+ann_weights[1345] = 21'b000000000000001110110;
+
+ann_weights[1346] = 21'b000000000000011110100;
+
+ann_weights[1347] = 21'b100000000000101000111;
+
+ann_weights[1348] = 21'b100000000000010101100;
+
+ann_weights[1349] = 21'b100000000001110001101;
+
+ann_weights[1350] = 21'b100000000000001101111;
+
+ann_weights[1351] = 21'b100000000000010110101;
+
+ann_weights[1352] = 21'b100000000001010011010;
+
+ann_weights[1353] = 21'b100000000001011101010;
+
+ann_weights[1354] = 21'b000000000000100101011;
+
+ann_weights[1355] = 21'b000000000000011010011;
+
+ann_weights[1356] = 21'b000000000000100100010;
+
+ann_weights[1357] = 21'b100000000000100011111;
+
+ann_weights[1358] = 21'b100000000000010011000;
+
+ann_weights[1359] = 21'b100000000001010111101;
+
+ann_weights[1360] = 21'b100000000000011111101;
+
+ann_weights[1361] = 21'b100000000000111001010;
+
+ann_weights[1362] = 21'b100000000000111111010;
+
+ann_weights[1363] = 21'b100000000001010011011;
+
+ann_weights[1364] = 21'b000000000000011111111;
+
+ann_weights[1365] = 21'b000000000000100011100;
+
+ann_weights[1366] = 21'b100000000000000010010;
+
+ann_weights[1367] = 21'b100000000000101111110;
+
+ann_weights[1368] = 21'b000000000000000101100;
+
+ann_weights[1369] = 21'b100000000000101001001;
+
+ann_weights[1370] = 21'b100000000000011110100;
+
+ann_weights[1371] = 21'b100000000001000001111;
+
+ann_weights[1372] = 21'b100000000000001100000;
+
+ann_weights[1373] = 21'b100000000000011000111;
+
+ann_weights[1374] = 21'b100000000000000101000;
+
+ann_weights[1375] = 21'b000000000000100101100;
+
+ann_weights[1376] = 21'b100000000000001011100;
+
+ann_weights[1377] = 21'b100000000000011100000;
+
+ann_weights[1378] = 21'b000000000000010001100;
+
+ann_weights[1379] = 21'b100000000000100011010;
+
+ann_weights[1380] = 21'b100000000000010001001;
+
+ann_weights[1381] = 21'b100000000000011110110;
+
+ann_weights[1382] = 21'b100000000000001100001;
+
+ann_weights[1383] = 21'b100000000000001101111;
+
+ann_weights[1384] = 21'b100000000000001101001;
+
+ann_weights[1385] = 21'b000000000000001000010;
+
+ann_weights[1386] = 21'b100000000000001101011;
+
+ann_weights[1387] = 21'b100000000000000111100;
+
+ann_weights[1388] = 21'b000000000000001011100;
+
+ann_weights[1389] = 21'b100000000000000011110;
+
+ann_weights[1390] = 21'b100000000000001100110;
+
+ann_weights[1391] = 21'b100000000000010110111;
+
+ann_weights[1392] = 21'b100000000000011001100;
+
+ann_weights[1393] = 21'b100000000000001010111;
+
+ann_weights[1394] = 21'b100000000000001110010;
+
+ann_weights[1395] = 21'b100000000000011010011;
+
+ann_weights[1396] = 21'b000000000000001001001;
+
+ann_weights[1397] = 21'b100000000000000110000;
+
+ann_weights[1398] = 21'b000000000000000110001;
+
+ann_weights[1399] = 21'b100000000000010011001;
+
+ann_weights[1400] = 21'b000000000000000010011;
+
+ann_weights[1401] = 21'b100000000000000011001;
+
+ann_weights[1402] = 21'b000000000000000011100;
+
+ann_weights[1403] = 21'b000000000000001000001;
+
+ann_weights[1404] = 21'b000000000000001010000;
+
+ann_weights[1405] = 21'b100000000000000000001;
+
+ann_weights[1406] = 21'b100000000000001000011;
+
+ann_weights[1407] = 21'b000000000000000111010;
+
+ann_weights[1408] = 21'b000000000000000001101;
+
+ann_weights[1409] = 21'b100000000000001001100;
+
+ann_weights[1410] = 21'b000000000000000100011;
+
+ann_weights[1411] = 21'b000000000000001010100;
+
+ann_weights[1412] = 21'b100000000000000010010;
+
+ann_weights[1413] = 21'b100000000000001000110;
+
+ann_weights[1414] = 21'b100000000000001010010;
+
+ann_weights[1415] = 21'b000000000000000101110;
+
+ann_weights[1416] = 21'b100000000000000001000;
+
+ann_weights[1417] = 21'b000000000000000100011;
+
+ann_weights[1418] = 21'b000000000000001000111;
+
+ann_weights[1419] = 21'b100000000000000011111;
+
+ann_weights[1420] = 21'b100000000000011010000;
+
+ann_weights[1421] = 21'b000000000000001110010;
+
+ann_weights[1422] = 21'b100000000000000011001;
+
+ann_weights[1423] = 21'b000000000000000100011;
+
+ann_weights[1424] = 21'b100000000000011101001;
+
+ann_weights[1425] = 21'b100000000000100000100;
+
+ann_weights[1426] = 21'b000000000000001110111;
+
+ann_weights[1427] = 21'b100000000000010101110;
+
+ann_weights[1428] = 21'b100000000000100100010;
+
+ann_weights[1429] = 21'b100000000000011000001;
+
+ann_weights[1430] = 21'b100000000000011010000;
+
+ann_weights[1431] = 21'b000000000000001101111;
+
+ann_weights[1432] = 21'b100000000000000100100;
+
+ann_weights[1433] = 21'b000000000000010000000;
+
+ann_weights[1434] = 21'b100000000000000001011;
+
+ann_weights[1435] = 21'b100000000000011000101;
+
+ann_weights[1436] = 21'b100000000000011010010;
+
+ann_weights[1437] = 21'b100000000000001110101;
+
+ann_weights[1438] = 21'b100000000000101100001;
+
+ann_weights[1439] = 21'b100000000000100000001;
+
+ann_weights[1440] = 21'b100000000000101001011;
+
+ann_weights[1441] = 21'b000000000000011000001;
+
+ann_weights[1442] = 21'b100000000000000010110;
+
+ann_weights[1443] = 21'b000000000000100011110;
+
+ann_weights[1444] = 21'b000000000000001111100;
+
+ann_weights[1445] = 21'b100000000001001001011;
+
+ann_weights[1446] = 21'b000000000000001000011;
+
+ann_weights[1447] = 21'b100000000000011011100;
+
+ann_weights[1448] = 21'b100000000000111100000;
+
+ann_weights[1449] = 21'b100000000000100111110;
+
+ann_weights[1450] = 21'b100000000000110011011;
+
+ann_weights[1451] = 21'b000000000000001011010;
+
+ann_weights[1452] = 21'b000000000000000110111;
+
+ann_weights[1453] = 21'b000000000000110001110;
+
+ann_weights[1454] = 21'b000000000000010000111;
+
+ann_weights[1455] = 21'b100000000000110111110;
+
+ann_weights[1456] = 21'b100000000000011010000;
+
+ann_weights[1457] = 21'b000000000000001110111;
+
+ann_weights[1458] = 21'b100000000001001000110;
+
+ann_weights[1459] = 21'b100000000001001100000;
+
+ann_weights[1460] = 21'b100000000000010001000;
+
+ann_weights[1461] = 21'b100000000000000000010;
+
+ann_weights[1462] = 21'b000000000000010010000;
+
+ann_weights[1463] = 21'b000000000000011111010;
+
+ann_weights[1464] = 21'b100000000000000010010;
+
+ann_weights[1465] = 21'b100000000000011111111;
+
+ann_weights[1466] = 21'b100000000000001010101;
+
+ann_weights[1467] = 21'b000000000000000010110;
+
+ann_weights[1468] = 21'b100000000000100101001;
+
+ann_weights[1469] = 21'b100000000001100100001;
+
+ann_weights[1470] = 21'b100000000000010001001;
+
+ann_weights[1471] = 21'b100000000000010100101;
+
+ann_weights[1472] = 21'b000000000000000100001;
+
+ann_weights[1473] = 21'b000000000000010010100;
+
+ann_weights[1474] = 21'b100000000000000001110;
+
+ann_weights[1475] = 21'b100000000000010010111;
+
+ann_weights[1476] = 21'b100000000000011000001;
+
+ann_weights[1477] = 21'b000000000000000111011;
+
+ann_weights[1478] = 21'b100000000000000001010;
+
+ann_weights[1479] = 21'b100000000001000101011;
+
+ann_weights[1480] = 21'b000000000000000001010;
+
+ann_weights[1481] = 21'b100000000000101011011;
+
+ann_weights[1482] = 21'b000000000000001000001;
+
+ann_weights[1483] = 21'b000000000000001010011;
+
+ann_weights[1484] = 21'b100000000000000101011;
+
+ann_weights[1485] = 21'b100000000000001011111;
+
+ann_weights[1486] = 21'b000000000000001000000;
+
+ann_weights[1487] = 21'b000000000000010000001;
+
+ann_weights[1488] = 21'b100000000000010011000;
+
+ann_weights[1489] = 21'b100000000000110010101;
+
+ann_weights[1490] = 21'b100000000000000010101;
+
+ann_weights[1491] = 21'b100000000000101011110;
+
+ann_weights[1492] = 21'b000000000000001110111;
+
+ann_weights[1493] = 21'b000000000000001111011;
+
+ann_weights[1494] = 21'b100000000000000110010;
+
+ann_weights[1495] = 21'b100000000000001101110;
+
+ann_weights[1496] = 21'b100000000000001110001;
+
+ann_weights[1497] = 21'b100000000000000010010;
+
+ann_weights[1498] = 21'b100000000000000110110;
+
+ann_weights[1499] = 21'b100000000000101100001;
+
+ann_weights[1500] = 21'b000000000000001001101;
+
+ann_weights[1501] = 21'b100000000000100010111;
+
+ann_weights[1502] = 21'b000000000000001110111;
+
+ann_weights[1503] = 21'b000000000000001100000;
+
+ann_weights[1504] = 21'b100000000000011001000;
+
+ann_weights[1505] = 21'b000000000000000011001;
+
+ann_weights[1506] = 21'b100000000000001011000;
+
+ann_weights[1507] = 21'b100000000000011000111;
+
+ann_weights[1508] = 21'b100000000000011001000;
+
+ann_weights[1509] = 21'b100000000000100010010;
+
+ann_weights[1510] = 21'b000000000000000000000;
+
+ann_weights[1511] = 21'b100000000000101101001;
+
+ann_weights[1512] = 21'b000000000000010010111;
+
+ann_weights[1513] = 21'b000000000000001011011;
+
+ann_weights[1514] = 21'b100000000000010010110;
+
+ann_weights[1515] = 21'b100000000000000111000;
+
+ann_weights[1516] = 21'b100000000000100101100;
+
+ann_weights[1517] = 21'b100000000000011100111;
+
+ann_weights[1518] = 21'b000000000000001001000;
+
+ann_weights[1519] = 21'b000000000000001101111;
+
+ann_weights[1520] = 21'b100000000000001010010;
+
+ann_weights[1521] = 21'b100000000000011000001;
+
+ann_weights[1522] = 21'b000000000000001110110;
+
+ann_weights[1523] = 21'b000000000000000001000;
+
+ann_weights[1524] = 21'b100000000000010111110;
+
+ann_weights[1525] = 21'b100000000000000011010;
+
+ann_weights[1526] = 21'b100000000000010111000;
+
+ann_weights[1527] = 21'b100000000000011011001;
+
+ann_weights[1528] = 21'b000000000000001010100;
+
+ann_weights[1529] = 21'b100000000000000011100;
+
+ann_weights[1530] = 21'b000000000000001000101;
+
+ann_weights[1531] = 21'b100000000000001111100;
+
+ann_weights[1532] = 21'b000000000000011001111;
+
+ann_weights[1533] = 21'b000000000000010000100;
+
+ann_weights[1534] = 21'b100000000000011111010;
+
+ann_weights[1535] = 21'b100000000000001001110;
+
+ann_weights[1536] = 21'b100000000000011110011;
+
+ann_weights[1537] = 21'b100000000000011100111;
+
+ann_weights[1538] = 21'b000000000000010101111;
+
+ann_weights[1539] = 21'b000000000000000101110;
+
+ann_weights[1540] = 21'b000000000000001011000;
+
+ann_weights[1541] = 21'b100000000000000010111;
+
+ann_weights[1542] = 21'b000000000000010010110;
+
+ann_weights[1543] = 21'b100000000000000101010;
+
+ann_weights[1544] = 21'b100000000000001100100;
+
+ann_weights[1545] = 21'b100000000000000101101;
+
+ann_weights[1546] = 21'b100000000000001110110;
+
+ann_weights[1547] = 21'b100000000000101011100;
+
+ann_weights[1548] = 21'b000000000000000111110;
+
+ann_weights[1549] = 21'b100000000000010100101;
+
+ann_weights[1550] = 21'b000000000000000110111;
+
+ann_weights[1551] = 21'b100000000000000000101;
+
+ann_weights[1552] = 21'b000000000000011001000;
+
+ann_weights[1553] = 21'b000000000000010011001;
+
+ann_weights[1554] = 21'b100000000000010000010;
+
+ann_weights[1555] = 21'b100000000000010011001;
+
+ann_weights[1556] = 21'b100000000000001011111;
+
+ann_weights[1557] = 21'b100000000000101111010;
+
+ann_weights[1558] = 21'b000000000000001101001;
+
+ann_weights[1559] = 21'b100000000000011111000;
+
+ann_weights[1560] = 21'b000000000000001100010;
+
+ann_weights[1561] = 21'b100000000000011001011;
+
+ann_weights[1562] = 21'b000000000000011011000;
+
+ann_weights[1563] = 21'b000000000000010100001;
+
+ann_weights[1564] = 21'b000000000000000111000;
+
+ann_weights[1565] = 21'b000000000000000011101;
+
+ann_weights[1566] = 21'b100000000000010010101;
+
+ann_weights[1567] = 21'b100000000000101100010;
+
+ann_weights[1568] = 21'b000000000000010000110;
+
+ann_weights[1569] = 21'b100000000000101100000;
+
+ann_weights[1570] = 21'b000000000000010001001;
+
+ann_weights[1571] = 21'b100000000000100010001;
+
+ann_weights[1572] = 21'b000000000000010000101;
+
+ann_weights[1573] = 21'b100000000000001100011;
+
+ann_weights[1574] = 21'b100000000000000010111;
+
+ann_weights[1575] = 21'b000000000000001010010;
+
+ann_weights[1576] = 21'b000000000000000110000;
+
+ann_weights[1577] = 21'b100000000000111011110;
+
+ann_weights[1578] = 21'b000000000000001101000;
+
+ann_weights[1579] = 21'b100000000000110010010;
+
+ann_weights[1580] = 21'b000000000000000111110;
+
+ann_weights[1581] = 21'b100000000000010000010;
+
+ann_weights[1582] = 21'b000000000000010000001;
+
+ann_weights[1583] = 21'b100000000000000010111;
+
+ann_weights[1584] = 21'b100000000000000001010;
+
+ann_weights[1585] = 21'b000000000000001100110;
+
+ann_weights[1586] = 21'b000000000000001010100;
+
+ann_weights[1587] = 21'b100000000000111000011;
+
+ann_weights[1588] = 21'b100000000000000011110;
+
+ann_weights[1589] = 21'b100000000000101111000;
+
+ann_weights[1590] = 21'b000000000000001010001;
+
+ann_weights[1591] = 21'b100000000000000110010;
+
+ann_weights[1592] = 21'b100000000000000110110;
+
+ann_weights[1593] = 21'b000000000000000111110;
+
+ann_weights[1594] = 21'b000000000000000101011;
+
+ann_weights[1595] = 21'b000000000000001100110;
+
+ann_weights[1596] = 21'b000000000000010100000;
+
+ann_weights[1597] = 21'b100000000001010010101;
+
+ann_weights[1598] = 21'b000000000000000111001;
+
+ann_weights[1599] = 21'b100000000000101101101;
+
+ann_weights[1600] = 21'b100000000000001000110;
+
+ann_weights[1601] = 21'b000000000000000010001;
+
+ann_weights[1602] = 21'b100000000000000001011;
+
+ann_weights[1603] = 21'b100000000000010101011;
+
+ann_weights[1604] = 21'b000000000000000110101;
+
+ann_weights[1605] = 21'b000000000000001011010;
+
+ann_weights[1606] = 21'b000000000000001111111;
+
+ann_weights[1607] = 21'b100000000001101101010;
+
+ann_weights[1608] = 21'b000000000000001000110;
+
+ann_weights[1609] = 21'b100000000000100110000;
+
+ann_weights[1610] = 21'b100000000000000100011;
+
+ann_weights[1611] = 21'b000000000000010101000;
+
+ann_weights[1612] = 21'b100000000000001010011;
+
+ann_weights[1613] = 21'b100000000000010001011;
+
+ann_weights[1614] = 21'b000000000000000011001;
+
+ann_weights[1615] = 21'b000000000000000101011;
+
+ann_weights[1616] = 21'b000000000000001100101;
+
+ann_weights[1617] = 21'b100000000001100011010;
+
+ann_weights[1618] = 21'b100000000000000100001;
+
+ann_weights[1619] = 21'b100000000000101110111;
+
+ann_weights[1620] = 21'b000000000000000001100;
+
+ann_weights[1621] = 21'b000000000000011001001;
+
+ann_weights[1622] = 21'b100000000000010001001;
+
+ann_weights[1623] = 21'b100000000000011000000;
+
+ann_weights[1624] = 21'b000000000000001111011;
+
+ann_weights[1625] = 21'b000000000000001101000;
+
+ann_weights[1626] = 21'b000000000000001101111;
+
+ann_weights[1627] = 21'b100000000001000111110;
+
+ann_weights[1628] = 21'b100000000000010011011;
+
+ann_weights[1629] = 21'b100000000001010010010;
+
+ann_weights[1630] = 21'b100000000000100011000;
+
+ann_weights[1631] = 21'b000000000000000010011;
+
+ann_weights[1632] = 21'b100000000000100100101;
+
+ann_weights[1633] = 21'b100000000000110101011;
+
+ann_weights[1634] = 21'b000000000000110100000;
+
+ann_weights[1635] = 21'b000000000000011101101;
+
+ann_weights[1636] = 21'b000000000000100100110;
+
+ann_weights[1637] = 21'b100000000001100111100;
+
+ann_weights[1638] = 21'b100000000000100011000;
+
+ann_weights[1639] = 21'b100000000010101011000;
+
+ann_weights[1640] = 21'b100000000000110000110;
+
+ann_weights[1641] = 21'b100000000000000001011;
+
+ann_weights[1642] = 21'b100000000000111111101;
+
+ann_weights[1643] = 21'b100000000001000000110;
+
+ann_weights[1644] = 21'b000000000000001011101;
+
+ann_weights[1645] = 21'b000000000000100100110;
+
+ann_weights[1646] = 21'b000000000000001001111;
+
+ann_weights[1647] = 21'b100000000001010100010;
+
+ann_weights[1648] = 21'b100000000000001000010;
+
+ann_weights[1649] = 21'b100000000001101111000;
+
+ann_weights[1650] = 21'b100000000001011011010;
+
+ann_weights[1651] = 21'b100000000001000010011;
+
+ann_weights[1652] = 21'b100000000000100011110;
+
+ann_weights[1653] = 21'b100000000001001011010;
+
+ann_weights[1654] = 21'b100000000000001010111;
+
+ann_weights[1655] = 21'b000000000000111011110;
+
+ann_weights[1656] = 21'b100000000000001001110;
+
+ann_weights[1657] = 21'b100000000000101010010;
+
+ann_weights[1658] = 21'b000000000000100001100;
+
+ann_weights[1659] = 21'b100000000000111100101;
+
+ann_weights[1660] = 21'b100000000000110100111;
+
+ann_weights[1661] = 21'b100000000000100110101;
+
+ann_weights[1662] = 21'b100000000000100111101;
+
+ann_weights[1663] = 21'b100000000000011001010;
+
+ann_weights[1664] = 21'b100000000000100001001;
+
+ann_weights[1665] = 21'b000000000000101111101;
+
+ann_weights[1666] = 21'b100000000000000000111;
+
+ann_weights[1667] = 21'b100000000000100101011;
+
+ann_weights[1668] = 21'b100000000000001100000;
+
+ann_weights[1669] = 21'b100000000000101011110;
+
+ann_weights[1670] = 21'b100000000000011000110;
+
+ann_weights[1671] = 21'b100000000000011000001;
+
+ann_weights[1672] = 21'b100000000000001111011;
+
+ann_weights[1673] = 21'b100000000000011100000;
+
+ann_weights[1674] = 21'b100000000000011011100;
+
+ann_weights[1675] = 21'b000000000000000111010;
+
+ann_weights[1676] = 21'b000000000000001100010;
+
+ann_weights[1677] = 21'b100000000000000110001;
+
+ann_weights[1678] = 21'b100000000000010001010;
+
+ann_weights[1679] = 21'b100000000000001010001;
+
+ann_weights[1680] = 21'b100000000000000111110;
+
+ann_weights[1681] = 21'b000000000000001001100;
+
+ann_weights[1682] = 21'b100000000000000111101;
+
+ann_weights[1683] = 21'b000000000000000001000;
+
+ann_weights[1684] = 21'b100000000000000001111;
+
+ann_weights[1685] = 21'b100000000000000000111;
+
+ann_weights[1686] = 21'b100000000000000011011;
+
+ann_weights[1687] = 21'b000000000000000101010;
+
+ann_weights[1688] = 21'b000000000000000000000;
+
+ann_weights[1689] = 21'b000000000000000100110;
+
+ann_weights[1690] = 21'b100000000000000001000;
+
+ann_weights[1691] = 21'b100000000000001100100;
+
+ann_weights[1692] = 21'b100000000000000111101;
+
+ann_weights[1693] = 21'b000000000000011001010;
+
+ann_weights[1694] = 21'b100000000000001100100;
+
+ann_weights[1695] = 21'b100000000000000110111;
+
+ann_weights[1696] = 21'b000000000000000110000;
+
+ann_weights[1697] = 21'b100000000000010001011;
+
+ann_weights[1698] = 21'b100000000000010111000;
+
+ann_weights[1699] = 21'b100000000000010010101;
+
+ann_weights[1700] = 21'b100000000000011001110;
+
+ann_weights[1701] = 21'b100000000000100001000;
+
+ann_weights[1702] = 21'b100000000000010101001;
+
+ann_weights[1703] = 21'b100000000000000001110;
+
+ann_weights[1704] = 21'b100000000000100000100;
+
+ann_weights[1705] = 21'b000000000000000011000;
+
+ann_weights[1706] = 21'b100000000000010000011;
+
+ann_weights[1707] = 21'b000000000000011001101;
+
+ann_weights[1708] = 21'b100000000000100101100;
+
+ann_weights[1709] = 21'b100000000000011111110;
+
+ann_weights[1710] = 21'b100000000000011000110;
+
+ann_weights[1711] = 21'b000000000000000111101;
+
+ann_weights[1712] = 21'b100000000000001010010;
+
+ann_weights[1713] = 21'b000000000000011111011;
+
+ann_weights[1714] = 21'b100000000000100010101;
+
+ann_weights[1715] = 21'b100000000001001001011;
+
+ann_weights[1716] = 21'b100000000000110011101;
+
+ann_weights[1717] = 21'b000000000000011110101;
+
+ann_weights[1718] = 21'b100000000000111001111;
+
+ann_weights[1719] = 21'b100000000000101110110;
+
+ann_weights[1720] = 21'b100000000000101101101;
+
+ann_weights[1721] = 21'b000000000000001000001;
+
+ann_weights[1722] = 21'b000000000000001111100;
+
+ann_weights[1723] = 21'b000000000000010001101;
+
+ann_weights[1724] = 21'b000000000000000011101;
+
+ann_weights[1725] = 21'b100000000000111000101;
+
+ann_weights[1726] = 21'b100000000000010000111;
+
+ann_weights[1727] = 21'b000000000000000000010;
+
+ann_weights[1728] = 21'b100000000000101100110;
+
+ann_weights[1729] = 21'b100000000001001110110;
+
+ann_weights[1730] = 21'b100000000000000101000;
+
+ann_weights[1731] = 21'b100000000000010001101;
+
+ann_weights[1732] = 21'b000000000000010001001;
+
+ann_weights[1733] = 21'b000000000000100000101;
+
+ann_weights[1734] = 21'b000000000000010101100;
+
+ann_weights[1735] = 21'b100000000000011111010;
+
+ann_weights[1736] = 21'b100000000000100001011;
+
+ann_weights[1737] = 21'b000000000000011101010;
+
+ann_weights[1738] = 21'b100000000000011011000;
+
+ann_weights[1739] = 21'b100000000001101010110;
+
+ann_weights[1740] = 21'b100000000000001101110;
+
+ann_weights[1741] = 21'b100000000000000010101;
+
+ann_weights[1742] = 21'b000000000000001000110;
+
+ann_weights[1743] = 21'b000000000000011001110;
+
+ann_weights[1744] = 21'b000000000000000011110;
+
+ann_weights[1745] = 21'b100000000000010100010;
+
+ann_weights[1746] = 21'b100000000000010101111;
+
+ann_weights[1747] = 21'b000000000000011010001;
+
+ann_weights[1748] = 21'b100000000000011101001;
+
+ann_weights[1749] = 21'b100000000000110101101;
+
+ann_weights[1750] = 21'b000000000000000001111;
+
+ann_weights[1751] = 21'b100000000000101001100;
+
+ann_weights[1752] = 21'b000000000000001110001;
+
+ann_weights[1753] = 21'b000000000000001101001;
+
+ann_weights[1754] = 21'b100000000000000101111;
+
+ann_weights[1755] = 21'b100000000000001011100;
+
+ann_weights[1756] = 21'b100000000000001110010;
+
+ann_weights[1757] = 21'b000000000000001111100;
+
+ann_weights[1758] = 21'b100000000000010001110;
+
+ann_weights[1759] = 21'b100000000000111100011;
+
+ann_weights[1760] = 21'b100000000000001111111;
+
+ann_weights[1761] = 21'b100000000000110001100;
+
+ann_weights[1762] = 21'b000000000000001111111;
+
+ann_weights[1763] = 21'b000000000000001001010;
+
+ann_weights[1764] = 21'b100000000000000000100;
+
+ann_weights[1765] = 21'b000000000000000011001;
+
+ann_weights[1766] = 21'b100000000000000000011;
+
+ann_weights[1767] = 21'b000000000000011000000;
+
+ann_weights[1768] = 21'b100000000000000000011;
+
+ann_weights[1769] = 21'b100000000000011110010;
+
+ann_weights[1770] = 21'b100000000000100101001;
+
+ann_weights[1771] = 21'b100000000000101100010;
+
+ann_weights[1772] = 21'b000000000000000101111;
+
+ann_weights[1773] = 21'b000000000000001010010;
+
+ann_weights[1774] = 21'b100000000000001011101;
+
+ann_weights[1775] = 21'b100000000000000110111;
+
+ann_weights[1776] = 21'b100000000000001011111;
+
+ann_weights[1777] = 21'b000000000000010011010;
+
+ann_weights[1778] = 21'b100000000000001011110;
+
+ann_weights[1779] = 21'b100000000000001011011;
+
+ann_weights[1780] = 21'b000000000000000000001;
+
+ann_weights[1781] = 21'b100000000000100010110;
+
+ann_weights[1782] = 21'b000000000000010001110;
+
+ann_weights[1783] = 21'b000000000000010011000;
+
+ann_weights[1784] = 21'b100000000000010001110;
+
+ann_weights[1785] = 21'b000000000000000001011;
+
+ann_weights[1786] = 21'b100000000000011111000;
+
+ann_weights[1787] = 21'b000000000000001010100;
+
+ann_weights[1788] = 21'b100000000000000011101;
+
+ann_weights[1789] = 21'b100000000000000101011;
+
+ann_weights[1790] = 21'b100000000000000111101;
+
+ann_weights[1791] = 21'b100000000000011011101;
+
+ann_weights[1792] = 21'b100000000000000101000;
+
+ann_weights[1793] = 21'b000000000000001001011;
+
+ann_weights[1794] = 21'b100000000000011101011;
+
+ann_weights[1795] = 21'b000000000000000110100;
+
+ann_weights[1796] = 21'b100000000000010011001;
+
+ann_weights[1797] = 21'b000000000000011110011;
+
+ann_weights[1798] = 21'b100000000000000010100;
+
+ann_weights[1799] = 21'b000000000000001001000;
+
+ann_weights[1800] = 21'b100000000000000011100;
+
+ann_weights[1801] = 21'b100000000000010010001;
+
+ann_weights[1802] = 21'b000000000000000100101;
+
+ann_weights[1803] = 21'b000000000000010000110;
+
+ann_weights[1804] = 21'b100000000000101001100;
+
+ann_weights[1805] = 21'b000000000000000000110;
+
+ann_weights[1806] = 21'b100000000000011010001;
+
+ann_weights[1807] = 21'b000000000000000001011;
+
+ann_weights[1808] = 21'b000000000000000010010;
+
+ann_weights[1809] = 21'b000000000000001011110;
+
+ann_weights[1810] = 21'b000000000000010010111;
+
+ann_weights[1811] = 21'b100000000000011011000;
+
+ann_weights[1812] = 21'b000000000000000100011;
+
+ann_weights[1813] = 21'b000000000000010011110;
+
+ann_weights[1814] = 21'b100000000000101011001;
+
+ann_weights[1815] = 21'b100000000000000010000;
+
+ann_weights[1816] = 21'b100000000000010000000;
+
+ann_weights[1817] = 21'b100000000000001001000;
+
+ann_weights[1818] = 21'b000000000000001001010;
+
+ann_weights[1819] = 21'b000000000000100010110;
+
+ann_weights[1820] = 21'b000000000000010011101;
+
+ann_weights[1821] = 21'b100000000000011000100;
+
+ann_weights[1822] = 21'b000000000000000100101;
+
+ann_weights[1823] = 21'b000000000000001111111;
+
+ann_weights[1824] = 21'b100000000000110000000;
+
+ann_weights[1825] = 21'b000000000000000101000;
+
+ann_weights[1826] = 21'b100000000000011011010;
+
+ann_weights[1827] = 21'b100000000000001000110;
+
+ann_weights[1828] = 21'b000000000000001001111;
+
+ann_weights[1829] = 21'b000000000000100010111;
+
+ann_weights[1830] = 21'b000000000000000001000;
+
+ann_weights[1831] = 21'b100000000000101000010;
+
+ann_weights[1832] = 21'b000000000000000100011;
+
+ann_weights[1833] = 21'b000000000000001001001;
+
+ann_weights[1834] = 21'b100000000000110100100;
+
+ann_weights[1835] = 21'b100000000000001000000;
+
+ann_weights[1836] = 21'b100000000000000111100;
+
+ann_weights[1837] = 21'b100000000000001110111;
+
+ann_weights[1838] = 21'b000000000000001011111;
+
+ann_weights[1839] = 21'b000000000000010111111;
+
+ann_weights[1840] = 21'b000000000000001011101;
+
+ann_weights[1841] = 21'b100000000000100010010;
+
+ann_weights[1842] = 21'b000000000000001011001;
+
+ann_weights[1843] = 21'b000000000000010110101;
+
+ann_weights[1844] = 21'b100000000000111010101;
+
+ann_weights[1845] = 21'b100000000000001010010;
+
+ann_weights[1846] = 21'b100000000000011010100;
+
+ann_weights[1847] = 21'b000000000000000001001;
+
+ann_weights[1848] = 21'b000000000000001110110;
+
+ann_weights[1849] = 21'b000000000000011010000;
+
+ann_weights[1850] = 21'b000000000000010000001;
+
+ann_weights[1851] = 21'b100000000000100111011;
+
+ann_weights[1852] = 21'b100000000000000010101;
+
+ann_weights[1853] = 21'b100000000000000000100;
+
+ann_weights[1854] = 21'b100000000000011110100;
+
+ann_weights[1855] = 21'b000000000000000011101;
+
+ann_weights[1856] = 21'b100000000000010100010;
+
+ann_weights[1857] = 21'b100000000000001011010;
+
+ann_weights[1858] = 21'b000000000000000110100;
+
+ann_weights[1859] = 21'b000000000000010111010;
+
+ann_weights[1860] = 21'b000000000000011011100;
+
+ann_weights[1861] = 21'b100000000000001010111;
+
+ann_weights[1862] = 21'b100000000000000100110;
+
+ann_weights[1863] = 21'b000000000000010010001;
+
+ann_weights[1864] = 21'b100000000000011110000;
+
+ann_weights[1865] = 21'b000000000000001001011;
+
+ann_weights[1866] = 21'b100000000000011100101;
+
+ann_weights[1867] = 21'b100000000000001101111;
+
+ann_weights[1868] = 21'b000000000000000011011;
+
+ann_weights[1869] = 21'b000000000000011100000;
+
+ann_weights[1870] = 21'b000000000000010111001;
+
+ann_weights[1871] = 21'b100000000000001101001;
+
+ann_weights[1872] = 21'b100000000000000111011;
+
+ann_weights[1873] = 21'b100000000000000101101;
+
+ann_weights[1874] = 21'b100000000000001101111;
+
+ann_weights[1875] = 21'b000000000000001111011;
+
+ann_weights[1876] = 21'b100000000000001001100;
+
+ann_weights[1877] = 21'b100000000000000111111;
+
+ann_weights[1878] = 21'b000000000000001000001;
+
+ann_weights[1879] = 21'b000000000000000000000;
+
+ann_weights[1880] = 21'b000000000000001010111;
+
+ann_weights[1881] = 21'b000000000000001011010;
+
+ann_weights[1882] = 21'b100000000000001000110;
+
+ann_weights[1883] = 21'b100000000000000011010;
+
+ann_weights[1884] = 21'b100000000000001000000;
+
+ann_weights[1885] = 21'b000000000000010111001;
+
+ann_weights[1886] = 21'b100000000000000010110;
+
+ann_weights[1887] = 21'b100000000000010010001;
+
+ann_weights[1888] = 21'b000000000000010001000;
+
+ann_weights[1889] = 21'b000000000000000110001;
+
+ann_weights[1890] = 21'b000000000000010001010;
+
+ann_weights[1891] = 21'b000000000000000011111;
+
+ann_weights[1892] = 21'b100000000000001010010;
+
+ann_weights[1893] = 21'b100000000000000001101;
+
+ann_weights[1894] = 21'b100000000000001111100;
+
+ann_weights[1895] = 21'b000000000000001001011;
+
+ann_weights[1896] = 21'b000000000000000001000;
+
+ann_weights[1897] = 21'b100000000000001001110;
+
+ann_weights[1898] = 21'b000000000000000011111;
+
+ann_weights[1899] = 21'b100000000000010101001;
+
+ann_weights[1900] = 21'b000000000000010011110;
+
+ann_weights[1901] = 21'b100000000000000000000;
+
+ann_weights[1902] = 21'b100000000000010010111;
+
+ann_weights[1903] = 21'b100000000000011001011;
+
+ann_weights[1904] = 21'b000000000000010100101;
+
+ann_weights[1905] = 21'b000000000000010011110;
+
+ann_weights[1906] = 21'b000000000000000011100;
+
+ann_weights[1907] = 21'b100000000000010100111;
+
+ann_weights[1908] = 21'b100000000000000001111;
+
+ann_weights[1909] = 21'b100000000000101110110;
+
+ann_weights[1910] = 21'b100000000000000101001;
+
+ann_weights[1911] = 21'b000000000000000010000;
+
+ann_weights[1912] = 21'b100000000000111000010;
+
+ann_weights[1913] = 21'b100000000000100100100;
+
+ann_weights[1914] = 21'b000000000000101000000;
+
+ann_weights[1915] = 21'b000000000000011001000;
+
+ann_weights[1916] = 21'b000000000000000110010;
+
+ann_weights[1917] = 21'b100000000000111001010;
+
+ann_weights[1918] = 21'b000000000000001010111;
+
+ann_weights[1919] = 21'b100000000001001000011;
+
+ann_weights[1920] = 21'b100000000001001100110;
+
+ann_weights[1921] = 21'b100000000000010011101;
+
+ann_weights[1922] = 21'b100000000001010110101;
+
+ann_weights[1923] = 21'b100000000000111000011;
+
+ann_weights[1924] = 21'b000000000000000110110;
+
+ann_weights[1925] = 21'b000000000000111010011;
+
+ann_weights[1926] = 21'b000000000000010010110;
+
+ann_weights[1927] = 21'b100000000001001011010;
+
+ann_weights[1928] = 21'b100000000000000110101;
+
+ann_weights[1929] = 21'b100000000001001010001;
+
+ann_weights[1930] = 21'b100000000001110110010;
+
+ann_weights[1931] = 21'b100000000001110011010;
+
+ann_weights[1932] = 21'b100000000000111100111;
+
+ann_weights[1933] = 21'b100000000001110010010;
+
+ann_weights[1934] = 21'b100000000000010111011;
+
+ann_weights[1935] = 21'b000000000000111111010;
+
+ann_weights[1936] = 21'b100000000000001001011;
+
+ann_weights[1937] = 21'b100000000001011101001;
+
+ann_weights[1938] = 21'b000000000000011010010;
+
+ann_weights[1939] = 21'b100000000000110101001;
+
+ann_weights[1940] = 21'b100000000001000011110;
+
+ann_weights[1941] = 21'b100000000000011111110;
+
+ann_weights[1942] = 21'b100000000000110111100;
+
+ann_weights[1943] = 21'b100000000000101111110;
+
+ann_weights[1944] = 21'b000000000000001001011;
+
+ann_weights[1945] = 21'b000000000000101110000;
+
+ann_weights[1946] = 21'b100000000000010101000;
+
+ann_weights[1947] = 21'b100000000001000000110;
+
+ann_weights[1948] = 21'b100000000000000001001;
+
+ann_weights[1949] = 21'b100000000000110001100;
+
+ann_weights[1950] = 21'b100000000000100110110;
+
+ann_weights[1951] = 21'b100000000000001000001;
+
+ann_weights[1952] = 21'b100000000000100001001;
+
+ann_weights[1953] = 21'b100000000000000110111;
+
+ann_weights[1954] = 21'b100000000000011011010;
+
+ann_weights[1955] = 21'b000000000000010001100;
+
+ann_weights[1956] = 21'b100000000000000110111;
+
+ann_weights[1957] = 21'b100000000000100100010;
+
+ann_weights[1958] = 21'b100000000000000011001;
+
+ann_weights[1959] = 21'b100000000000010011010;
+
+ann_weights[1960] = 21'b000000000000000100010;
+
+ann_weights[1961] = 21'b100000000000000101000;
+
+ann_weights[1962] = 21'b000000000000001000011;
+
+ann_weights[1963] = 21'b000000000000000010010;
+
+ann_weights[1964] = 21'b000000000000000000111;
+
+ann_weights[1965] = 21'b000000000000000011110;
+
+ann_weights[1966] = 21'b000000000000000001011;
+
+ann_weights[1967] = 21'b000000000000000011111;
+
+ann_weights[1968] = 21'b100000000000000011100;
+
+ann_weights[1969] = 21'b000000000000000011110;
+
+ann_weights[1970] = 21'b100000000000100110010;
+
+ann_weights[1971] = 21'b100000000000001001100;
+
+ann_weights[1972] = 21'b100000000000110101101;
+
+ann_weights[1973] = 21'b000000000000011011010;
+
+ann_weights[1974] = 21'b100000000000010011011;
+
+ann_weights[1975] = 21'b100000000000110001010;
+
+ann_weights[1976] = 21'b100000000000010100000;
+
+ann_weights[1977] = 21'b000000000000001000100;
+
+ann_weights[1978] = 21'b100000000000011100010;
+
+ann_weights[1979] = 21'b100000000000110000101;
+
+ann_weights[1980] = 21'b100000000000010011111;
+
+ann_weights[1981] = 21'b100000000000011001100;
+
+ann_weights[1982] = 21'b000000000000001001001;
+
+ann_weights[1983] = 21'b100000000000011100110;
+
+ann_weights[1984] = 21'b100000000000100001111;
+
+ann_weights[1985] = 21'b100000000000010011100;
+
+ann_weights[1986] = 21'b100000000000011000111;
+
+ann_weights[1987] = 21'b000000000000100000010;
+
+ann_weights[1988] = 21'b100000000000111011000;
+
+ann_weights[1989] = 21'b100000000000110110101;
+
+ann_weights[1990] = 21'b100000000000011110111;
+
+ann_weights[1991] = 21'b100000000000011010000;
+
+ann_weights[1992] = 21'b000000000000000101011;
+
+ann_weights[1993] = 21'b000000000000001101100;
+
+ann_weights[1994] = 21'b100000000000010001101;
+
+ann_weights[1995] = 21'b100000000001011100011;
+
+ann_weights[1996] = 21'b100000000000101111101;
+
+ann_weights[1997] = 21'b000000000000101000111;
+
+ann_weights[1998] = 21'b100000000000101100100;
+
+ann_weights[1999] = 21'b100000000001000111110;
+
+ann_weights[2000] = 21'b100000000000111001001;
+
+ann_weights[2001] = 21'b100000000000001001011;
+
+ann_weights[2002] = 21'b000000000000010111010;
+
+ann_weights[2003] = 21'b000000000000100001110;
+
+ann_weights[2004] = 21'b000000000000001000001;
+
+ann_weights[2005] = 21'b100000000001011000110;
+
+ann_weights[2006] = 21'b100000000000011000110;
+
+ann_weights[2007] = 21'b000000000000001101011;
+
+ann_weights[2008] = 21'b100000000000010011001;
+
+ann_weights[2009] = 21'b100000000001101000010;
+
+ann_weights[2010] = 21'b000000000000000001100;
+
+ann_weights[2011] = 21'b100000000000101010000;
+
+ann_weights[2012] = 21'b000000000000010000001;
+
+ann_weights[2013] = 21'b000000000000010100100;
+
+ann_weights[2014] = 21'b000000000000011000100;
+
+ann_weights[2015] = 21'b100000000000100111000;
+
+ann_weights[2016] = 21'b100000000000001100001;
+
+ann_weights[2017] = 21'b000000000000001110001;
+
+ann_weights[2018] = 21'b100000000000011011000;
+
+ann_weights[2019] = 21'b100000000001011010100;
+
+ann_weights[2020] = 21'b000000000000000000000;
+
+ann_weights[2021] = 21'b100000000000100001001;
+
+ann_weights[2022] = 21'b000000000000010101100;
+
+ann_weights[2023] = 21'b000000000000010001010;
+
+ann_weights[2024] = 21'b000000000000000001100;
+
+ann_weights[2025] = 21'b100000000000000000010;
+
+ann_weights[2026] = 21'b100000000000100111101;
+
+ann_weights[2027] = 21'b000000000000011010110;
+
+ann_weights[2028] = 21'b100000000000000010111;
+
+ann_weights[2029] = 21'b100000000000110000010;
+
+ann_weights[2030] = 21'b100000000000001100100;
+
+ann_weights[2031] = 21'b100000000000011101110;
+
+ann_weights[2032] = 21'b000000000000000111010;
+
+ann_weights[2033] = 21'b000000000000001000011;
+
+ann_weights[2034] = 21'b100000000000000011000;
+
+ann_weights[2035] = 21'b100000000000001001001;
+
+ann_weights[2036] = 21'b100000000000000110011;
+
+ann_weights[2037] = 21'b000000000000011101111;
+
+ann_weights[2038] = 21'b000000000000000011101;
+
+ann_weights[2039] = 21'b100000000000101001110;
+
+ann_weights[2040] = 21'b100000000000011010000;
+
+ann_weights[2041] = 21'b100000000000111010001;
+
+ann_weights[2042] = 21'b000000000000001010000;
+
+ann_weights[2043] = 21'b000000000000000110111;
+
+ann_weights[2044] = 21'b100000000000000100101;
+
+ann_weights[2045] = 21'b000000000000010110000;
+
+ann_weights[2046] = 21'b100000000000010000001;
+
+ann_weights[2047] = 21'b000000000000010111001;
+
+ann_weights[2048] = 21'b000000000000001011111;
+
+ann_weights[2049] = 21'b100000000000001100011;
+
+ann_weights[2050] = 21'b100000000000001110110;
+
+ann_weights[2051] = 21'b100000000000101011101;
+
+ann_weights[2052] = 21'b100000000000000111010;
+
+ann_weights[2053] = 21'b000000000000001001111;
+
+ann_weights[2054] = 21'b100000000000000110101;
+
+ann_weights[2055] = 21'b100000000000000001000;
+
+ann_weights[2056] = 21'b100000000000010100110;
+
+ann_weights[2057] = 21'b000000000000011110010;
+
+ann_weights[2058] = 21'b100000000000001000000;
+
+ann_weights[2059] = 21'b100000000000001011101;
+
+ann_weights[2060] = 21'b000000000000000010101;
+
+ann_weights[2061] = 21'b100000000000010010010;
+
+ann_weights[2062] = 21'b000000000000000011001;
+
+ann_weights[2063] = 21'b000000000000000111010;
+
+ann_weights[2064] = 21'b100000000000010001111;
+
+ann_weights[2065] = 21'b000000000000010001101;
+
+ann_weights[2066] = 21'b100000000000011101100;
+
+ann_weights[2067] = 21'b000000000000100110110;
+
+ann_weights[2068] = 21'b000000000000000000011;
+
+ann_weights[2069] = 21'b100000000000000000010;
+
+ann_weights[2070] = 21'b000000000000001001010;
+
+ann_weights[2071] = 21'b100000000000100010111;
+
+ann_weights[2072] = 21'b000000000000001101111;
+
+ann_weights[2073] = 21'b100000000000000011011;
+
+ann_weights[2074] = 21'b100000000000011001000;
+
+ann_weights[2075] = 21'b000000000000010001101;
+
+ann_weights[2076] = 21'b100000000000000101001;
+
+ann_weights[2077] = 21'b000000000000010011110;
+
+ann_weights[2078] = 21'b000000000000000000100;
+
+ann_weights[2079] = 21'b000000000000000000010;
+
+ann_weights[2080] = 21'b000000000000000101000;
+
+ann_weights[2081] = 21'b100000000000001100111;
+
+ann_weights[2082] = 21'b000000000000000000111;
+
+ann_weights[2083] = 21'b000000000000010011010;
+
+ann_weights[2084] = 21'b100000000000110000000;
+
+ann_weights[2085] = 21'b000000000000000011100;
+
+ann_weights[2086] = 21'b100000000000001100011;
+
+ann_weights[2087] = 21'b000000000000010110111;
+
+ann_weights[2088] = 21'b100000000000000100111;
+
+ann_weights[2089] = 21'b000000000000011000010;
+
+ann_weights[2090] = 21'b000000000000001110001;
+
+ann_weights[2091] = 21'b100000000000001000011;
+
+ann_weights[2092] = 21'b000000000000001011100;
+
+ann_weights[2093] = 21'b000000000000000111000;
+
+ann_weights[2094] = 21'b100000000000101100001;
+
+ann_weights[2095] = 21'b100000000000000101010;
+
+ann_weights[2096] = 21'b100000000000011101000;
+
+ann_weights[2097] = 21'b000000000000000100010;
+
+ann_weights[2098] = 21'b100000000000000111010;
+
+ann_weights[2099] = 21'b000000000000011110010;
+
+ann_weights[2100] = 21'b000000000000000000010;
+
+ann_weights[2101] = 21'b100000000000011010001;
+
+ann_weights[2102] = 21'b000000000000000100000;
+
+ann_weights[2103] = 21'b000000000000010111011;
+
+ann_weights[2104] = 21'b100000000000111101101;
+
+ann_weights[2105] = 21'b100000000000000100111;
+
+ann_weights[2106] = 21'b100000000000010011011;
+
+ann_weights[2107] = 21'b100000000000000111000;
+
+ann_weights[2108] = 21'b100000000000010010010;
+
+ann_weights[2109] = 21'b000000000000110101111;
+
+ann_weights[2110] = 21'b000000000000010000101;
+
+ann_weights[2111] = 21'b100000000000011110010;
+
+ann_weights[2112] = 21'b000000000000000010110;
+
+ann_weights[2113] = 21'b000000000000010000110;
+
+ann_weights[2114] = 21'b100000000000111100111;
+
+ann_weights[2115] = 21'b100000000000001010010;
+
+ann_weights[2116] = 21'b100000000000010010111;
+
+ann_weights[2117] = 21'b000000000000000110000;
+
+ann_weights[2118] = 21'b000000000000001100010;
+
+ann_weights[2119] = 21'b000000000000110001001;
+
+ann_weights[2120] = 21'b000000000000001001100;
+
+ann_weights[2121] = 21'b100000000000100010001;
+
+ann_weights[2122] = 21'b100000000000001001001;
+
+ann_weights[2123] = 21'b000000000000000001010;
+
+ann_weights[2124] = 21'b100000000000110000011;
+
+ann_weights[2125] = 21'b000000000000000011011;
+
+ann_weights[2126] = 21'b100000000000100101100;
+
+ann_weights[2127] = 21'b000000000000000011011;
+
+ann_weights[2128] = 21'b000000000000000000011;
+
+ann_weights[2129] = 21'b000000000000110011101;
+
+ann_weights[2130] = 21'b000000000000011000111;
+
+ann_weights[2131] = 21'b100000000000011101101;
+
+ann_weights[2132] = 21'b100000000000001111010;
+
+ann_weights[2133] = 21'b000000000000001111000;
+
+ann_weights[2134] = 21'b100000000000100100011;
+
+ann_weights[2135] = 21'b000000000000000000010;
+
+ann_weights[2136] = 21'b100000000000010101111;
+
+ann_weights[2137] = 21'b000000000000011011000;
+
+ann_weights[2138] = 21'b100000000000000101000;
+
+ann_weights[2139] = 21'b000000000000010110111;
+
+ann_weights[2140] = 21'b000000000000011011110;
+
+ann_weights[2141] = 21'b100000000000010100111;
+
+ann_weights[2142] = 21'b100000000000001101100;
+
+ann_weights[2143] = 21'b100000000000000100001;
+
+ann_weights[2144] = 21'b100000000000011110011;
+
+ann_weights[2145] = 21'b000000000000000111110;
+
+ann_weights[2146] = 21'b100000000000011110001;
+
+ann_weights[2147] = 21'b000000000000010111110;
+
+ann_weights[2148] = 21'b000000000000000110000;
+
+ann_weights[2149] = 21'b000000000000000111110;
+
+ann_weights[2150] = 21'b000000000000001100000;
+
+ann_weights[2151] = 21'b100000000000000110000;
+
+ann_weights[2152] = 21'b100000000000000001001;
+
+ann_weights[2153] = 21'b000000000000000111000;
+
+ann_weights[2154] = 21'b100000000000010100110;
+
+ann_weights[2155] = 21'b000000000000000011010;
+
+ann_weights[2156] = 21'b100000000000100001000;
+
+ann_weights[2157] = 21'b000000000000001111001;
+
+ann_weights[2158] = 21'b000000000000000000111;
+
+ann_weights[2159] = 21'b100000000000000100010;
+
+ann_weights[2160] = 21'b000000000000000001011;
+
+ann_weights[2161] = 21'b100000000000000010101;
+
+ann_weights[2162] = 21'b100000000000001101010;
+
+ann_weights[2163] = 21'b000000000000000001001;
+
+ann_weights[2164] = 21'b100000000000001101101;
+
+ann_weights[2165] = 21'b000000000000010000111;
+
+ann_weights[2166] = 21'b100000000000100001101;
+
+ann_weights[2167] = 21'b000000000000001001111;
+
+ann_weights[2168] = 21'b000000000000000110110;
+
+ann_weights[2169] = 21'b000000000000000110011;
+
+ann_weights[2170] = 21'b000000000000001111010;
+
+ann_weights[2171] = 21'b100000000000001110110;
+
+ann_weights[2172] = 21'b100000000000000110100;
+
+ann_weights[2173] = 21'b100000000000010110011;
+
+ann_weights[2174] = 21'b100000000000000000000;
+
+ann_weights[2175] = 21'b000000000000010000000;
+
+ann_weights[2176] = 21'b100000000000010000010;
+
+ann_weights[2177] = 21'b000000000000000111101;
+
+ann_weights[2178] = 21'b000000000000001001001;
+
+ann_weights[2179] = 21'b100000000000000010110;
+
+ann_weights[2180] = 21'b000000000000001111110;
+
+ann_weights[2181] = 21'b100000000000001111011;
+
+ann_weights[2182] = 21'b100000000000000100010;
+
+ann_weights[2183] = 21'b100000000000011000000;
+
+ann_weights[2184] = 21'b000000000000000100001;
+
+ann_weights[2185] = 21'b000000000000001010001;
+
+ann_weights[2186] = 21'b100000000000100100000;
+
+ann_weights[2187] = 21'b100000000000000000101;
+
+ann_weights[2188] = 21'b100000000000000100100;
+
+ann_weights[2189] = 21'b100000000000011011101;
+
+ann_weights[2190] = 21'b000000000000001011001;
+
+ann_weights[2191] = 21'b100000000000011100000;
+
+ann_weights[2192] = 21'b100000000001000100011;
+
+ann_weights[2193] = 21'b100000000000100011000;
+
+ann_weights[2194] = 21'b000000000000100000101;
+
+ann_weights[2195] = 21'b000000000000101000010;
+
+ann_weights[2196] = 21'b100000000000010101010;
+
+ann_weights[2197] = 21'b100000000000010101010;
+
+ann_weights[2198] = 21'b000000000000011010001;
+
+ann_weights[2199] = 21'b100000000000101010010;
+
+ann_weights[2200] = 21'b100000000000010010011;
+
+ann_weights[2201] = 21'b100000000001010000101;
+
+ann_weights[2202] = 21'b100000000001010111110;
+
+ann_weights[2203] = 21'b100000000001000111101;
+
+ann_weights[2204] = 21'b000000000000000111010;
+
+ann_weights[2205] = 21'b000000000001000010010;
+
+ann_weights[2206] = 21'b100000000000000101011;
+
+ann_weights[2207] = 21'b100000000000110110001;
+
+ann_weights[2208] = 21'b000000000000001111000;
+
+ann_weights[2209] = 21'b100000000000111011100;
+
+ann_weights[2210] = 21'b100000000001110100001;
+
+ann_weights[2211] = 21'b100000000001100010001;
+
+ann_weights[2212] = 21'b100000000000100100110;
+
+ann_weights[2213] = 21'b100000000001110001110;
+
+ann_weights[2214] = 21'b100000000000000111100;
+
+ann_weights[2215] = 21'b000000000001001111101;
+
+ann_weights[2216] = 21'b100000000000100100010;
+
+ann_weights[2217] = 21'b100000000000110101101;
+
+ann_weights[2218] = 21'b000000000000000110010;
+
+ann_weights[2219] = 21'b100000000001000111100;
+
+ann_weights[2220] = 21'b100000000001011001100;
+
+ann_weights[2221] = 21'b100000000000100100100;
+
+ann_weights[2222] = 21'b100000000000101010010;
+
+ann_weights[2223] = 21'b100000000000011000011;
+
+ann_weights[2224] = 21'b000000000000000010010;
+
+ann_weights[2225] = 21'b000000000000001110010;
+
+ann_weights[2226] = 21'b100000000000001001000;
+
+ann_weights[2227] = 21'b100000000001000010010;
+
+ann_weights[2228] = 21'b000000000000000100100;
+
+ann_weights[2229] = 21'b100000000001001001111;
+
+ann_weights[2230] = 21'b100000000000011110000;
+
+ann_weights[2231] = 21'b100000000000001111011;
+
+ann_weights[2232] = 21'b100000000000011101010;
+
+ann_weights[2233] = 21'b100000000000010011100;
+
+ann_weights[2234] = 21'b100000000000101101010;
+
+ann_weights[2235] = 21'b000000000000000101011;
+
+ann_weights[2236] = 21'b000000000000000011010;
+
+ann_weights[2237] = 21'b100000000000011001110;
+
+ann_weights[2238] = 21'b100000000000000000101;
+
+ann_weights[2239] = 21'b100000000000100010110;
+
+ann_weights[2240] = 21'b000000000000001101011;
+
+ann_weights[2241] = 21'b100000000000000111010;
+
+ann_weights[2242] = 21'b100000000000000100011;
+
+ann_weights[2243] = 21'b100000000000001101111;
+
+ann_weights[2244] = 21'b100000000000001110011;
+
+ann_weights[2245] = 21'b000000000000000110010;
+
+ann_weights[2246] = 21'b000000000000000110110;
+
+ann_weights[2247] = 21'b100000000000001100000;
+
+ann_weights[2248] = 21'b100000000000001100110;
+
+ann_weights[2249] = 21'b100000000000001011011;
+
+ann_weights[2250] = 21'b100000000000100100110;
+
+ann_weights[2251] = 21'b100000000000001110111;
+
+ann_weights[2252] = 21'b000000000000001011101;
+
+ann_weights[2253] = 21'b100000000000010111101;
+
+ann_weights[2254] = 21'b100000000000011111110;
+
+ann_weights[2255] = 21'b100000000000010110111;
+
+ann_weights[2256] = 21'b100000000000001011000;
+
+ann_weights[2257] = 21'b000000000000101111001;
+
+ann_weights[2258] = 21'b100000000000100110111;
+
+ann_weights[2259] = 21'b100000000000100001101;
+
+ann_weights[2260] = 21'b100000000000000001010;
+
+ann_weights[2261] = 21'b100000000000010100100;
+
+ann_weights[2262] = 21'b000000000000000000000;
+
+ann_weights[2263] = 21'b100000000000001001101;
+
+ann_weights[2264] = 21'b000000000000000011001;
+
+ann_weights[2265] = 21'b100000000000100101001;
+
+ann_weights[2266] = 21'b100000000000001101100;
+
+ann_weights[2267] = 21'b000000000000101000100;
+
+ann_weights[2268] = 21'b100000000000110110111;
+
+ann_weights[2269] = 21'b100000000001000110000;
+
+ann_weights[2270] = 21'b100000000000001011010;
+
+ann_weights[2271] = 21'b100000000000011111111;
+
+ann_weights[2272] = 21'b000000000000000010010;
+
+ann_weights[2273] = 21'b000000000000000101001;
+
+ann_weights[2274] = 21'b100000000000011011100;
+
+ann_weights[2275] = 21'b100000000001100011010;
+
+ann_weights[2276] = 21'b100000000000111000000;
+
+ann_weights[2277] = 21'b000000000000100110100;
+
+ann_weights[2278] = 21'b100000000000010011111;
+
+ann_weights[2279] = 21'b100000000001000010100;
+
+ann_weights[2280] = 21'b100000000000111010011;
+
+ann_weights[2281] = 21'b100000000000001010001;
+
+ann_weights[2282] = 21'b000000000000010100110;
+
+ann_weights[2283] = 21'b000000000000011010110;
+
+ann_weights[2284] = 21'b100000000000001011111;
+
+ann_weights[2285] = 21'b100000000001100111110;
+
+ann_weights[2286] = 21'b100000000000010011011;
+
+ann_weights[2287] = 21'b000000000000010100100;
+
+ann_weights[2288] = 21'b100000000000000001111;
+
+ann_weights[2289] = 21'b100000000000111001111;
+
+ann_weights[2290] = 21'b100000000000011000110;
+
+ann_weights[2291] = 21'b100000000000101001100;
+
+ann_weights[2292] = 21'b000000000000000111100;
+
+ann_weights[2293] = 21'b000000000000010110011;
+
+ann_weights[2294] = 21'b000000000000001010001;
+
+ann_weights[2295] = 21'b100000000000101010100;
+
+ann_weights[2296] = 21'b100000000000001110001;
+
+ann_weights[2297] = 21'b000000000000001101111;
+
+ann_weights[2298] = 21'b000000000000000101000;
+
+ann_weights[2299] = 21'b100000000000101110001;
+
+ann_weights[2300] = 21'b100000000000001111000;
+
+ann_weights[2301] = 21'b100000000000101111111;
+
+ann_weights[2302] = 21'b000000000000010000000;
+
+ann_weights[2303] = 21'b000000000000001011110;
+
+ann_weights[2304] = 21'b000000000000000100001;
+
+ann_weights[2305] = 21'b100000000000001100000;
+
+ann_weights[2306] = 21'b100000000000100000010;
+
+ann_weights[2307] = 21'b000000000000011101111;
+
+ann_weights[2308] = 21'b000000000000010000001;
+
+ann_weights[2309] = 21'b100000000000010110001;
+
+ann_weights[2310] = 21'b100000000000001000101;
+
+ann_weights[2311] = 21'b100000000000100010101;
+
+ann_weights[2312] = 21'b100000000000000000001;
+
+ann_weights[2313] = 21'b000000000000000101100;
+
+ann_weights[2314] = 21'b100000000000000000110;
+
+ann_weights[2315] = 21'b100000000000001110101;
+
+ann_weights[2316] = 21'b100000000000001001100;
+
+ann_weights[2317] = 21'b000000000000100000101;
+
+ann_weights[2318] = 21'b000000000000001001110;
+
+ann_weights[2319] = 21'b100000000000011100011;
+
+ann_weights[2320] = 21'b100000000000010000100;
+
+ann_weights[2321] = 21'b100000000000101000000;
+
+ann_weights[2322] = 21'b000000000000001000111;
+
+ann_weights[2323] = 21'b100000000000000100000;
+
+ann_weights[2324] = 21'b100000000000001100101;
+
+ann_weights[2325] = 21'b000000000000001011001;
+
+ann_weights[2326] = 21'b100000000000010010010;
+
+ann_weights[2327] = 21'b000000000000011011101;
+
+ann_weights[2328] = 21'b000000000000000101001;
+
+ann_weights[2329] = 21'b000000000000000000011;
+
+ann_weights[2330] = 21'b000000000000001011101;
+
+ann_weights[2331] = 21'b100000000000110100111;
+
+ann_weights[2332] = 21'b000000000000000101001;
+
+ann_weights[2333] = 21'b100000000000000011110;
+
+ann_weights[2334] = 21'b100000000000000111011;
+
+ann_weights[2335] = 21'b000000000000001011101;
+
+ann_weights[2336] = 21'b100000000000010110011;
+
+ann_weights[2337] = 21'b000000000000010010110;
+
+ann_weights[2338] = 21'b000000000000010110111;
+
+ann_weights[2339] = 21'b100000000000010010110;
+
+ann_weights[2340] = 21'b100000000000001000100;
+
+ann_weights[2341] = 21'b100000000000100111110;
+
+ann_weights[2342] = 21'b000000000000001101011;
+
+ann_weights[2343] = 21'b000000000000001010011;
+
+ann_weights[2344] = 21'b100000000000010000000;
+
+ann_weights[2345] = 21'b000000000000000101001;
+
+ann_weights[2346] = 21'b100000000000010101110;
+
+ann_weights[2347] = 21'b000000000000001010110;
+
+ann_weights[2348] = 21'b000000000000000010010;
+
+ann_weights[2349] = 21'b100000000000001000101;
+
+ann_weights[2350] = 21'b000000000000000100011;
+
+ann_weights[2351] = 21'b100000000000001101110;
+
+ann_weights[2352] = 21'b000000000000000101110;
+
+ann_weights[2353] = 21'b100000000000000110001;
+
+ann_weights[2354] = 21'b100000000000010101000;
+
+ann_weights[2355] = 21'b000000000000010000000;
+
+ann_weights[2356] = 21'b100000000000010111010;
+
+ann_weights[2357] = 21'b000000000000011000001;
+
+ann_weights[2358] = 21'b100000000000000011001;
+
+ann_weights[2359] = 21'b100000000000001100010;
+
+ann_weights[2360] = 21'b000000000000000110010;
+
+ann_weights[2361] = 21'b100000000000001010001;
+
+ann_weights[2362] = 21'b000000000000000001110;
+
+ann_weights[2363] = 21'b000000000000001110001;
+
+ann_weights[2364] = 21'b100000000000100010101;
+
+ann_weights[2365] = 21'b000000000000000101011;
+
+ann_weights[2366] = 21'b100000000000001101010;
+
+ann_weights[2367] = 21'b000000000000100101011;
+
+ann_weights[2368] = 21'b000000000000001111101;
+
+ann_weights[2369] = 21'b100000000000001011100;
+
+ann_weights[2370] = 21'b000000000000000011111;
+
+ann_weights[2371] = 21'b100000000000000010000;
+
+ann_weights[2372] = 21'b100000000000000011010;
+
+ann_weights[2373] = 21'b000000000000000011111;
+
+ann_weights[2374] = 21'b100000000000011001100;
+
+ann_weights[2375] = 21'b100000000000001100101;
+
+ann_weights[2376] = 21'b100000000000011100101;
+
+ann_weights[2377] = 21'b000000000000000011011;
+
+ann_weights[2378] = 21'b000000000000000011110;
+
+ann_weights[2379] = 21'b000000000000010000001;
+
+ann_weights[2380] = 21'b000000000000010111101;
+
+ann_weights[2381] = 21'b100000000000000011110;
+
+ann_weights[2382] = 21'b000000000000001010000;
+
+ann_weights[2383] = 21'b000000000000010101001;
+
+ann_weights[2384] = 21'b100000000000110111011;
+
+ann_weights[2385] = 21'b100000000000001100011;
+
+ann_weights[2386] = 21'b100000000000010110101;
+
+ann_weights[2387] = 21'b000000000000011010110;
+
+ann_weights[2388] = 21'b100000000000001000001;
+
+ann_weights[2389] = 21'b000000000000011101101;
+
+ann_weights[2390] = 21'b000000000000001110100;
+
+ann_weights[2391] = 21'b000000000000000010111;
+
+ann_weights[2392] = 21'b000000000000000110000;
+
+ann_weights[2393] = 21'b000000000000011011101;
+
+ann_weights[2394] = 21'b100000000000110011001;
+
+ann_weights[2395] = 21'b100000000000011111010;
+
+ann_weights[2396] = 21'b100000000000101011010;
+
+ann_weights[2397] = 21'b000000000000011001110;
+
+ann_weights[2398] = 21'b100000000000001010110;
+
+ann_weights[2399] = 21'b000000000000010110010;
+
+ann_weights[2400] = 21'b000000000000101011010;
+
+ann_weights[2401] = 21'b100000000000001111101;
+
+ann_weights[2402] = 21'b100000000000000111111;
+
+ann_weights[2403] = 21'b000000000000001011010;
+
+ann_weights[2404] = 21'b100000000000110101110;
+
+ann_weights[2405] = 21'b100000000000010110001;
+
+ann_weights[2406] = 21'b100000000000101001111;
+
+ann_weights[2407] = 21'b000000000000011100001;
+
+ann_weights[2408] = 21'b000000000000001000111;
+
+ann_weights[2409] = 21'b000000000000001110000;
+
+ann_weights[2410] = 21'b000000000000100011100;
+
+ann_weights[2411] = 21'b000000000000000110110;
+
+ann_weights[2412] = 21'b100000000000000101001;
+
+ann_weights[2413] = 21'b000000000000000110000;
+
+ann_weights[2414] = 21'b100000000000010110101;
+
+ann_weights[2415] = 21'b100000000000001001011;
+
+ann_weights[2416] = 21'b100000000000101001010;
+
+ann_weights[2417] = 21'b000000000000011010011;
+
+ann_weights[2418] = 21'b100000000000000111001;
+
+ann_weights[2419] = 21'b000000000000000010000;
+
+ann_weights[2420] = 21'b000000000000010110111;
+
+ann_weights[2421] = 21'b100000000000001101100;
+
+ann_weights[2422] = 21'b100000000000000000111;
+
+ann_weights[2423] = 21'b000000000000011001010;
+
+ann_weights[2424] = 21'b100000000000000110111;
+
+ann_weights[2425] = 21'b100000000000000000001;
+
+ann_weights[2426] = 21'b100000000001001110000;
+
+ann_weights[2427] = 21'b000000000000100010010;
+
+ann_weights[2428] = 21'b000000000000001101110;
+
+ann_weights[2429] = 21'b000000000000000100100;
+
+ann_weights[2430] = 21'b000000000000010011100;
+
+ann_weights[2431] = 21'b100000000000010001011;
+
+ann_weights[2432] = 21'b000000000000001000110;
+
+ann_weights[2433] = 21'b000000000000001100001;
+
+ann_weights[2434] = 21'b100000000000001011000;
+
+ann_weights[2435] = 21'b000000000000001100110;
+
+ann_weights[2436] = 21'b100000000000110100000;
+
+ann_weights[2437] = 21'b000000000000001000011;
+
+ann_weights[2438] = 21'b000000000000010000110;
+
+ann_weights[2439] = 21'b100000000000000011010;
+
+ann_weights[2440] = 21'b000000000000000110001;
+
+ann_weights[2441] = 21'b100000000000010101101;
+
+ann_weights[2442] = 21'b000000000000000110110;
+
+ann_weights[2443] = 21'b000000000000010010111;
+
+ann_weights[2444] = 21'b100000000000000111011;
+
+ann_weights[2445] = 21'b000000000000010110010;
+
+ann_weights[2446] = 21'b100000000000110110101;
+
+ann_weights[2447] = 21'b000000000000001000110;
+
+ann_weights[2448] = 21'b000000000000000101001;
+
+ann_weights[2449] = 21'b100000000000001000011;
+
+ann_weights[2450] = 21'b100000000000000000110;
+
+ann_weights[2451] = 21'b100000000000010110101;
+
+ann_weights[2452] = 21'b100000000000001100001;
+
+ann_weights[2453] = 21'b100000000000000100100;
+
+ann_weights[2454] = 21'b100000000000010010010;
+
+ann_weights[2455] = 21'b000000000000001100110;
+
+ann_weights[2456] = 21'b100000000000010101101;
+
+ann_weights[2457] = 21'b100000000000001000001;
+
+ann_weights[2458] = 21'b000000000000000100010;
+
+ann_weights[2459] = 21'b100000000000000010111;
+
+ann_weights[2460] = 21'b000000000000001001000;
+
+ann_weights[2461] = 21'b100000000000101000111;
+
+ann_weights[2462] = 21'b100000000000010000111;
+
+ann_weights[2463] = 21'b000000000000010001100;
+
+ann_weights[2464] = 21'b100000000000010000101;
+
+ann_weights[2465] = 21'b000000000000010101100;
+
+ann_weights[2466] = 21'b100000000000100001110;
+
+ann_weights[2467] = 21'b100000000000000001111;
+
+ann_weights[2468] = 21'b000000000000010100011;
+
+ann_weights[2469] = 21'b100000000000010000001;
+
+ann_weights[2470] = 21'b000000000000011110111;
+
+ann_weights[2471] = 21'b100000000000110011011;
+
+ann_weights[2472] = 21'b100000000000001101011;
+
+ann_weights[2473] = 21'b100000000000110010010;
+
+ann_weights[2474] = 21'b100000000000000111010;
+
+ann_weights[2475] = 21'b000000000000110100111;
+
+ann_weights[2476] = 21'b100000000000111100110;
+
+ann_weights[2477] = 21'b100000000000001111110;
+
+ann_weights[2478] = 21'b000000000000010000101;
+
+ann_weights[2479] = 21'b100000000000110001110;
+
+ann_weights[2480] = 21'b100000000000001001111;
+
+ann_weights[2481] = 21'b100000000001011010110;
+
+ann_weights[2482] = 21'b100000000001110111000;
+
+ann_weights[2483] = 21'b100000000010000010010;
+
+ann_weights[2484] = 21'b100000000000001010100;
+
+ann_weights[2485] = 21'b000000000001011001001;
+
+ann_weights[2486] = 21'b100000000001000101111;
+
+ann_weights[2487] = 21'b100000000000101111011;
+
+ann_weights[2488] = 21'b000000000000011000010;
+
+ann_weights[2489] = 21'b100000000000111001100;
+
+ann_weights[2490] = 21'b100000000010000100011;
+
+ann_weights[2491] = 21'b100000000001101010100;
+
+ann_weights[2492] = 21'b100000000001101110001;
+
+ann_weights[2493] = 21'b100000000001111011011;
+
+ann_weights[2494] = 21'b100000000000000111010;
+
+ann_weights[2495] = 21'b000000000001100000010;
+
+ann_weights[2496] = 21'b100000000001011100011;
+
+ann_weights[2497] = 21'b100000000001001100111;
+
+ann_weights[2498] = 21'b000000000000000101010;
+
+ann_weights[2499] = 21'b100000000000110111010;
+
+ann_weights[2500] = 21'b100000000001101100011;
+
+ann_weights[2501] = 21'b100000000000110101111;
+
+ann_weights[2502] = 21'b100000000001000110111;
+
+ann_weights[2503] = 21'b100000000000100111000;
+
+ann_weights[2504] = 21'b100000000000010000011;
+
+ann_weights[2505] = 21'b000000000000100000101;
+
+ann_weights[2506] = 21'b100000000000110001001;
+
+ann_weights[2507] = 21'b100000000000111111110;
+
+ann_weights[2508] = 21'b000000000000011000000;
+
+ann_weights[2509] = 21'b100000000001001010000;
+
+ann_weights[2510] = 21'b100000000000011000011;
+
+ann_weights[2511] = 21'b100000000000011000010;
+
+ann_weights[2512] = 21'b100000000000011000001;
+
+ann_weights[2513] = 21'b100000000000001000000;
+
+ann_weights[2514] = 21'b100000000000011000010;
+
+ann_weights[2515] = 21'b000000000000000100001;
+
+ann_weights[2516] = 21'b100000000000100011010;
+
+ann_weights[2517] = 21'b100000000000100000100;
+
+ann_weights[2518] = 21'b000000000000010100110;
+
+ann_weights[2519] = 21'b100000000000100000110;
+
+ann_weights[2520] = 21'b100000000000001011100;
+
+ann_weights[2521] = 21'b100000000000000101010;
+
+ann_weights[2522] = 21'b100000000000000100110;
+
+ann_weights[2523] = 21'b100000000000010101000;
+
+ann_weights[2524] = 21'b100000000000011001100;
+
+ann_weights[2525] = 21'b100000000000001101111;
+
+ann_weights[2526] = 21'b100000000000000110010;
+
+ann_weights[2527] = 21'b000000000000010000001;
+
+ann_weights[2528] = 21'b100000000000000001010;
+
+ann_weights[2529] = 21'b100000000000011010100;
+
+ann_weights[2530] = 21'b100000000000001011000;
+
+ann_weights[2531] = 21'b100000000000010011010;
+
+ann_weights[2532] = 21'b100000000000011110101;
+
+ann_weights[2533] = 21'b100000000000010101101;
+
+ann_weights[2534] = 21'b100000000000100110101;
+
+ann_weights[2535] = 21'b100000000000101001100;
+
+ann_weights[2536] = 21'b100000000000001010010;
+
+ann_weights[2537] = 21'b000000000000100001000;
+
+ann_weights[2538] = 21'b100000000000100010011;
+
+ann_weights[2539] = 21'b100000000000011011001;
+
+ann_weights[2540] = 21'b000000000000001111110;
+
+ann_weights[2541] = 21'b100000000000011101110;
+
+ann_weights[2542] = 21'b100000000000001001110;
+
+ann_weights[2543] = 21'b000000000000001101011;
+
+ann_weights[2544] = 21'b100000000000001111000;
+
+ann_weights[2545] = 21'b100000000000101001111;
+
+ann_weights[2546] = 21'b100000000000011111001;
+
+ann_weights[2547] = 21'b000000000000011110100;
+
+ann_weights[2548] = 21'b100000000000100111011;
+
+ann_weights[2549] = 21'b100000000001000111010;
+
+ann_weights[2550] = 21'b100000000000000101010;
+
+ann_weights[2551] = 21'b100000000000011010111;
+
+ann_weights[2552] = 21'b100000000000000000010;
+
+ann_weights[2553] = 21'b000000000000011001110;
+
+ann_weights[2554] = 21'b100000000000110001110;
+
+ann_weights[2555] = 21'b100000000001011100000;
+
+ann_weights[2556] = 21'b100000000001000011000;
+
+ann_weights[2557] = 21'b000000000000101110000;
+
+ann_weights[2558] = 21'b100000000000001001011;
+
+ann_weights[2559] = 21'b100000000000101100100;
+
+ann_weights[2560] = 21'b100000000000011101001;
+
+ann_weights[2561] = 21'b100000000000010000110;
+
+ann_weights[2562] = 21'b000000000000010001101;
+
+ann_weights[2563] = 21'b000000000000110000101;
+
+ann_weights[2564] = 21'b100000000000101001000;
+
+ann_weights[2565] = 21'b100000000001001000100;
+
+ann_weights[2566] = 21'b100000000000000100001;
+
+ann_weights[2567] = 21'b000000000000011101101;
+
+ann_weights[2568] = 21'b100000000000010110111;
+
+ann_weights[2569] = 21'b100000000000110011000;
+
+ann_weights[2570] = 21'b100000000000000101010;
+
+ann_weights[2571] = 21'b100000000001000011110;
+
+ann_weights[2572] = 21'b000000000000100010100;
+
+ann_weights[2573] = 21'b000000000000000100110;
+
+ann_weights[2574] = 21'b100000000000010101101;
+
+ann_weights[2575] = 21'b100000000000101100100;
+
+ann_weights[2576] = 21'b100000000000100001110;
+
+ann_weights[2577] = 21'b000000000000011110001;
+
+ann_weights[2578] = 21'b100000000000000010010;
+
+ann_weights[2579] = 21'b100000000000010101001;
+
+ann_weights[2580] = 21'b100000000000010111110;
+
+ann_weights[2581] = 21'b100000000000101000011;
+
+ann_weights[2582] = 21'b100000000000000110101;
+
+ann_weights[2583] = 21'b000000000000010100011;
+
+ann_weights[2584] = 21'b100000000000011010111;
+
+ann_weights[2585] = 21'b100000000000010101001;
+
+ann_weights[2586] = 21'b100000000000100001111;
+
+ann_weights[2587] = 21'b000000000000001101100;
+
+ann_weights[2588] = 21'b000000000000010000111;
+
+ann_weights[2589] = 21'b000000000000000001000;
+
+ann_weights[2590] = 21'b100000000000001110110;
+
+ann_weights[2591] = 21'b100000000000001011101;
+
+ann_weights[2592] = 21'b100000000000000001001;
+
+ann_weights[2593] = 21'b000000000000000101010;
+
+ann_weights[2594] = 21'b100000000000001110000;
+
+ann_weights[2595] = 21'b100000000000000100111;
+
+ann_weights[2596] = 21'b100000000000001100001;
+
+ann_weights[2597] = 21'b000000000000001001001;
+
+ann_weights[2598] = 21'b000000000000010011000;
+
+ann_weights[2599] = 21'b100000000000001001111;
+
+ann_weights[2600] = 21'b100000000000010001011;
+
+ann_weights[2601] = 21'b100000000000011110010;
+
+ann_weights[2602] = 21'b100000000000000101100;
+
+ann_weights[2603] = 21'b000000000000000010110;
+
+ann_weights[2604] = 21'b100000000000000011001;
+
+ann_weights[2605] = 21'b000000000000010001101;
+
+ann_weights[2606] = 21'b100000000000001000111;
+
+ann_weights[2607] = 21'b000000000000001001000;
+
+ann_weights[2608] = 21'b000000000000001011011;
+
+ann_weights[2609] = 21'b100000000000001000010;
+
+ann_weights[2610] = 21'b000000000000000011011;
+
+ann_weights[2611] = 21'b100000000000101001000;
+
+ann_weights[2612] = 21'b000000000000001010100;
+
+ann_weights[2613] = 21'b100000000000010000110;
+
+ann_weights[2614] = 21'b100000000000000110010;
+
+ann_weights[2615] = 21'b000000000000000011110;
+
+ann_weights[2616] = 21'b100000000000010100001;
+
+ann_weights[2617] = 21'b000000000000000011000;
+
+ann_weights[2618] = 21'b000000000000010110010;
+
+ann_weights[2619] = 21'b000000000000000010001;
+
+ann_weights[2620] = 21'b000000000000000000001;
+
+ann_weights[2621] = 21'b100000000000010111011;
+
+ann_weights[2622] = 21'b000000000000001111111;
+
+ann_weights[2623] = 21'b100000000000011000010;
+
+ann_weights[2624] = 21'b100000000000010000110;
+
+ann_weights[2625] = 21'b000000000000001101111;
+
+ann_weights[2626] = 21'b100000000000011101111;
+
+ann_weights[2627] = 21'b000000000000000011000;
+
+ann_weights[2628] = 21'b000000000000010001110;
+
+ann_weights[2629] = 21'b100000000000000001111;
+
+ann_weights[2630] = 21'b100000000000000101101;
+
+ann_weights[2631] = 21'b100000000000001001111;
+
+ann_weights[2632] = 21'b000000000000000100101;
+
+ann_weights[2633] = 21'b100000000000100101001;
+
+ann_weights[2634] = 21'b100000000000001000001;
+
+ann_weights[2635] = 21'b000000000000100000001;
+
+ann_weights[2636] = 21'b100000000000001111110;
+
+ann_weights[2637] = 21'b000000000000000101110;
+
+ann_weights[2638] = 21'b000000000000001111010;
+
+ann_weights[2639] = 21'b000000000000000001100;
+
+ann_weights[2640] = 21'b000000000000000001101;
+
+ann_weights[2641] = 21'b100000000000001011010;
+
+ann_weights[2642] = 21'b000000000000001001010;
+
+ann_weights[2643] = 21'b100000000000011010011;
+
+ann_weights[2644] = 21'b100000000000000010110;
+
+ann_weights[2645] = 21'b000000000000001111100;
+
+ann_weights[2646] = 21'b100000000000011011010;
+
+ann_weights[2647] = 21'b000000000000011011101;
+
+ann_weights[2648] = 21'b000000000000001101110;
+
+ann_weights[2649] = 21'b000000000000000110100;
+
+ann_weights[2650] = 21'b000000000000010001100;
+
+ann_weights[2651] = 21'b000000000000000110000;
+
+ann_weights[2652] = 21'b000000000000000011001;
+
+ann_weights[2653] = 21'b100000000000001010111;
+
+ann_weights[2654] = 21'b100000000000011011101;
+
+ann_weights[2655] = 21'b000000000000000011011;
+
+ann_weights[2656] = 21'b100000000000011001110;
+
+ann_weights[2657] = 21'b000000000000001100011;
+
+ann_weights[2658] = 21'b000000000000000111100;
+
+ann_weights[2659] = 21'b100000000000000111111;
+
+ann_weights[2660] = 21'b000000000000010001111;
+
+ann_weights[2661] = 21'b000000000000100100111;
+
+ann_weights[2662] = 21'b000000000000001101001;
+
+ann_weights[2663] = 21'b000000000000011001011;
+
+ann_weights[2664] = 21'b100000000001000110110;
+
+ann_weights[2665] = 21'b100000000000011001100;
+
+ann_weights[2666] = 21'b100000000000011001101;
+
+ann_weights[2667] = 21'b000000000000011100111;
+
+ann_weights[2668] = 21'b100000000000011001100;
+
+ann_weights[2669] = 21'b000000000000010000011;
+
+ann_weights[2670] = 21'b100000000000000101000;
+
+ann_weights[2671] = 21'b000000000000110010000;
+
+ann_weights[2672] = 21'b000000000000011101111;
+
+ann_weights[2673] = 21'b000000000000011111111;
+
+ann_weights[2674] = 21'b100000000000110101000;
+
+ann_weights[2675] = 21'b100000000000100100010;
+
+ann_weights[2676] = 21'b100000000000100011010;
+
+ann_weights[2677] = 21'b000000000000100100110;
+
+ann_weights[2678] = 21'b100000000000101011011;
+
+ann_weights[2679] = 21'b000000000000001010100;
+
+ann_weights[2680] = 21'b000000000000010100111;
+
+ann_weights[2681] = 21'b000000000000001000001;
+
+ann_weights[2682] = 21'b000000000000000100011;
+
+ann_weights[2683] = 21'b000000000000010101111;
+
+ann_weights[2684] = 21'b100000000000001011001;
+
+ann_weights[2685] = 21'b100000000000110100111;
+
+ann_weights[2686] = 21'b100000000001000101000;
+
+ann_weights[2687] = 21'b000000000000100011100;
+
+ann_weights[2688] = 21'b100000000000010111111;
+
+ann_weights[2689] = 21'b100000000000001100111;
+
+ann_weights[2690] = 21'b000000000000011110011;
+
+ann_weights[2691] = 21'b100000000000000011011;
+
+ann_weights[2692] = 21'b000000000000001101110;
+
+ann_weights[2693] = 21'b000000000000010001110;
+
+ann_weights[2694] = 21'b100000000000010100100;
+
+ann_weights[2695] = 21'b100000000000011010110;
+
+ann_weights[2696] = 21'b100000000001001111000;
+
+ann_weights[2697] = 21'b000000000000100000001;
+
+ann_weights[2698] = 21'b100000000000000111100;
+
+ann_weights[2699] = 21'b100000000000001101001;
+
+ann_weights[2700] = 21'b000000000000100101110;
+
+ann_weights[2701] = 21'b100000000000000010110;
+
+ann_weights[2702] = 21'b000000000000000001110;
+
+ann_weights[2703] = 21'b000000000000001011000;
+
+ann_weights[2704] = 21'b100000000000000011000;
+
+ann_weights[2705] = 21'b100000000000010000011;
+
+ann_weights[2706] = 21'b100000000000111111001;
+
+ann_weights[2707] = 21'b000000000000011101111;
+
+ann_weights[2708] = 21'b000000000000000111010;
+
+ann_weights[2709] = 21'b000000000000000001010;
+
+ann_weights[2710] = 21'b000000000000011101010;
+
+ann_weights[2711] = 21'b100000000000011010010;
+
+ann_weights[2712] = 21'b000000000000000111101;
+
+ann_weights[2713] = 21'b000000000000001100110;
+
+ann_weights[2714] = 21'b100000000000000111101;
+
+ann_weights[2715] = 21'b100000000000001111011;
+
+ann_weights[2716] = 21'b100000000001000011111;
+
+ann_weights[2717] = 21'b000000000000011111101;
+
+ann_weights[2718] = 21'b000000000000001000010;
+
+ann_weights[2719] = 21'b100000000000001001000;
+
+ann_weights[2720] = 21'b000000000000010001101;
+
+ann_weights[2721] = 21'b100000000000101010101;
+
+ann_weights[2722] = 21'b100000000000001000101;
+
+ann_weights[2723] = 21'b000000000000010010010;
+
+ann_weights[2724] = 21'b100000000000001110010;
+
+ann_weights[2725] = 21'b100000000000000001100;
+
+ann_weights[2726] = 21'b100000000000100010000;
+
+ann_weights[2727] = 21'b000000000000000100110;
+
+ann_weights[2728] = 21'b000000000000001011010;
+
+ann_weights[2729] = 21'b100000000000001110110;
+
+ann_weights[2730] = 21'b000000000000000000110;
+
+ann_weights[2731] = 21'b100000000000100010101;
+
+ann_weights[2732] = 21'b100000000000000101110;
+
+ann_weights[2733] = 21'b000000000000011110010;
+
+ann_weights[2734] = 21'b000000000000000010001;
+
+ann_weights[2735] = 21'b000000000000011001000;
+
+ann_weights[2736] = 21'b100000000000011010111;
+
+ann_weights[2737] = 21'b000000000000001101110;
+
+ann_weights[2738] = 21'b000000000000010000011;
+
+ann_weights[2739] = 21'b100000000000010001110;
+
+ann_weights[2740] = 21'b100000000000000010001;
+
+ann_weights[2741] = 21'b100000000000101011111;
+
+ann_weights[2742] = 21'b100000000000000110000;
+
+ann_weights[2743] = 21'b000000000000010011101;
+
+ann_weights[2744] = 21'b100000000000000011010;
+
+ann_weights[2745] = 21'b000000000000011001101;
+
+ann_weights[2746] = 21'b100000000000101101110;
+
+ann_weights[2747] = 21'b000000000000000011001;
+
+ann_weights[2748] = 21'b000000000000001010101;
+
+ann_weights[2749] = 21'b100000000000011100111;
+
+ann_weights[2750] = 21'b000000000000100110010;
+
+ann_weights[2751] = 21'b100000000001011010000;
+
+ann_weights[2752] = 21'b100000000000001111010;
+
+ann_weights[2753] = 21'b100000000000100001100;
+
+ann_weights[2754] = 21'b100000000000011101010;
+
+ann_weights[2755] = 21'b000000000000111100001;
+
+ann_weights[2756] = 21'b100000000000101111011;
+
+ann_weights[2757] = 21'b100000000000010011111;
+
+ann_weights[2758] = 21'b000000000000010100010;
+
+ann_weights[2759] = 21'b100000000000100110110;
+
+ann_weights[2760] = 21'b000000000000010110010;
+
+ann_weights[2761] = 21'b100000000001001111110;
+
+ann_weights[2762] = 21'b100000000010000001111;
+
+ann_weights[2763] = 21'b100000000011000100001;
+
+ann_weights[2764] = 21'b100000000000110101010;
+
+ann_weights[2765] = 21'b000000000001111100010;
+
+ann_weights[2766] = 21'b100000000001000001011;
+
+ann_weights[2767] = 21'b100000000000101010110;
+
+ann_weights[2768] = 21'b100000000000000100000;
+
+ann_weights[2769] = 21'b100000000001000101011;
+
+ann_weights[2770] = 21'b100000000001110011001;
+
+ann_weights[2771] = 21'b100000000001100000011;
+
+ann_weights[2772] = 21'b100000000001101011010;
+
+ann_weights[2773] = 21'b100000000001011111011;
+
+ann_weights[2774] = 21'b100000000000111100000;
+
+ann_weights[2775] = 21'b000000000001110110000;
+
+ann_weights[2776] = 21'b100000000001110101000;
+
+ann_weights[2777] = 21'b100000000001000010010;
+
+ann_weights[2778] = 21'b000000000000000001110;
+
+ann_weights[2779] = 21'b100000000001010000100;
+
+ann_weights[2780] = 21'b100000000001100101111;
+
+ann_weights[2781] = 21'b100000000000100110101;
+
+ann_weights[2782] = 21'b100000000000011000101;
+
+ann_weights[2783] = 21'b100000000000111011111;
+
+ann_weights[2784] = 21'b100000000000111010011;
+
+ann_weights[2785] = 21'b000000000000110111110;
+
+ann_weights[2786] = 21'b100000000001011111010;
+
+ann_weights[2787] = 21'b100000000000001011000;
+
+ann_weights[2788] = 21'b000000000000001111010;
+
+ann_weights[2789] = 21'b100000000001011101001;
+
+ann_weights[2790] = 21'b100000000000011011011;
+
+ann_weights[2791] = 21'b100000000000001101010;
+
+ann_weights[2792] = 21'b100000000000011011001;
+
+ann_weights[2793] = 21'b100000000000010000100;
+
+ann_weights[2794] = 21'b100000000000100100001;
+
+ann_weights[2795] = 21'b000000000000010010100;
+
+ann_weights[2796] = 21'b100000000000100110000;
+
+ann_weights[2797] = 21'b000000000000010000100;
+
+ann_weights[2798] = 21'b100000000000000111011;
+
+ann_weights[2799] = 21'b100000000000100010001;
+
+ann_weights[2800] = 21'b100000000000010001001;
+
+ann_weights[2801] = 21'b100000000000001001100;
+
+ann_weights[2802] = 21'b100000000000000111011;
+
+ann_weights[2803] = 21'b100000000000001001000;
+
+ann_weights[2804] = 21'b100000000000001011111;
+
+ann_weights[2805] = 21'b100000000000010010011;
+
+ann_weights[2806] = 21'b100000000000001000010;
+
+ann_weights[2807] = 21'b000000000000011010001;
+
+ann_weights[2808] = 21'b100000000000000001010;
+
+ann_weights[2809] = 21'b100000000000010011100;
+
+ann_weights[2810] = 21'b100000000000001010111;
+
+ann_weights[2811] = 21'b100000000000000110111;
+
+ann_weights[2812] = 21'b100000000000100101010;
+
+ann_weights[2813] = 21'b100000000000100011111;
+
+ann_weights[2814] = 21'b100000000000011111000;
+
+ann_weights[2815] = 21'b100000000000011001011;
+
+ann_weights[2816] = 21'b100000000000001101000;
+
+ann_weights[2817] = 21'b000000000000100010111;
+
+ann_weights[2818] = 21'b100000000000011110001;
+
+ann_weights[2819] = 21'b100000000000011010111;
+
+ann_weights[2820] = 21'b000000000000000111100;
+
+ann_weights[2821] = 21'b100000000000001101111;
+
+ann_weights[2822] = 21'b100000000000000110010;
+
+ann_weights[2823] = 21'b000000000000001000011;
+
+ann_weights[2824] = 21'b100000000000110000110;
+
+ann_weights[2825] = 21'b100000000000100111000;
+
+ann_weights[2826] = 21'b100000000000100001011;
+
+ann_weights[2827] = 21'b000000000000111101010;
+
+ann_weights[2828] = 21'b100000000000101001000;
+
+ann_weights[2829] = 21'b100000000001000101011;
+
+ann_weights[2830] = 21'b100000000000000011100;
+
+ann_weights[2831] = 21'b100000000000100100100;
+
+ann_weights[2832] = 21'b000000000000010000000;
+
+ann_weights[2833] = 21'b000000000000101111110;
+
+ann_weights[2834] = 21'b100000000000110010000;
+
+ann_weights[2835] = 21'b100000000001010001100;
+
+ann_weights[2836] = 21'b100000000001000000000;
+
+ann_weights[2837] = 21'b000000000000101111100;
+
+ann_weights[2838] = 21'b100000000000110010110;
+
+ann_weights[2839] = 21'b100000000000101111000;
+
+ann_weights[2840] = 21'b100000000000011011110;
+
+ann_weights[2841] = 21'b100000000000011100000;
+
+ann_weights[2842] = 21'b000000000000000010111;
+
+ann_weights[2843] = 21'b000000000000010101011;
+
+ann_weights[2844] = 21'b100000000000011100101;
+
+ann_weights[2845] = 21'b100000000000100011010;
+
+ann_weights[2846] = 21'b100000000000011111001;
+
+ann_weights[2847] = 21'b000000000000011001001;
+
+ann_weights[2848] = 21'b000000000000001110000;
+
+ann_weights[2849] = 21'b100000000000100101011;
+
+ann_weights[2850] = 21'b000000000000000011100;
+
+ann_weights[2851] = 21'b100000000001001010000;
+
+ann_weights[2852] = 21'b000000000000010101001;
+
+ann_weights[2853] = 21'b100000000000000011000;
+
+ann_weights[2854] = 21'b100000000000010111100;
+
+ann_weights[2855] = 21'b100000000000010110101;
+
+ann_weights[2856] = 21'b100000000000011000101;
+
+ann_weights[2857] = 21'b000000000000011010100;
+
+ann_weights[2858] = 21'b000000000000000010110;
+
+ann_weights[2859] = 21'b000000000000001100100;
+
+ann_weights[2860] = 21'b100000000000000100010;
+
+ann_weights[2861] = 21'b100000000000110101011;
+
+ann_weights[2862] = 21'b000000000000000101111;
+
+ann_weights[2863] = 21'b100000000000001011000;
+
+ann_weights[2864] = 21'b100000000000011100011;
+
+ann_weights[2865] = 21'b100000000000001001100;
+
+ann_weights[2866] = 21'b100000000000010111111;
+
+ann_weights[2867] = 21'b000000000000000111011;
+
+ann_weights[2868] = 21'b000000000000000100100;
+
+ann_weights[2869] = 21'b000000000000001101100;
+
+ann_weights[2870] = 21'b100000000000000110010;
+
+ann_weights[2871] = 21'b100000000000011100101;
+
+ann_weights[2872] = 21'b100000000000000110010;
+
+ann_weights[2873] = 21'b100000000000000101100;
+
+ann_weights[2874] = 21'b100000000000000011111;
+
+ann_weights[2875] = 21'b000000000000001010011;
+
+ann_weights[2876] = 21'b100000000000001001000;
+
+ann_weights[2877] = 21'b000000000000000010011;
+
+ann_weights[2878] = 21'b000000000000010001011;
+
+ann_weights[2879] = 21'b000000000000001001110;
+
+ann_weights[2880] = 21'b100000000000001100110;
+
+ann_weights[2881] = 21'b100000000000010100001;
+
+ann_weights[2882] = 21'b100000000000010011010;
+
+ann_weights[2883] = 21'b100000000000100001101;
+
+ann_weights[2884] = 21'b100000000000000000110;
+
+ann_weights[2885] = 21'b000000000000011001110;
+
+ann_weights[2886] = 21'b000000000000000001110;
+
+ann_weights[2887] = 21'b100000000000001010111;
+
+ann_weights[2888] = 21'b000000000000010111001;
+
+ann_weights[2889] = 21'b000000000000001011000;
+
+ann_weights[2890] = 21'b000000000000000100100;
+
+ann_weights[2891] = 21'b100000000000100010101;
+
+ann_weights[2892] = 21'b100000000000001100001;
+
+ann_weights[2893] = 21'b100000000000101101101;
+
+ann_weights[2894] = 21'b000000000000001000011;
+
+ann_weights[2895] = 21'b000000000000100101010;
+
+ann_weights[2896] = 21'b100000000000000110010;
+
+ann_weights[2897] = 21'b000000000000000000000;
+
+ann_weights[2898] = 21'b000000000000011011101;
+
+ann_weights[2899] = 21'b000000000000001100110;
+
+ann_weights[2900] = 21'b100000000000010001000;
+
+ann_weights[2901] = 21'b000000000000000000000;
+
+ann_weights[2902] = 21'b100000000000011000100;
+
+ann_weights[2903] = 21'b100000000000111011001;
+
+ann_weights[2904] = 21'b000000000000000101010;
+
+ann_weights[2905] = 21'b000000000000010111010;
+
+ann_weights[2906] = 21'b100000000000001101110;
+
+ann_weights[2907] = 21'b000000000000000101100;
+
+ann_weights[2908] = 21'b000000000000010110011;
+
+ann_weights[2909] = 21'b000000000000000111000;
+
+ann_weights[2910] = 21'b000000000000001001010;
+
+ann_weights[2911] = 21'b100000000000001011011;
+
+ann_weights[2912] = 21'b100000000000001101110;
+
+ann_weights[2913] = 21'b100000000000110100110;
+
+ann_weights[2914] = 21'b100000000000000000101;
+
+ann_weights[2915] = 21'b000000000000100111101;
+
+ann_weights[2916] = 21'b100000000000001110011;
+
+ann_weights[2917] = 21'b000000000000000000010;
+
+ann_weights[2918] = 21'b000000000000011001110;
+
+ann_weights[2919] = 21'b000000000000010100101;
+
+ann_weights[2920] = 21'b100000000000000000001;
+
+ann_weights[2921] = 21'b000000000000000001110;
+
+ann_weights[2922] = 21'b100000000000010101111;
+
+ann_weights[2923] = 21'b100000000000101111000;
+
+ann_weights[2924] = 21'b000000000000010101110;
+
+ann_weights[2925] = 21'b000000000000100101010;
+
+ann_weights[2926] = 21'b100000000000001101000;
+
+ann_weights[2927] = 21'b100000000000000111000;
+
+ann_weights[2928] = 21'b000000000000001111010;
+
+ann_weights[2929] = 21'b000000000000001011110;
+
+ann_weights[2930] = 21'b000000000000000000101;
+
+ann_weights[2931] = 21'b000000000000010111100;
+
+ann_weights[2932] = 21'b100000000000100010110;
+
+ann_weights[2933] = 21'b100000000000000001100;
+
+ann_weights[2934] = 21'b100000000000100011101;
+
+ann_weights[2935] = 21'b000000000000010100111;
+
+ann_weights[2936] = 21'b100000000000001011011;
+
+ann_weights[2937] = 21'b000000000000010011101;
+
+ann_weights[2938] = 21'b000000000000000001001;
+
+ann_weights[2939] = 21'b100000000000010100011;
+
+ann_weights[2940] = 21'b000000000000000000010;
+
+ann_weights[2941] = 21'b000000000000110011011;
+
+ann_weights[2942] = 21'b100000000000001101010;
+
+ann_weights[2943] = 21'b000000000000011010010;
+
+ann_weights[2944] = 21'b100000000001011011000;
+
+ann_weights[2945] = 21'b100000000000000000010;
+
+ann_weights[2946] = 21'b100000000000100101100;
+
+ann_weights[2947] = 21'b000000000000011011101;
+
+ann_weights[2948] = 21'b100000000000001111000;
+
+ann_weights[2949] = 21'b100000000000000001100;
+
+ann_weights[2950] = 21'b100000000000010001110;
+
+ann_weights[2951] = 21'b000000000001001101101;
+
+ann_weights[2952] = 21'b100000000000010101010;
+
+ann_weights[2953] = 21'b000000000000010101001;
+
+ann_weights[2954] = 21'b100000000000011001011;
+
+ann_weights[2955] = 21'b100000000000010110000;
+
+ann_weights[2956] = 21'b100000000000110011010;
+
+ann_weights[2957] = 21'b000000000000110111000;
+
+ann_weights[2958] = 21'b100000000000100101101;
+
+ann_weights[2959] = 21'b100000000000010010110;
+
+ann_weights[2960] = 21'b100000000000001000101;
+
+ann_weights[2961] = 21'b000000000000100000000;
+
+ann_weights[2962] = 21'b000000000000000001111;
+
+ann_weights[2963] = 21'b000000000000011100000;
+
+ann_weights[2964] = 21'b100000000000000111011;
+
+ann_weights[2965] = 21'b100000000000100111111;
+
+ann_weights[2966] = 21'b100000000000111110011;
+
+ann_weights[2967] = 21'b000000000000110110100;
+
+ann_weights[2968] = 21'b100000000000100100101;
+
+ann_weights[2969] = 21'b100000000000000010010;
+
+ann_weights[2970] = 21'b000000000000010001101;
+
+ann_weights[2971] = 21'b000000000000001001111;
+
+ann_weights[2972] = 21'b000000000000000010111;
+
+ann_weights[2973] = 21'b000000000000001100001;
+
+ann_weights[2974] = 21'b000000000000001000000;
+
+ann_weights[2975] = 21'b100000000000110000011;
+
+ann_weights[2976] = 21'b100000000000111101011;
+
+ann_weights[2977] = 21'b000000000000101000101;
+
+ann_weights[2978] = 21'b100000000000010110001;
+
+ann_weights[2979] = 21'b100000000000000011101;
+
+ann_weights[2980] = 21'b000000000000011001101;
+
+ann_weights[2981] = 21'b100000000000010111001;
+
+ann_weights[2982] = 21'b100000000000000011000;
+
+ann_weights[2983] = 21'b000000000000001111110;
+
+ann_weights[2984] = 21'b100000000000001001010;
+
+ann_weights[2985] = 21'b100000000000101100110;
+
+ann_weights[2986] = 21'b100000000000111010101;
+
+ann_weights[2987] = 21'b000000000000100100011;
+
+ann_weights[2988] = 21'b100000000000000001100;
+
+ann_weights[2989] = 21'b100000000000000000011;
+
+ann_weights[2990] = 21'b000000000000000100000;
+
+ann_weights[2991] = 21'b100000000000100001001;
+
+ann_weights[2992] = 21'b100000000000000000101;
+
+ann_weights[2993] = 21'b000000000000010110101;
+
+ann_weights[2994] = 21'b000000000000000010011;
+
+ann_weights[2995] = 21'b100000000000101000000;
+
+ann_weights[2996] = 21'b100000000000101001101;
+
+ann_weights[2997] = 21'b000000000000010100010;
+
+ann_weights[2998] = 21'b000000000000001001111;
+
+ann_weights[2999] = 21'b100000000000000100011;
+
+ann_weights[3000] = 21'b000000000000001011010;
+
+ann_weights[3001] = 21'b100000000000101100110;
+
+ann_weights[3002] = 21'b100000000000001000111;
+
+ann_weights[3003] = 21'b000000000000010101100;
+
+ann_weights[3004] = 21'b100000000000001100001;
+
+ann_weights[3005] = 21'b100000000000011100110;
+
+ann_weights[3006] = 21'b100000000000100010100;
+
+ann_weights[3007] = 21'b000000000000011110111;
+
+ann_weights[3008] = 21'b100000000000000000000;
+
+ann_weights[3009] = 21'b100000000000000100010;
+
+ann_weights[3010] = 21'b000000000000001110001;
+
+ann_weights[3011] = 21'b100000000000110000000;
+
+ann_weights[3012] = 21'b100000000000000111010;
+
+ann_weights[3013] = 21'b000000000000001000000;
+
+ann_weights[3014] = 21'b100000000000010000110;
+
+ann_weights[3015] = 21'b100000000000001100010;
+
+ann_weights[3016] = 21'b100000000000011011011;
+
+ann_weights[3017] = 21'b000000000000011010111;
+
+ann_weights[3018] = 21'b000000000000010000010;
+
+ann_weights[3019] = 21'b100000000000000010001;
+
+ann_weights[3020] = 21'b000000000000010000010;
+
+ann_weights[3021] = 21'b100000000000111000110;
+
+ann_weights[3022] = 21'b100000000000010010100;
+
+ann_weights[3023] = 21'b000000000000001101000;
+
+ann_weights[3024] = 21'b100000000000001100000;
+
+ann_weights[3025] = 21'b000000000000000000000;
+
+ann_weights[3026] = 21'b100000000000100011110;
+
+ann_weights[3027] = 21'b000000000000001011110;
+
+ann_weights[3028] = 21'b000000000000001001111;
+
+ann_weights[3029] = 21'b100000000000001001101;
+
+ann_weights[3030] = 21'b000000000000100110011;
+
+ann_weights[3031] = 21'b100000000001011010111;
+
+ann_weights[3032] = 21'b100000000000011101001;
+
+ann_weights[3033] = 21'b100000000000000100100;
+
+ann_weights[3034] = 21'b100000000001000000110;
+
+ann_weights[3035] = 21'b000000000000110011000;
+
+ann_weights[3036] = 21'b100000000000001101110;
+
+ann_weights[3037] = 21'b100000000000011101000;
+
+ann_weights[3038] = 21'b000000000000001001111;
+
+ann_weights[3039] = 21'b100000000000011100010;
+
+ann_weights[3040] = 21'b000000000000010111010;
+
+ann_weights[3041] = 21'b100000000001110111001;
+
+ann_weights[3042] = 21'b100000000001001111110;
+
+ann_weights[3043] = 21'b100000000010001101001;
+
+ann_weights[3044] = 21'b100000000001001001110;
+
+ann_weights[3045] = 21'b000000000001111111011;
+
+ann_weights[3046] = 21'b100000000000011110110;
+
+ann_weights[3047] = 21'b100000000000111110011;
+
+ann_weights[3048] = 21'b100000000000010010111;
+
+ann_weights[3049] = 21'b100000000001000111000;
+
+ann_weights[3050] = 21'b100000000001011010111;
+
+ann_weights[3051] = 21'b100000000000101111000;
+
+ann_weights[3052] = 21'b100000000000100100110;
+
+ann_weights[3053] = 21'b100000000000110101100;
+
+ann_weights[3054] = 21'b100000000001001110000;
+
+ann_weights[3055] = 21'b000000000010010001110;
+
+ann_weights[3056] = 21'b100000000001100111110;
+
+ann_weights[3057] = 21'b100000000000101010001;
+
+ann_weights[3058] = 21'b100000000000111001110;
+
+ann_weights[3059] = 21'b100000000001000100111;
+
+ann_weights[3060] = 21'b100000000001000111000;
+
+ann_weights[3061] = 21'b100000000000100001010;
+
+ann_weights[3062] = 21'b100000000000010001001;
+
+ann_weights[3063] = 21'b100000000000111110000;
+
+ann_weights[3064] = 21'b100000000000111101100;
+
+ann_weights[3065] = 21'b000000000001101111110;
+
+ann_weights[3066] = 21'b100000000001011100000;
+
+ann_weights[3067] = 21'b100000000000001000111;
+
+ann_weights[3068] = 21'b100000000000000011111;
+
+ann_weights[3069] = 21'b100000000001010110010;
+
+ann_weights[3070] = 21'b100000000000001101011;
+
+ann_weights[3071] = 21'b000000000000001101101;
+
+ann_weights[3072] = 21'b100000000000100000110;
+
+ann_weights[3073] = 21'b100000000000001000001;
+
+ann_weights[3074] = 21'b100000000000100001000;
+
+ann_weights[3075] = 21'b000000000000010011010;
+
+ann_weights[3076] = 21'b100000000000011011100;
+
+ann_weights[3077] = 21'b000000000000010000100;
+
+ann_weights[3078] = 21'b000000000000000100011;
+
+ann_weights[3079] = 21'b100000000000011011111;
+
+ann_weights[3080] = 21'b100000000000000011011;
+
+ann_weights[3081] = 21'b100000000000010000110;
+
+ann_weights[3082] = 21'b100000000000000000011;
+
+ann_weights[3083] = 21'b100000000000010110001;
+
+ann_weights[3084] = 21'b100000000000001001101;
+
+ann_weights[3085] = 21'b100000000000000100100;
+
+ann_weights[3086] = 21'b100000000000001001110;
+
+ann_weights[3087] = 21'b000000000000001110010;
+
+ann_weights[3088] = 21'b100000000000011001000;
+
+ann_weights[3089] = 21'b100000000000001101000;
+
+ann_weights[3090] = 21'b000000000000001101110;
+
+ann_weights[3091] = 21'b000000000000001101010;
+
+ann_weights[3092] = 21'b100000000000100001111;
+
+ann_weights[3093] = 21'b100000000000011011000;
+
+ann_weights[3094] = 21'b100000000000100001000;
+
+ann_weights[3095] = 21'b100000000000011100010;
+
+ann_weights[3096] = 21'b100000000000010111011;
+
+ann_weights[3097] = 21'b000000000000100010100;
+
+ann_weights[3098] = 21'b100000000000101010001;
+
+ann_weights[3099] = 21'b100000000000110110001;
+
+ann_weights[3100] = 21'b100000000000010101001;
+
+ann_weights[3101] = 21'b100000000000000110000;
+
+ann_weights[3102] = 21'b100000000000011110110;
+
+ann_weights[3103] = 21'b100000000000000010011;
+
+ann_weights[3104] = 21'b100000000000111110110;
+
+ann_weights[3105] = 21'b100000000000100000010;
+
+ann_weights[3106] = 21'b100000000000001011101;
+
+ann_weights[3107] = 21'b000000000000111011001;
+
+ann_weights[3108] = 21'b100000000000111100010;
+
+ann_weights[3109] = 21'b100000000001001110110;
+
+ann_weights[3110] = 21'b100000000000000110110;
+
+ann_weights[3111] = 21'b100000000000011101110;
+
+ann_weights[3112] = 21'b100000000000011100100;
+
+ann_weights[3113] = 21'b000000000000101101000;
+
+ann_weights[3114] = 21'b100000000000101011100;
+
+ann_weights[3115] = 21'b100000000001001010000;
+
+ann_weights[3116] = 21'b100000000000110001110;
+
+ann_weights[3117] = 21'b000000000000111111111;
+
+ann_weights[3118] = 21'b100000000000011111011;
+
+ann_weights[3119] = 21'b100000000000101110011;
+
+ann_weights[3120] = 21'b100000000000011111000;
+
+ann_weights[3121] = 21'b100000000000010101100;
+
+ann_weights[3122] = 21'b100000000000010010011;
+
+ann_weights[3123] = 21'b000000000000010001011;
+
+ann_weights[3124] = 21'b100000000000011011100;
+
+ann_weights[3125] = 21'b100000000000000100111;
+
+ann_weights[3126] = 21'b100000000000010001100;
+
+ann_weights[3127] = 21'b000000000000110010101;
+
+ann_weights[3128] = 21'b000000000000001011110;
+
+ann_weights[3129] = 21'b100000000000010000111;
+
+ann_weights[3130] = 21'b100000000000011011110;
+
+ann_weights[3131] = 21'b100000000000100111001;
+
+ann_weights[3132] = 21'b100000000000001001011;
+
+ann_weights[3133] = 21'b100000000000011000110;
+
+ann_weights[3134] = 21'b100000000000011011101;
+
+ann_weights[3135] = 21'b100000000000000100001;
+
+ann_weights[3136] = 21'b100000000000001111110;
+
+ann_weights[3137] = 21'b000000000000001101101;
+
+ann_weights[3138] = 21'b000000000000001010010;
+
+ann_weights[3139] = 21'b000000000000010000000;
+
+ann_weights[3140] = 21'b100000000000001011100;
+
+ann_weights[3141] = 21'b100000000000111101010;
+
+ann_weights[3142] = 21'b100000000000010010011;
+
+ann_weights[3143] = 21'b100000000000100010101;
+
+ann_weights[3144] = 21'b100000000000001011100;
+
+ann_weights[3145] = 21'b000000000000010001010;
+
+ann_weights[3146] = 21'b100000000000000101110;
+
+ann_weights[3147] = 21'b100000000000000001000;
+
+ann_weights[3148] = 21'b000000000000001100101;
+
+ann_weights[3149] = 21'b000000000000011011101;
+
+ann_weights[3150] = 21'b100000000000000111011;
+
+ann_weights[3151] = 21'b100000000000101111101;
+
+ann_weights[3152] = 21'b100000000000110100010;
+
+ann_weights[3153] = 21'b100000000000110111100;
+
+ann_weights[3154] = 21'b100000000000000110101;
+
+ann_weights[3155] = 21'b000000000000010011000;
+
+ann_weights[3156] = 21'b000000000000001100110;
+
+ann_weights[3157] = 21'b000000000000010000101;
+
+ann_weights[3158] = 21'b000000000000100011010;
+
+ann_weights[3159] = 21'b000000000000010100111;
+
+ann_weights[3160] = 21'b000000000000000100111;
+
+ann_weights[3161] = 21'b100000000000100000111;
+
+ann_weights[3162] = 21'b100000000000110100001;
+
+ann_weights[3163] = 21'b100000000000111101100;
+
+ann_weights[3164] = 21'b000000000000010010111;
+
+ann_weights[3165] = 21'b000000000000010100010;
+
+ann_weights[3166] = 21'b100000000000000101000;
+
+ann_weights[3167] = 21'b100000000000000011111;
+
+ann_weights[3168] = 21'b000000000000011000000;
+
+ann_weights[3169] = 21'b000000000000011111100;
+
+ann_weights[3170] = 21'b100000000000011000000;
+
+ann_weights[3171] = 21'b100000000000010111001;
+
+ann_weights[3172] = 21'b100000000001000110100;
+
+ann_weights[3173] = 21'b100000000000111110011;
+
+ann_weights[3174] = 21'b000000000000011101111;
+
+ann_weights[3175] = 21'b000000000000001001010;
+
+ann_weights[3176] = 21'b000000000000000000001;
+
+ann_weights[3177] = 21'b000000000000001011101;
+
+ann_weights[3178] = 21'b000000000000010110001;
+
+ann_weights[3179] = 21'b000000000000010001001;
+
+ann_weights[3180] = 21'b100000000000001001001;
+
+ann_weights[3181] = 21'b100000000000001111110;
+
+ann_weights[3182] = 21'b100000000001001001111;
+
+ann_weights[3183] = 21'b100000000000100110101;
+
+ann_weights[3184] = 21'b000000000000100111001;
+
+ann_weights[3185] = 21'b000000000000010001010;
+
+ann_weights[3186] = 21'b000000000000000110101;
+
+ann_weights[3187] = 21'b000000000000001001011;
+
+ann_weights[3188] = 21'b000000000000010100110;
+
+ann_weights[3189] = 21'b000000000000100000111;
+
+ann_weights[3190] = 21'b000000000000000100100;
+
+ann_weights[3191] = 21'b100000000000010011110;
+
+ann_weights[3192] = 21'b100000000001000011000;
+
+ann_weights[3193] = 21'b100000000000100011101;
+
+ann_weights[3194] = 21'b000000000000010110100;
+
+ann_weights[3195] = 21'b000000000000001110101;
+
+ann_weights[3196] = 21'b100000000000001000100;
+
+ann_weights[3197] = 21'b000000000000000001101;
+
+ann_weights[3198] = 21'b000000000000001000000;
+
+ann_weights[3199] = 21'b000000000000011101011;
+
+ann_weights[3200] = 21'b100000000000001101101;
+
+ann_weights[3201] = 21'b100000000000010011011;
+
+ann_weights[3202] = 21'b100000000001010000011;
+
+ann_weights[3203] = 21'b100000000000001101000;
+
+ann_weights[3204] = 21'b000000000000011101010;
+
+ann_weights[3205] = 21'b000000000000100111110;
+
+ann_weights[3206] = 21'b000000000000001010100;
+
+ann_weights[3207] = 21'b100000000000000001110;
+
+ann_weights[3208] = 21'b000000000000010101000;
+
+ann_weights[3209] = 21'b100000000000000010110;
+
+ann_weights[3210] = 21'b100000000000010000000;
+
+ann_weights[3211] = 21'b000000000000011011100;
+
+ann_weights[3212] = 21'b100000000001011110010;
+
+ann_weights[3213] = 21'b000000000000000101001;
+
+ann_weights[3214] = 21'b100000000000110000110;
+
+ann_weights[3215] = 21'b000000000000100110010;
+
+ann_weights[3216] = 21'b000000000000001010001;
+
+ann_weights[3217] = 21'b100000000000000011010;
+
+ann_weights[3218] = 21'b000000000000011011101;
+
+ann_weights[3219] = 21'b100000000000001011001;
+
+ann_weights[3220] = 21'b100000000000110001100;
+
+ann_weights[3221] = 21'b000000000001001110110;
+
+ann_weights[3222] = 21'b100000000001000100010;
+
+ann_weights[3223] = 21'b000000000000001110001;
+
+ann_weights[3224] = 21'b100000000001010101101;
+
+ann_weights[3225] = 21'b000000000000000110011;
+
+ann_weights[3226] = 21'b100000000000100001001;
+
+ann_weights[3227] = 21'b000000000000010101011;
+
+ann_weights[3228] = 21'b000000000000100000110;
+
+ann_weights[3229] = 21'b100000000000000001101;
+
+ann_weights[3230] = 21'b100000000001001000010;
+
+ann_weights[3231] = 21'b000000000001001101011;
+
+ann_weights[3232] = 21'b100000000000110011001;
+
+ann_weights[3233] = 21'b000000000000001111110;
+
+ann_weights[3234] = 21'b100000000000000110010;
+
+ann_weights[3235] = 21'b100000000000010101100;
+
+ann_weights[3236] = 21'b100000000001000001001;
+
+ann_weights[3237] = 21'b000000000000101110101;
+
+ann_weights[3238] = 21'b100000000000001010000;
+
+ann_weights[3239] = 21'b000000000000000011100;
+
+ann_weights[3240] = 21'b100000000000111000110;
+
+ann_weights[3241] = 21'b000000000000011011101;
+
+ann_weights[3242] = 21'b100000000000010100010;
+
+ann_weights[3243] = 21'b000000000000000001001;
+
+ann_weights[3244] = 21'b000000000000011010011;
+
+ann_weights[3245] = 21'b100000000000011000011;
+
+ann_weights[3246] = 21'b100000000000100110110;
+
+ann_weights[3247] = 21'b000000000000110011011;
+
+ann_weights[3248] = 21'b100000000000010011011;
+
+ann_weights[3249] = 21'b000000000000001111110;
+
+ann_weights[3250] = 21'b100000000000010010011;
+
+ann_weights[3251] = 21'b100000000000010010010;
+
+ann_weights[3252] = 21'b100000000000011100101;
+
+ann_weights[3253] = 21'b000000000000010111111;
+
+ann_weights[3254] = 21'b000000000000001110010;
+
+ann_weights[3255] = 21'b100000000000101000101;
+
+ann_weights[3256] = 21'b100000000000101001110;
+
+ann_weights[3257] = 21'b000000000000101010011;
+
+ann_weights[3258] = 21'b100000000000011010011;
+
+ann_weights[3259] = 21'b000000000000100101000;
+
+ann_weights[3260] = 21'b100000000000000011000;
+
+ann_weights[3261] = 21'b100000000000001100011;
+
+ann_weights[3262] = 21'b100000000000000111111;
+
+ann_weights[3263] = 21'b000000000000010011010;
+
+ann_weights[3264] = 21'b100000000000001000011;
+
+ann_weights[3265] = 21'b100000000000011011100;
+
+ann_weights[3266] = 21'b100000000000101010000;
+
+ann_weights[3267] = 21'b000000000000101001101;
+
+ann_weights[3268] = 21'b100000000000000111000;
+
+ann_weights[3269] = 21'b000000000000010001101;
+
+ann_weights[3270] = 21'b000000000000000010110;
+
+ann_weights[3271] = 21'b100000000000001110110;
+
+ann_weights[3272] = 21'b000000000000000011110;
+
+ann_weights[3273] = 21'b000000000000000011000;
+
+ann_weights[3274] = 21'b100000000000000110101;
+
+ann_weights[3275] = 21'b100000000000110111110;
+
+ann_weights[3276] = 21'b100000000000100010000;
+
+ann_weights[3277] = 21'b000000000000001011100;
+
+ann_weights[3278] = 21'b100000000000000011110;
+
+ann_weights[3279] = 21'b000000000000010101001;
+
+ann_weights[3280] = 21'b000000000000010010100;
+
+ann_weights[3281] = 21'b100000000000010011010;
+
+ann_weights[3282] = 21'b100000000000001001011;
+
+ann_weights[3283] = 21'b000000000000010101111;
+
+ann_weights[3284] = 21'b100000000000011111110;
+
+ann_weights[3285] = 21'b100000000001001011110;
+
+ann_weights[3286] = 21'b100000000000010110000;
+
+ann_weights[3287] = 21'b000000000000010000100;
+
+ann_weights[3288] = 21'b100000000000000000100;
+
+ann_weights[3289] = 21'b000000000000100001011;
+
+ann_weights[3290] = 21'b000000000000010101100;
+
+ann_weights[3291] = 21'b100000000000011100001;
+
+ann_weights[3292] = 21'b100000000000001010110;
+
+ann_weights[3293] = 21'b100000000000010101001;
+
+ann_weights[3294] = 21'b100000000000010101110;
+
+ann_weights[3295] = 21'b100000000001001110001;
+
+ann_weights[3296] = 21'b000000000000000011000;
+
+ann_weights[3297] = 21'b000000000000010110001;
+
+ann_weights[3298] = 21'b000000000000000100100;
+
+ann_weights[3299] = 21'b000000000000011100100;
+
+ann_weights[3300] = 21'b000000000000100100000;
+
+ann_weights[3301] = 21'b100000000000110111001;
+
+ann_weights[3302] = 21'b100000000000010001100;
+
+ann_weights[3303] = 21'b100000000000010011110;
+
+ann_weights[3304] = 21'b100000000000010000010;
+
+ann_weights[3305] = 21'b100000000001000010110;
+
+ann_weights[3306] = 21'b000000000000000101100;
+
+ann_weights[3307] = 21'b000000000000001101111;
+
+ann_weights[3308] = 21'b000000000000011010101;
+
+ann_weights[3309] = 21'b000000000000001010011;
+
+ann_weights[3310] = 21'b000000000000011100111;
+
+ann_weights[3311] = 21'b100000000000101110110;
+
+ann_weights[3312] = 21'b100000000000011001011;
+
+ann_weights[3313] = 21'b100000000000100100011;
+
+ann_weights[3314] = 21'b100000000001000000001;
+
+ann_weights[3315] = 21'b100000000000001110010;
+
+ann_weights[3316] = 21'b000000000000010111001;
+
+ann_weights[3317] = 21'b100000000000010111111;
+
+ann_weights[3318] = 21'b000000000000100001100;
+
+ann_weights[3319] = 21'b100000000000010011111;
+
+ann_weights[3320] = 21'b000000000000010100000;
+
+ann_weights[3321] = 21'b100000000001101101010;
+
+ann_weights[3322] = 21'b100000000000011001101;
+
+ann_weights[3323] = 21'b100000000001100010001;
+
+ann_weights[3324] = 21'b100000000001011001100;
+
+ann_weights[3325] = 21'b000000000000111010100;
+
+ann_weights[3326] = 21'b100000000000000011011;
+
+ann_weights[3327] = 21'b100000000001011100000;
+
+ann_weights[3328] = 21'b000000000000001000010;
+
+ann_weights[3329] = 21'b100000000000111000010;
+
+ann_weights[3330] = 21'b100000000000111110000;
+
+ann_weights[3331] = 21'b100000000000100111101;
+
+ann_weights[3332] = 21'b000000000000010000101;
+
+ann_weights[3333] = 21'b100000000000010001001;
+
+ann_weights[3334] = 21'b100000000001001001001;
+
+ann_weights[3335] = 21'b000000000001110001001;
+
+ann_weights[3336] = 21'b100000000001000001001;
+
+ann_weights[3337] = 21'b100000000001011001111;
+
+ann_weights[3338] = 21'b100000000000001100111;
+
+ann_weights[3339] = 21'b100000000001001000110;
+
+ann_weights[3340] = 21'b100000000001010000000;
+
+ann_weights[3341] = 21'b100000000000100011011;
+
+ann_weights[3342] = 21'b100000000000001010101;
+
+ann_weights[3343] = 21'b100000000000100101110;
+
+ann_weights[3344] = 21'b100000000000110011101;
+
+ann_weights[3345] = 21'b000000000000111100101;
+
+ann_weights[3346] = 21'b100000000001010101011;
+
+ann_weights[3347] = 21'b100000000000101010100;
+
+ann_weights[3348] = 21'b000000000000010000111;
+
+ann_weights[3349] = 21'b100000000000111001101;
+
+ann_weights[3350] = 21'b100000000000001111011;
+
+ann_weights[3351] = 21'b000000000000011001101;
+
+ann_weights[3352] = 21'b100000000000100000111;
+
+ann_weights[3353] = 21'b100000000000010000001;
+
+ann_weights[3354] = 21'b100000000000100011111;
+
+ann_weights[3355] = 21'b100000000000001001101;
+
+ann_weights[3356] = 21'b100000000000010000011;
+
+ann_weights[3357] = 21'b000000000000001011010;
+
+ann_weights[3358] = 21'b000000000000001110101;
+
+ann_weights[3359] = 21'b100000000000100011110;
+
+ann_weights[3360] = 21'b000000000000000010001;
+
+ann_weights[3361] = 21'b100000000000000110010;
+
+ann_weights[3362] = 21'b100000000000000101111;
+
+ann_weights[3363] = 21'b100000000000010110010;
+
+ann_weights[3364] = 21'b100000000000001011101;
+
+ann_weights[3365] = 21'b100000000000000101110;
+
+ann_weights[3366] = 21'b000000000000000000100;
+
+ann_weights[3367] = 21'b000000000000010010000;
+
+ann_weights[3368] = 21'b100000000000001000010;
+
+ann_weights[3369] = 21'b100000000000010010110;
+
+ann_weights[3370] = 21'b000000000000000100010;
+
+ann_weights[3371] = 21'b100000000000100001000;
+
+ann_weights[3372] = 21'b100000000000010000110;
+
+ann_weights[3373] = 21'b100000000000100000000;
+
+ann_weights[3374] = 21'b100000000000011111000;
+
+ann_weights[3375] = 21'b100000000000100111111;
+
+ann_weights[3376] = 21'b100000000000100110110;
+
+ann_weights[3377] = 21'b000000000000101001111;
+
+ann_weights[3378] = 21'b100000000000011100111;
+
+ann_weights[3379] = 21'b100000000000111000000;
+
+ann_weights[3380] = 21'b100000000000011000011;
+
+ann_weights[3381] = 21'b100000000000010000001;
+
+ann_weights[3382] = 21'b100000000000011001010;
+
+ann_weights[3383] = 21'b100000000000110111001;
+
+ann_weights[3384] = 21'b100000000000101110001;
+
+ann_weights[3385] = 21'b100000000000100011001;
+
+ann_weights[3386] = 21'b100000000000011101101;
+
+ann_weights[3387] = 21'b000000000000111111000;
+
+ann_weights[3388] = 21'b100000000000110001011;
+
+ann_weights[3389] = 21'b100000000000111010111;
+
+ann_weights[3390] = 21'b100000000000010110011;
+
+ann_weights[3391] = 21'b100000000000000101110;
+
+ann_weights[3392] = 21'b100000000000101110111;
+
+ann_weights[3393] = 21'b000000000000000101110;
+
+ann_weights[3394] = 21'b100000000000011100101;
+
+ann_weights[3395] = 21'b100000000000011001101;
+
+ann_weights[3396] = 21'b100000000000101101100;
+
+ann_weights[3397] = 21'b000000000001000101000;
+
+ann_weights[3398] = 21'b000000000000000110000;
+
+ann_weights[3399] = 21'b100000000000010001000;
+
+ann_weights[3400] = 21'b100000000000100100111;
+
+ann_weights[3401] = 21'b000000000000000110100;
+
+ann_weights[3402] = 21'b100000000000011110011;
+
+ann_weights[3403] = 21'b100000000000000100111;
+
+ann_weights[3404] = 21'b100000000000100111110;
+
+ann_weights[3405] = 21'b100000000000001101101;
+
+ann_weights[3406] = 21'b100000000000011000100;
+
+ann_weights[3407] = 21'b000000000000101101101;
+
+ann_weights[3408] = 21'b100000000000000100010;
+
+ann_weights[3409] = 21'b000000000000011100001;
+
+ann_weights[3410] = 21'b100000000000001010000;
+
+ann_weights[3411] = 21'b100000000000101000010;
+
+ann_weights[3412] = 21'b100000000000111110110;
+
+ann_weights[3413] = 21'b100000000000101110000;
+
+ann_weights[3414] = 21'b100000000000001100110;
+
+ann_weights[3415] = 21'b000000000000000111000;
+
+ann_weights[3416] = 21'b100000000000001011110;
+
+ann_weights[3417] = 21'b000000000000000101001;
+
+ann_weights[3418] = 21'b000000000000010111111;
+
+ann_weights[3419] = 21'b000000000000011001110;
+
+ann_weights[3420] = 21'b000000000000001111101;
+
+ann_weights[3421] = 21'b100000000000001101011;
+
+ann_weights[3422] = 21'b100000000001011110010;
+
+ann_weights[3423] = 21'b100000000000110001010;
+
+ann_weights[3424] = 21'b000000000000010100110;
+
+ann_weights[3425] = 21'b000000000000100010000;
+
+ann_weights[3426] = 21'b000000000000001111011;
+
+ann_weights[3427] = 21'b100000000000001000111;
+
+ann_weights[3428] = 21'b000000000000001000011;
+
+ann_weights[3429] = 21'b000000000000010110111;
+
+ann_weights[3430] = 21'b000000000000000101011;
+
+ann_weights[3431] = 21'b000000000000000000110;
+
+ann_weights[3432] = 21'b100000000001100011010;
+
+ann_weights[3433] = 21'b100000000000110111001;
+
+ann_weights[3434] = 21'b000000000000100100010;
+
+ann_weights[3435] = 21'b000000000000001001011;
+
+ann_weights[3436] = 21'b000000000000010000111;
+
+ann_weights[3437] = 21'b000000000000001100001;
+
+ann_weights[3438] = 21'b000000000000010000111;
+
+ann_weights[3439] = 21'b000000000000011001011;
+
+ann_weights[3440] = 21'b100000000000001011101;
+
+ann_weights[3441] = 21'b100000000000010001101;
+
+ann_weights[3442] = 21'b100000000001001010001;
+
+ann_weights[3443] = 21'b100000000000100111111;
+
+ann_weights[3444] = 21'b000000000000100001010;
+
+ann_weights[3445] = 21'b100000000000000001001;
+
+ann_weights[3446] = 21'b000000000000001111010;
+
+ann_weights[3447] = 21'b000000000000011100010;
+
+ann_weights[3448] = 21'b000000000000000001000;
+
+ann_weights[3449] = 21'b000000000000010000111;
+
+ann_weights[3450] = 21'b100000000000010000101;
+
+ann_weights[3451] = 21'b100000000000010100010;
+
+ann_weights[3452] = 21'b100000000000111110010;
+
+ann_weights[3453] = 21'b100000000000011011010;
+
+ann_weights[3454] = 21'b000000000000011011010;
+
+ann_weights[3455] = 21'b100000000000001011111;
+
+ann_weights[3456] = 21'b000000000000001001011;
+
+ann_weights[3457] = 21'b100000000000000111110;
+
+ann_weights[3458] = 21'b000000000000001001111;
+
+ann_weights[3459] = 21'b000000000000010100011;
+
+ann_weights[3460] = 21'b100000000000000001010;
+
+ann_weights[3461] = 21'b100000000000101001100;
+
+ann_weights[3462] = 21'b100000000001001010110;
+
+ann_weights[3463] = 21'b100000000000000110010;
+
+ann_weights[3464] = 21'b000000000000100101010;
+
+ann_weights[3465] = 21'b000000000000001110011;
+
+ann_weights[3466] = 21'b000000000000001001111;
+
+ann_weights[3467] = 21'b100000000000001000110;
+
+ann_weights[3468] = 21'b100000000000001101110;
+
+ann_weights[3469] = 21'b000000000000001100101;
+
+ann_weights[3470] = 21'b100000000000001001001;
+
+ann_weights[3471] = 21'b100000000000101100100;
+
+ann_weights[3472] = 21'b100000000001000100000;
+
+ann_weights[3473] = 21'b100000000000001001111;
+
+ann_weights[3474] = 21'b000000000000111111110;
+
+ann_weights[3475] = 21'b000000000000011001100;
+
+ann_weights[3476] = 21'b000000000000001011010;
+
+ann_weights[3477] = 21'b100000000000010110000;
+
+ann_weights[3478] = 21'b100000000000001001110;
+
+ann_weights[3479] = 21'b000000000000000101001;
+
+ann_weights[3480] = 21'b100000000000000010110;
+
+ann_weights[3481] = 21'b100000000000010111011;
+
+ann_weights[3482] = 21'b100000000001001100110;
+
+ann_weights[3483] = 21'b100000000000000100011;
+
+ann_weights[3484] = 21'b000000000000111000101;
+
+ann_weights[3485] = 21'b000000000000100011010;
+
+ann_weights[3486] = 21'b000000000000001000011;
+
+ann_weights[3487] = 21'b100000000000111111110;
+
+ann_weights[3488] = 21'b000000000000001101110;
+
+ann_weights[3489] = 21'b100000000000010110000;
+
+ann_weights[3490] = 21'b100000000000010101111;
+
+ann_weights[3491] = 21'b000000000000100010110;
+
+ann_weights[3492] = 21'b100000000000111111001;
+
+ann_weights[3493] = 21'b000000000000010001011;
+
+ann_weights[3494] = 21'b100000000000010101101;
+
+ann_weights[3495] = 21'b000000000000010101101;
+
+ann_weights[3496] = 21'b000000000000001001101;
+
+ann_weights[3497] = 21'b100000000001011001100;
+
+ann_weights[3498] = 21'b000000000000011111010;
+
+ann_weights[3499] = 21'b100000000000000110010;
+
+ann_weights[3500] = 21'b100000000001001011000;
+
+ann_weights[3501] = 21'b000000000001010000100;
+
+ann_weights[3502] = 21'b100000000000111001100;
+
+ann_weights[3503] = 21'b000000000000011101010;
+
+ann_weights[3504] = 21'b100000000000101101010;
+
+ann_weights[3505] = 21'b100000000000000100001;
+
+ann_weights[3506] = 21'b100000000000101000111;
+
+ann_weights[3507] = 21'b100000000000010111100;
+
+ann_weights[3508] = 21'b000000000000010011100;
+
+ann_weights[3509] = 21'b000000000000001101101;
+
+ann_weights[3510] = 21'b100000000001011010001;
+
+ann_weights[3511] = 21'b000000000000111111000;
+
+ann_weights[3512] = 21'b100000000000110010000;
+
+ann_weights[3513] = 21'b000000000000001110010;
+
+ann_weights[3514] = 21'b000000000000001101000;
+
+ann_weights[3515] = 21'b100000000000010011101;
+
+ann_weights[3516] = 21'b100000000000101010010;
+
+ann_weights[3517] = 21'b000000000000001111100;
+
+ann_weights[3518] = 21'b000000000000000100001;
+
+ann_weights[3519] = 21'b000000000000100001000;
+
+ann_weights[3520] = 21'b100000000001000100010;
+
+ann_weights[3521] = 21'b000000000000001111001;
+
+ann_weights[3522] = 21'b100000000000101100011;
+
+ann_weights[3523] = 21'b000000000000001111100;
+
+ann_weights[3524] = 21'b000000000000101101001;
+
+ann_weights[3525] = 21'b100000000000110001001;
+
+ann_weights[3526] = 21'b100000000000010000000;
+
+ann_weights[3527] = 21'b000000000000101101000;
+
+ann_weights[3528] = 21'b100000000000000000111;
+
+ann_weights[3529] = 21'b000000000000011111111;
+
+ann_weights[3530] = 21'b100000000000011011110;
+
+ann_weights[3531] = 21'b100000000000000011110;
+
+ann_weights[3532] = 21'b100000000000101000001;
+
+ann_weights[3533] = 21'b100000000000000001110;
+
+ann_weights[3534] = 21'b000000000000001111111;
+
+ann_weights[3535] = 21'b100000000000100011111;
+
+ann_weights[3536] = 21'b100000000000001111010;
+
+ann_weights[3537] = 21'b000000000000100010011;
+
+ann_weights[3538] = 21'b100000000000000100100;
+
+ann_weights[3539] = 21'b000000000000100011001;
+
+ann_weights[3540] = 21'b100000000000000111011;
+
+ann_weights[3541] = 21'b100000000000000100010;
+
+ann_weights[3542] = 21'b100000000000010010000;
+
+ann_weights[3543] = 21'b000000000000000101001;
+
+ann_weights[3544] = 21'b100000000000000010001;
+
+ann_weights[3545] = 21'b100000000000100110001;
+
+ann_weights[3546] = 21'b100000000000010111100;
+
+ann_weights[3547] = 21'b000000000000100001001;
+
+ann_weights[3548] = 21'b100000000000001000011;
+
+ann_weights[3549] = 21'b000000000000101001101;
+
+ann_weights[3550] = 21'b100000000000000011001;
+
+ann_weights[3551] = 21'b100000000000100011000;
+
+ann_weights[3552] = 21'b000000000000000011010;
+
+ann_weights[3553] = 21'b100000000000000000100;
+
+ann_weights[3554] = 21'b000000000000000101101;
+
+ann_weights[3555] = 21'b100000000000100110110;
+
+ann_weights[3556] = 21'b100000000000011100101;
+
+ann_weights[3557] = 21'b100000000000000111001;
+
+ann_weights[3558] = 21'b000000000000000111100;
+
+ann_weights[3559] = 21'b000000000000101001011;
+
+ann_weights[3560] = 21'b000000000000000100000;
+
+ann_weights[3561] = 21'b100000000000011001001;
+
+ann_weights[3562] = 21'b100000000000000101100;
+
+ann_weights[3563] = 21'b100000000000011000100;
+
+ann_weights[3564] = 21'b000000000000001000011;
+
+ann_weights[3565] = 21'b100000000000110011110;
+
+ann_weights[3566] = 21'b100000000000001110000;
+
+ann_weights[3567] = 21'b000000000000000011011;
+
+ann_weights[3568] = 21'b000000000000011010100;
+
+ann_weights[3569] = 21'b000000000000101001010;
+
+ann_weights[3570] = 21'b000000000000001010000;
+
+ann_weights[3571] = 21'b100000000000000011010;
+
+ann_weights[3572] = 21'b100000000000000100011;
+
+ann_weights[3573] = 21'b100000000000111001001;
+
+ann_weights[3574] = 21'b000000000000010000100;
+
+ann_weights[3575] = 21'b100000000001011110110;
+
+ann_weights[3576] = 21'b000000000000001001010;
+
+ann_weights[3577] = 21'b100000000000000010111;
+
+ann_weights[3578] = 21'b000000000000011100001;
+
+ann_weights[3579] = 21'b000000000000101000010;
+
+ann_weights[3580] = 21'b000000000000011001001;
+
+ann_weights[3581] = 21'b100000000000011100001;
+
+ann_weights[3582] = 21'b100000000000001111110;
+
+ann_weights[3583] = 21'b100000000000111000100;
+
+ann_weights[3584] = 21'b100000000000000001110;
+
+ann_weights[3585] = 21'b100000000010000000110;
+
+ann_weights[3586] = 21'b000000000000101001001;
+
+ann_weights[3587] = 21'b100000000000001000000;
+
+ann_weights[3588] = 21'b000000000000011101100;
+
+ann_weights[3589] = 21'b000000000000100011101;
+
+ann_weights[3590] = 21'b000000000000100100110;
+
+ann_weights[3591] = 21'b100000000000001101010;
+
+ann_weights[3592] = 21'b100000000000110111110;
+
+ann_weights[3593] = 21'b100000000000111111100;
+
+ann_weights[3594] = 21'b100000000000110001000;
+
+ann_weights[3595] = 21'b100000000001111111001;
+
+ann_weights[3596] = 21'b000000000001001000100;
+
+ann_weights[3597] = 21'b100000000000100000010;
+
+ann_weights[3598] = 21'b000000000000110000101;
+
+ann_weights[3599] = 21'b000000000000010101101;
+
+ann_weights[3600] = 21'b000000000000110010001;
+
+ann_weights[3601] = 21'b100000000001000111011;
+
+ann_weights[3602] = 21'b000000000000000101011;
+
+ann_weights[3603] = 21'b100000000001000111111;
+
+ann_weights[3604] = 21'b100000000000100011010;
+
+ann_weights[3605] = 21'b100000000001101001101;
+
+ann_weights[3606] = 21'b000000000000011100000;
+
+ann_weights[3607] = 21'b100000000000110110011;
+
+ann_weights[3608] = 21'b000000000000111011101;
+
+ann_weights[3609] = 21'b100000000001010100101;
+
+ann_weights[3610] = 21'b100000000000000011011;
+
+ann_weights[3611] = 21'b100000000000100001000;
+
+ann_weights[3612] = 21'b000000000000110000000;
+
+ann_weights[3613] = 21'b000000000000001100100;
+
+ann_weights[3614] = 21'b100000000000100111001;
+
+ann_weights[3615] = 21'b000000000000001011100;
+
+ann_weights[3616] = 21'b100000000000011110110;
+
+ann_weights[3617] = 21'b100000000000001000011;
+
+ann_weights[3618] = 21'b000000000000001100011;
+
+ann_weights[3619] = 21'b100000000001110111100;
+
+ann_weights[3620] = 21'b100000000000100111110;
+
+ann_weights[3621] = 21'b100000000000101010010;
+
+ann_weights[3622] = 21'b000000000000100101010;
+
+ann_weights[3623] = 21'b100000000000001110011;
+
+ann_weights[3624] = 21'b100000000000100101001;
+
+ann_weights[3625] = 21'b000000000000100001010;
+
+ann_weights[3626] = 21'b100000000001001001000;
+
+ann_weights[3627] = 21'b000000000000010111011;
+
+ann_weights[3628] = 21'b100000000000000110101;
+
+ann_weights[3629] = 21'b100000000000111010111;
+
+ann_weights[3630] = 21'b100000000000011001011;
+
+ann_weights[3631] = 21'b000000000000001110110;
+
+ann_weights[3632] = 21'b000000000000001011011;
+
+ann_weights[3633] = 21'b100000000000010111010;
+
+ann_weights[3634] = 21'b100000000000101011110;
+
+ann_weights[3635] = 21'b100000000000010111110;
+
+ann_weights[3636] = 21'b100000000000011011001;
+
+ann_weights[3637] = 21'b000000000000000100110;
+
+ann_weights[3638] = 21'b100000000000011111100;
+
+ann_weights[3639] = 21'b100000000000100110010;
+
+ann_weights[3640] = 21'b100000000000000000000;
+
+ann_weights[3641] = 21'b000000000000001010100;
+
+ann_weights[3642] = 21'b100000000000001110110;
+
+ann_weights[3643] = 21'b100000000000001100100;
+
+ann_weights[3644] = 21'b000000000000000010100;
+
+ann_weights[3645] = 21'b000000000000000010011;
+
+ann_weights[3646] = 21'b100000000000000100110;
+
+ann_weights[3647] = 21'b100000000000010101100;
+
+ann_weights[3648] = 21'b100000000000010001110;
+
+ann_weights[3649] = 21'b100000000000010010111;
+
+ann_weights[3650] = 21'b000000000000000000001;
+
+ann_weights[3651] = 21'b100000000000011110100;
+
+ann_weights[3652] = 21'b100000000000010011100;
+
+ann_weights[3653] = 21'b100000000000100000001;
+
+ann_weights[3654] = 21'b100000000000001100111;
+
+ann_weights[3655] = 21'b100000000000011000011;
+
+ann_weights[3656] = 21'b100000000000011110110;
+
+ann_weights[3657] = 21'b000000000000011110110;
+
+ann_weights[3658] = 21'b100000000000011010111;
+
+ann_weights[3659] = 21'b100000000000100011011;
+
+ann_weights[3660] = 21'b000000000000000011001;
+
+ann_weights[3661] = 21'b100000000000011101011;
+
+ann_weights[3662] = 21'b100000000000011100100;
+
+ann_weights[3663] = 21'b100000000000110101000;
+
+ann_weights[3664] = 21'b100000000000101001001;
+
+ann_weights[3665] = 21'b100000000000101110001;
+
+ann_weights[3666] = 21'b100000000000101010000;
+
+ann_weights[3667] = 21'b000000000000110011000;
+
+ann_weights[3668] = 21'b100000000000101000110;
+
+ann_weights[3669] = 21'b100000000001000001011;
+
+ann_weights[3670] = 21'b100000000000000101010;
+
+ann_weights[3671] = 21'b000000000000000111100;
+
+ann_weights[3672] = 21'b100000000000100101111;
+
+ann_weights[3673] = 21'b100000000000000011011;
+
+ann_weights[3674] = 21'b100000000000100101000;
+
+ann_weights[3675] = 21'b100000000000000111000;
+
+ann_weights[3676] = 21'b100000000000101001010;
+
+ann_weights[3677] = 21'b000000000000111101011;
+
+ann_weights[3678] = 21'b000000000000000010110;
+
+ann_weights[3679] = 21'b100000000000000110111;
+
+ann_weights[3680] = 21'b000000000000000100101;
+
+ann_weights[3681] = 21'b000000000000000110101;
+
+ann_weights[3682] = 21'b100000000001001000110;
+
+ann_weights[3683] = 21'b100000000000100000110;
+
+ann_weights[3684] = 21'b100000000000001001000;
+
+ann_weights[3685] = 21'b000000000000001101100;
+
+ann_weights[3686] = 21'b100000000000100000100;
+
+ann_weights[3687] = 21'b000000000000100010111;
+
+ann_weights[3688] = 21'b100000000000011001110;
+
+ann_weights[3689] = 21'b000000000000101110111;
+
+ann_weights[3690] = 21'b100000000000000011001;
+
+ann_weights[3691] = 21'b100000000000001100010;
+
+ann_weights[3692] = 21'b100000000001011000100;
+
+ann_weights[3693] = 21'b100000000000101011000;
+
+ann_weights[3694] = 21'b000000000000010000010;
+
+ann_weights[3695] = 21'b000000000000001110010;
+
+ann_weights[3696] = 21'b000000000000010101101;
+
+ann_weights[3697] = 21'b000000000000001101101;
+
+ann_weights[3698] = 21'b000000000000001000110;
+
+ann_weights[3699] = 21'b000000000000011011001;
+
+ann_weights[3700] = 21'b000000000000011110001;
+
+ann_weights[3701] = 21'b100000000000000101100;
+
+ann_weights[3702] = 21'b100000000001100100000;
+
+ann_weights[3703] = 21'b100000000000101110011;
+
+ann_weights[3704] = 21'b000000000000011010010;
+
+ann_weights[3705] = 21'b000000000000000010111;
+
+ann_weights[3706] = 21'b000000000000100010010;
+
+ann_weights[3707] = 21'b000000000000001101110;
+
+ann_weights[3708] = 21'b100000000000000100011;
+
+ann_weights[3709] = 21'b000000000000011010011;
+
+ann_weights[3710] = 21'b000000000000010100000;
+
+ann_weights[3711] = 21'b100000000000010110010;
+
+ann_weights[3712] = 21'b100000000001011010111;
+
+ann_weights[3713] = 21'b100000000000100101011;
+
+ann_weights[3714] = 21'b000000000000100110000;
+
+ann_weights[3715] = 21'b000000000000010100101;
+
+ann_weights[3716] = 21'b000000000000001001001;
+
+ann_weights[3717] = 21'b000000000000000110101;
+
+ann_weights[3718] = 21'b100000000000001001101;
+
+ann_weights[3719] = 21'b000000000000010101000;
+
+ann_weights[3720] = 21'b000000000000001000110;
+
+ann_weights[3721] = 21'b000000000000000110110;
+
+ann_weights[3722] = 21'b100000000000110100010;
+
+ann_weights[3723] = 21'b100000000000011001011;
+
+ann_weights[3724] = 21'b000000000000011111001;
+
+ann_weights[3725] = 21'b100000000000000000000;
+
+ann_weights[3726] = 21'b000000000000000110111;
+
+ann_weights[3727] = 21'b100000000000000111011;
+
+ann_weights[3728] = 21'b100000000000001011010;
+
+ann_weights[3729] = 21'b000000000000010101010;
+
+ann_weights[3730] = 21'b000000000000001000000;
+
+ann_weights[3731] = 21'b100000000000010001111;
+
+ann_weights[3732] = 21'b100000000000100111111;
+
+ann_weights[3733] = 21'b100000000000010100010;
+
+ann_weights[3734] = 21'b000000000000101001110;
+
+ann_weights[3735] = 21'b000000000000001011001;
+
+ann_weights[3736] = 21'b000000000000010110101;
+
+ann_weights[3737] = 21'b100000000000010010110;
+
+ann_weights[3738] = 21'b100000000000000000100;
+
+ann_weights[3739] = 21'b000000000000001110011;
+
+ann_weights[3740] = 21'b000000000000001000011;
+
+ann_weights[3741] = 21'b100000000001001000011;
+
+ann_weights[3742] = 21'b100000000000100101111;
+
+ann_weights[3743] = 21'b100000000000011000010;
+
+ann_weights[3744] = 21'b000000000000101111101;
+
+ann_weights[3745] = 21'b000000000000011001111;
+
+ann_weights[3746] = 21'b000000000000000111100;
+
+ann_weights[3747] = 21'b100000000000001010010;
+
+ann_weights[3748] = 21'b100000000000011010011;
+
+ann_weights[3749] = 21'b000000000000001010011;
+
+ann_weights[3750] = 21'b000000000000001000000;
+
+ann_weights[3751] = 21'b100000000001001110000;
+
+ann_weights[3752] = 21'b100000000000011000010;
+
+ann_weights[3753] = 21'b100000000000010100000;
+
+ann_weights[3754] = 21'b000000000000111100000;
+
+ann_weights[3755] = 21'b000000000000011101000;
+
+ann_weights[3756] = 21'b000000000000001111010;
+
+ann_weights[3757] = 21'b100000000001000100100;
+
+ann_weights[3758] = 21'b100000000000000010101;
+
+ann_weights[3759] = 21'b100000000000001111100;
+
+ann_weights[3760] = 21'b000000000000000110000;
+
+ann_weights[3761] = 21'b100000000000011001100;
+
+ann_weights[3762] = 21'b100000000000010010010;
+
+ann_weights[3763] = 21'b100000000000000001110;
+
+ann_weights[3764] = 21'b000000000000100001110;
+
+ann_weights[3765] = 21'b000000000000011110101;
+
+ann_weights[3766] = 21'b000000000000000110000;
+
+ann_weights[3767] = 21'b100000000001101101100;
+
+ann_weights[3768] = 21'b000000000000001111011;
+
+ann_weights[3769] = 21'b100000000000010111000;
+
+ann_weights[3770] = 21'b100000000000111010011;
+
+ann_weights[3771] = 21'b000000000000100001001;
+
+ann_weights[3772] = 21'b100000000000001011101;
+
+ann_weights[3773] = 21'b000000000000010101111;
+
+ann_weights[3774] = 21'b100000000000010010101;
+
+ann_weights[3775] = 21'b000000000000010100000;
+
+ann_weights[3776] = 21'b100000000000001010011;
+
+ann_weights[3777] = 21'b100000000001110110101;
+
+ann_weights[3778] = 21'b000000000000100101110;
+
+ann_weights[3779] = 21'b000000000000000100110;
+
+ann_weights[3780] = 21'b100000000001011011001;
+
+ann_weights[3781] = 21'b000000000001001001001;
+
+ann_weights[3782] = 21'b100000000000010010001;
+
+ann_weights[3783] = 21'b000000000000011000100;
+
+ann_weights[3784] = 21'b100000000000001000111;
+
+ann_weights[3785] = 21'b100000000000001000111;
+
+ann_weights[3786] = 21'b100000000000010101100;
+
+ann_weights[3787] = 21'b100000000000011101110;
+
+ann_weights[3788] = 21'b000000000000010000110;
+
+ann_weights[3789] = 21'b000000000000011011000;
+
+ann_weights[3790] = 21'b100000000001011010011;
+
+ann_weights[3791] = 21'b000000000000111000011;
+
+ann_weights[3792] = 21'b100000000000011100000;
+
+ann_weights[3793] = 21'b100000000000001010010;
+
+ann_weights[3794] = 21'b000000000000011001010;
+
+ann_weights[3795] = 21'b100000000000011111010;
+
+ann_weights[3796] = 21'b100000000000000101000;
+
+ann_weights[3797] = 21'b000000000000000100100;
+
+ann_weights[3798] = 21'b000000000000001111100;
+
+ann_weights[3799] = 21'b000000000000011010011;
+
+ann_weights[3800] = 21'b100000000001001111110;
+
+ann_weights[3801] = 21'b000000000000010000011;
+
+ann_weights[3802] = 21'b100000000000100000101;
+
+ann_weights[3803] = 21'b000000000000000110111;
+
+ann_weights[3804] = 21'b000000000000100011101;
+
+ann_weights[3805] = 21'b100000000000111010111;
+
+ann_weights[3806] = 21'b000000000000000100111;
+
+ann_weights[3807] = 21'b000000000000001101001;
+
+ann_weights[3808] = 21'b000000000000001101011;
+
+ann_weights[3809] = 21'b000000000000101110000;
+
+ann_weights[3810] = 21'b100000000000100000000;
+
+ann_weights[3811] = 21'b000000000000010000010;
+
+ann_weights[3812] = 21'b100000000000010100111;
+
+ann_weights[3813] = 21'b000000000000001100010;
+
+ann_weights[3814] = 21'b000000000000011100010;
+
+ann_weights[3815] = 21'b100000000000011100110;
+
+ann_weights[3816] = 21'b100000000000001110000;
+
+ann_weights[3817] = 21'b000000000000001110101;
+
+ann_weights[3818] = 21'b100000000000001101001;
+
+ann_weights[3819] = 21'b000000000000100000011;
+
+ann_weights[3820] = 21'b100000000000001000111;
+
+ann_weights[3821] = 21'b100000000000100001001;
+
+ann_weights[3822] = 21'b100000000000010000100;
+
+ann_weights[3823] = 21'b000000000000001101101;
+
+ann_weights[3824] = 21'b000000000000011110010;
+
+ann_weights[3825] = 21'b100000000000011110111;
+
+ann_weights[3826] = 21'b100000000000010111010;
+
+ann_weights[3827] = 21'b000000000000001101010;
+
+ann_weights[3828] = 21'b100000000000001000001;
+
+ann_weights[3829] = 21'b000000000000011000011;
+
+ann_weights[3830] = 21'b100000000000001101000;
+
+ann_weights[3831] = 21'b100000000000101000000;
+
+ann_weights[3832] = 21'b100000000000001100000;
+
+ann_weights[3833] = 21'b100000000000010011110;
+
+ann_weights[3834] = 21'b000000000000010100001;
+
+ann_weights[3835] = 21'b100000000000001111000;
+
+ann_weights[3836] = 21'b100000000000000011011;
+
+ann_weights[3837] = 21'b000000000000000001010;
+
+ann_weights[3838] = 21'b100000000000000010110;
+
+ann_weights[3839] = 21'b000000000000100001111;
+
+ann_weights[3840] = 21'b100000000000001000110;
+
+ann_weights[3841] = 21'b100000000000011000101;
+
+ann_weights[3842] = 21'b100000000000001111010;
+
+ann_weights[3843] = 21'b100000000000100110100;
+
+ann_weights[3844] = 21'b000000000000011100010;
+
+ann_weights[3845] = 21'b100000000000000110000;
+
+ann_weights[3846] = 21'b100000000000001001100;
+
+ann_weights[3847] = 21'b000000000000000000001;
+
+ann_weights[3848] = 21'b000000000000001010011;
+
+ann_weights[3849] = 21'b000000000000011011111;
+
+ann_weights[3850] = 21'b100000000000000001100;
+
+ann_weights[3851] = 21'b100000000000010011111;
+
+ann_weights[3852] = 21'b100000000000001110110;
+
+ann_weights[3853] = 21'b100000000000111111000;
+
+ann_weights[3854] = 21'b000000000000011101010;
+
+ann_weights[3855] = 21'b100000000000101100110;
+
+ann_weights[3856] = 21'b000000000000001100100;
+
+ann_weights[3857] = 21'b000000000000000011100;
+
+ann_weights[3858] = 21'b100000000000000101001;
+
+ann_weights[3859] = 21'b000000000000011111011;
+
+ann_weights[3860] = 21'b000000000000011100100;
+
+ann_weights[3861] = 21'b100000000000101111100;
+
+ann_weights[3862] = 21'b100000000000011010100;
+
+ann_weights[3863] = 21'b100000000001001001111;
+
+ann_weights[3864] = 21'b000000000000001101101;
+
+ann_weights[3865] = 21'b100000000000110101100;
+
+ann_weights[3866] = 21'b000000000000100100100;
+
+ann_weights[3867] = 21'b100000000000001010110;
+
+ann_weights[3868] = 21'b000000000000000111110;
+
+ann_weights[3869] = 21'b000000000000010010101;
+
+ann_weights[3870] = 21'b000000000000011111100;
+
+ann_weights[3871] = 21'b100000000001000101010;
+
+ann_weights[3872] = 21'b100000000000011011000;
+
+ann_weights[3873] = 21'b100000000000101010001;
+
+ann_weights[3874] = 21'b100000000000001100101;
+
+ann_weights[3875] = 21'b100000000001010001101;
+
+ann_weights[3876] = 21'b000000000000111110100;
+
+ann_weights[3877] = 21'b100000000000011011100;
+
+ann_weights[3878] = 21'b000000000000000100000;
+
+ann_weights[3879] = 21'b100000000000011101101;
+
+ann_weights[3880] = 21'b000000000000110010010;
+
+ann_weights[3881] = 21'b100000000001001110011;
+
+ann_weights[3882] = 21'b000000000000101100011;
+
+ann_weights[3883] = 21'b100000000000100100100;
+
+ann_weights[3884] = 21'b100000000000101001000;
+
+ann_weights[3885] = 21'b100000000001101101110;
+
+ann_weights[3886] = 21'b000000000000101010110;
+
+ann_weights[3887] = 21'b100000000000010001101;
+
+ann_weights[3888] = 21'b100000000000000001001;
+
+ann_weights[3889] = 21'b100000000001011110101;
+
+ann_weights[3890] = 21'b000000000000001001111;
+
+ann_weights[3891] = 21'b100000000000111001001;
+
+ann_weights[3892] = 21'b000000000001001111001;
+
+ann_weights[3893] = 21'b100000000000010010001;
+
+ann_weights[3894] = 21'b100000000000011001111;
+
+ann_weights[3895] = 21'b100000000000101010101;
+
+ann_weights[3896] = 21'b100000000000100010100;
+
+ann_weights[3897] = 21'b000000000000001011100;
+
+ann_weights[3898] = 21'b000000000000000010001;
+
+ann_weights[3899] = 21'b100000000001010000111;
+
+ann_weights[3900] = 21'b100000000000101000000;
+
+ann_weights[3901] = 21'b100000000000100101000;
+
+ann_weights[3902] = 21'b000000000001001100100;
+
+ann_weights[3903] = 21'b100000000000100011010;
+
+ann_weights[3904] = 21'b100000000000011011100;
+
+ann_weights[3905] = 21'b000000000000000110110;
+
+ann_weights[3906] = 21'b100000000001001010010;
+
+ann_weights[3907] = 21'b100000000000001001101;
+
+ann_weights[3908] = 21'b100000000000001111000;
+
+ann_weights[3909] = 21'b100000000000111001000;
+
+ann_weights[3910] = 21'b100000000000100001011;
+
+ann_weights[3911] = 21'b100000000000010101011;
+
+ann_weights[3912] = 21'b000000000000100110010;
+
+ann_weights[3913] = 21'b100000000000011000101;
+
+ann_weights[3914] = 21'b100000000000011101010;
+
+ann_weights[3915] = 21'b100000000000011010010;
+
+ann_weights[3916] = 21'b100000000000011110110;
+
+ann_weights[3917] = 21'b100000000000010001001;
+
+ann_weights[3918] = 21'b100000000000011010101;
+
+ann_weights[3919] = 21'b100000000000010000100;
+
+ann_weights[3920] = 21'b100000000000000100001;
+
+ann_weights[3921] = 21'b100000000000000011110;
+
+ann_weights[3922] = 21'b000000000000000001110;
+
+ann_weights[3923] = 21'b100000000000010010100;
+
+ann_weights[3924] = 21'b100000000000000110001;
+
+ann_weights[3925] = 21'b000000000000011000101;
+
+ann_weights[3926] = 21'b100000000000010100111;
+
+ann_weights[3927] = 21'b100000000000000110001;
+
+ann_weights[3928] = 21'b100000000000001011010;
+
+ann_weights[3929] = 21'b100000000000001010100;
+
+ann_weights[3930] = 21'b000000000000000010000;
+
+ann_weights[3931] = 21'b100000000000001000110;
+
+ann_weights[3932] = 21'b100000000000001101000;
+
+ann_weights[3933] = 21'b000000000000001100011;
+
+ann_weights[3934] = 21'b100000000000010000100;
+
+ann_weights[3935] = 21'b100000000000010001101;
+
+ann_weights[3936] = 21'b100000000000001010000;
+
+ann_weights[3937] = 21'b000000000000010101110;
+
+ann_weights[3938] = 21'b100000000000000110101;
+
+ann_weights[3939] = 21'b100000000000010101001;
+
+ann_weights[3940] = 21'b100000000000011001000;
+
+ann_weights[3941] = 21'b000000000000001101100;
+
+ann_weights[3942] = 21'b100000000000001010111;
+
+ann_weights[3943] = 21'b000000000000000110001;
+
+ann_weights[3944] = 21'b100000000000100100000;
+
+ann_weights[3945] = 21'b100000000000101000000;
+
+ann_weights[3946] = 21'b100000000000001011001;
+
+ann_weights[3947] = 21'b000000000000101110010;
+
+ann_weights[3948] = 21'b100000000000011010000;
+
+ann_weights[3949] = 21'b100000000001000010110;
+
+ann_weights[3950] = 21'b100000000000101111001;
+
+ann_weights[3951] = 21'b000000000000000111110;
+
+ann_weights[3952] = 21'b100000000000011111110;
+
+ann_weights[3953] = 21'b100000000000000101101;
+
+ann_weights[3954] = 21'b100000000000001111100;
+
+ann_weights[3955] = 21'b100000000000001010100;
+
+ann_weights[3956] = 21'b100000000000100110110;
+
+ann_weights[3957] = 21'b000000000000100011100;
+
+ann_weights[3958] = 21'b100000000000010111100;
+
+ann_weights[3959] = 21'b000000000000000100100;
+
+ann_weights[3960] = 21'b100000000000001010111;
+
+ann_weights[3961] = 21'b000000000000011010000;
+
+ann_weights[3962] = 21'b100000000000111000110;
+
+ann_weights[3963] = 21'b100000000000010011000;
+
+ann_weights[3964] = 21'b000000000000101011101;
+
+ann_weights[3965] = 21'b000000000000000101111;
+
+ann_weights[3966] = 21'b100000000001001111001;
+
+ann_weights[3967] = 21'b000000000000001111000;
+
+ann_weights[3968] = 21'b100000000000111011000;
+
+ann_weights[3969] = 21'b000000000000010110111;
+
+ann_weights[3970] = 21'b000000000000010000110;
+
+ann_weights[3971] = 21'b100000000000010000110;
+
+ann_weights[3972] = 21'b100000000001000100011;
+
+ann_weights[3973] = 21'b100000000000101011001;
+
+ann_weights[3974] = 21'b000000000000101100101;
+
+ann_weights[3975] = 21'b100000000000010000110;
+
+ann_weights[3976] = 21'b000000000000001111100;
+
+ann_weights[3977] = 21'b000000000000010000000;
+
+ann_weights[3978] = 21'b100000000000011101101;
+
+ann_weights[3979] = 21'b000000000000001111010;
+
+ann_weights[3980] = 21'b000000000000001101011;
+
+ann_weights[3981] = 21'b100000000000011110001;
+
+ann_weights[3982] = 21'b100000000000101111000;
+
+ann_weights[3983] = 21'b100000000000111110000;
+
+ann_weights[3984] = 21'b000000000000011100110;
+
+ann_weights[3985] = 21'b100000000000000011000;
+
+ann_weights[3986] = 21'b000000000000010000100;
+
+ann_weights[3987] = 21'b100000000000000100101;
+
+ann_weights[3988] = 21'b100000000000011101110;
+
+ann_weights[3989] = 21'b000000000000001100100;
+
+ann_weights[3990] = 21'b000000000000100011111;
+
+ann_weights[3991] = 21'b100000000000101101110;
+
+ann_weights[3992] = 21'b100000000000011000100;
+
+ann_weights[3993] = 21'b100000000000100111000;
+
+ann_weights[3994] = 21'b000000000000101001010;
+
+ann_weights[3995] = 21'b100000000000000110010;
+
+ann_weights[3996] = 21'b000000000000000111111;
+
+ann_weights[3997] = 21'b100000000000001001100;
+
+ann_weights[3998] = 21'b100000000000101110101;
+
+ann_weights[3999] = 21'b000000000000010011000;
+
+ann_weights[4000] = 21'b000000000000010110111;
+
+ann_weights[4001] = 21'b000000000000000000000;
+
+ann_weights[4002] = 21'b100000000000001010110;
+
+ann_weights[4003] = 21'b100000000000100000011;
+
+ann_weights[4004] = 21'b000000000000101010110;
+
+ann_weights[4005] = 21'b100000000000000100101;
+
+ann_weights[4006] = 21'b000000000000001011110;
+
+ann_weights[4007] = 21'b100000000000001101100;
+
+ann_weights[4008] = 21'b100000000000101011000;
+
+ann_weights[4009] = 21'b100000000000000001110;
+
+ann_weights[4010] = 21'b000000000000010101000;
+
+ann_weights[4011] = 21'b100000000000011101111;
+
+ann_weights[4012] = 21'b100000000000010010100;
+
+ann_weights[4013] = 21'b100000000000001010011;
+
+ann_weights[4014] = 21'b000000000000011111011;
+
+ann_weights[4015] = 21'b000000000000001110010;
+
+ann_weights[4016] = 21'b000000000000001100111;
+
+ann_weights[4017] = 21'b100000000000010111101;
+
+ann_weights[4018] = 21'b100000000000100010101;
+
+ann_weights[4019] = 21'b100000000000000000010;
+
+ann_weights[4020] = 21'b000000000000000100000;
+
+ann_weights[4021] = 21'b100000000001001011000;
+
+ann_weights[4022] = 21'b000000000000000001100;
+
+ann_weights[4023] = 21'b100000000000011000001;
+
+ann_weights[4024] = 21'b000000000000100110010;
+
+ann_weights[4025] = 21'b000000000000010110011;
+
+ann_weights[4026] = 21'b000000000000011011111;
+
+ann_weights[4027] = 21'b100000000000100000000;
+
+ann_weights[4028] = 21'b100000000000001110001;
+
+ann_weights[4029] = 21'b100000000000000011100;
+
+ann_weights[4030] = 21'b000000000000001010101;
+
+ann_weights[4031] = 21'b100000000001001010011;
+
+ann_weights[4032] = 21'b000000000000000110100;
+
+ann_weights[4033] = 21'b100000000000011110000;
+
+ann_weights[4034] = 21'b000000000000101101110;
+
+ann_weights[4035] = 21'b000000000000001001101;
+
+ann_weights[4036] = 21'b000000000000100000110;
+
+ann_weights[4037] = 21'b100000000001001100100;
+
+ann_weights[4038] = 21'b000000000000001010000;
+
+ann_weights[4039] = 21'b100000000000010000000;
+
+ann_weights[4040] = 21'b100000000000000001111;
+
+ann_weights[4041] = 21'b100000000000000111100;
+
+ann_weights[4042] = 21'b100000000000000100011;
+
+ann_weights[4043] = 21'b000000000000000100000;
+
+ann_weights[4044] = 21'b000000000000011011010;
+
+ann_weights[4045] = 21'b000000000000001100001;
+
+ann_weights[4046] = 21'b000000000000001111011;
+
+ann_weights[4047] = 21'b100000000001101011000;
+
+ann_weights[4048] = 21'b000000000000011100010;
+
+ann_weights[4049] = 21'b100000000000001111000;
+
+ann_weights[4050] = 21'b100000000000100001101;
+
+ann_weights[4051] = 21'b000000000000101111111;
+
+ann_weights[4052] = 21'b000000000000010100010;
+
+ann_weights[4053] = 21'b000000000000001101100;
+
+ann_weights[4054] = 21'b100000000000001110001;
+
+ann_weights[4055] = 21'b000000000000000101101;
+
+ann_weights[4056] = 21'b100000000000001011010;
+
+ann_weights[4057] = 21'b100000000001001101011;
+
+ann_weights[4058] = 21'b000000000000100111011;
+
+ann_weights[4059] = 21'b000000000000000111100;
+
+ann_weights[4060] = 21'b100000000001100010101;
+
+ann_weights[4061] = 21'b000000000001000100001;
+
+ann_weights[4062] = 21'b000000000000000100010;
+
+ann_weights[4063] = 21'b000000000000000110101;
+
+ann_weights[4064] = 21'b100000000000010000110;
+
+ann_weights[4065] = 21'b100000000000010001011;
+
+ann_weights[4066] = 21'b100000000000000111011;
+
+ann_weights[4067] = 21'b100000000000100000000;
+
+ann_weights[4068] = 21'b000000000000001011001;
+
+ann_weights[4069] = 21'b100000000000000110001;
+
+ann_weights[4070] = 21'b100000000001011100111;
+
+ann_weights[4071] = 21'b000000000000101000110;
+
+ann_weights[4072] = 21'b100000000000010011000;
+
+ann_weights[4073] = 21'b000000000000000100101;
+
+ann_weights[4074] = 21'b000000000000000111010;
+
+ann_weights[4075] = 21'b100000000000010111101;
+
+ann_weights[4076] = 21'b000000000000000100100;
+
+ann_weights[4077] = 21'b100000000000000110001;
+
+ann_weights[4078] = 21'b000000000000010000110;
+
+ann_weights[4079] = 21'b000000000000010000111;
+
+ann_weights[4080] = 21'b100000000001010010000;
+
+ann_weights[4081] = 21'b000000000000000011111;
+
+ann_weights[4082] = 21'b100000000000001001000;
+
+ann_weights[4083] = 21'b100000000000001011011;
+
+ann_weights[4084] = 21'b000000000000101101001;
+
+ann_weights[4085] = 21'b100000000000101001110;
+
+ann_weights[4086] = 21'b100000000000001000101;
+
+ann_weights[4087] = 21'b000000000000000001110;
+
+ann_weights[4088] = 21'b100000000000001010100;
+
+ann_weights[4089] = 21'b000000000000101000010;
+
+ann_weights[4090] = 21'b100000000000011100010;
+
+ann_weights[4091] = 21'b100000000000001010000;
+
+ann_weights[4092] = 21'b100000000000011101010;
+
+ann_weights[4093] = 21'b100000000000000011010;
+
+ann_weights[4094] = 21'b000000000000110001000;
+
+ann_weights[4095] = 21'b100000000000100100110;
+
+ann_weights[4096] = 21'b100000000000011001010;
+
+ann_weights[4097] = 21'b000000000000011000001;
+
+ann_weights[4098] = 21'b100000000000000111110;
+
+ann_weights[4099] = 21'b000000000000100011001;
+
+ann_weights[4100] = 21'b100000000000000011110;
+
+ann_weights[4101] = 21'b100000000000110101001;
+
+ann_weights[4102] = 21'b100000000000010011101;
+
+ann_weights[4103] = 21'b100000000000000011001;
+
+ann_weights[4104] = 21'b000000000000100000110;
+
+ann_weights[4105] = 21'b100000000000001100011;
+
+ann_weights[4106] = 21'b100000000000011001101;
+
+ann_weights[4107] = 21'b000000000000100100111;
+
+ann_weights[4108] = 21'b100000000000000110110;
+
+ann_weights[4109] = 21'b000000000000011000001;
+
+ann_weights[4110] = 21'b100000000000001111011;
+
+ann_weights[4111] = 21'b100000000000111001010;
+
+ann_weights[4112] = 21'b100000000000000111000;
+
+ann_weights[4113] = 21'b100000000000001001011;
+
+ann_weights[4114] = 21'b000000000000101010110;
+
+ann_weights[4115] = 21'b100000000000010100010;
+
+ann_weights[4116] = 21'b100000000000000101110;
+
+ann_weights[4117] = 21'b000000000000110000000;
+
+ann_weights[4118] = 21'b100000000000001001001;
+
+ann_weights[4119] = 21'b000000000000010001001;
+
+ann_weights[4120] = 21'b100000000000001000001;
+
+ann_weights[4121] = 21'b100000000000101000100;
+
+ann_weights[4122] = 21'b100000000000001000111;
+
+ann_weights[4123] = 21'b100000000000001110110;
+
+ann_weights[4124] = 21'b000000000000011001011;
+
+ann_weights[4125] = 21'b100000000000010000111;
+
+ann_weights[4126] = 21'b000000000000001001100;
+
+ann_weights[4127] = 21'b000000000000010111110;
+
+ann_weights[4128] = 21'b100000000000100001011;
+
+ann_weights[4129] = 21'b000000000000010110111;
+
+ann_weights[4130] = 21'b000000000000001111011;
+
+ann_weights[4131] = 21'b100000000000100001010;
+
+ann_weights[4132] = 21'b100000000000001110111;
+
+ann_weights[4133] = 21'b100000000000001100001;
+
+ann_weights[4134] = 21'b000000000000001101001;
+
+ann_weights[4135] = 21'b100000000000001101100;
+
+ann_weights[4136] = 21'b000000000000000110000;
+
+ann_weights[4137] = 21'b000000000000010010111;
+
+ann_weights[4138] = 21'b100000000000011011010;
+
+ann_weights[4139] = 21'b000000000000000111000;
+
+ann_weights[4140] = 21'b000000000000010001001;
+
+ann_weights[4141] = 21'b100000000000011011100;
+
+ann_weights[4142] = 21'b100000000000010101010;
+
+ann_weights[4143] = 21'b100000000000100110100;
+
+ann_weights[4144] = 21'b100000000000000000000;
+
+ann_weights[4145] = 21'b100000000000001011000;
+
+ann_weights[4146] = 21'b000000000000100001000;
+
+ann_weights[4147] = 21'b000000000000001110001;
+
+ann_weights[4148] = 21'b100000000000101101101;
+
+ann_weights[4149] = 21'b100000000000000111001;
+
+ann_weights[4150] = 21'b000000000000100011011;
+
+ann_weights[4151] = 21'b100000000000011010111;
+
+ann_weights[4152] = 21'b000000000000000001101;
+
+ann_weights[4153] = 21'b100000000000010110011;
+
+ann_weights[4154] = 21'b100000000000011011010;
+
+ann_weights[4155] = 21'b100000000000011000101;
+
+ann_weights[4156] = 21'b000000000000101001110;
+
+ann_weights[4157] = 21'b000000000000011100010;
+
+ann_weights[4158] = 21'b100000000000110001001;
+
+ann_weights[4159] = 21'b100000000000111101011;
+
+ann_weights[4160] = 21'b000000000000100110010;
+
+ann_weights[4161] = 21'b100000000000010101101;
+
+ann_weights[4162] = 21'b000000000000010100001;
+
+ann_weights[4163] = 21'b100000000000011100110;
+
+ann_weights[4164] = 21'b100000000000100100001;
+
+ann_weights[4165] = 21'b100000000000100001011;
+
+ann_weights[4166] = 21'b000000000000011101000;
+
+ann_weights[4167] = 21'b100000000000001111000;
+
+ann_weights[4168] = 21'b100000000000100010100;
+
+ann_weights[4169] = 21'b100000000001110100001;
+
+ann_weights[4170] = 21'b000000000000000011010;
+
+ann_weights[4171] = 21'b100000000000011010010;
+
+ann_weights[4172] = 21'b000000000000110111000;
+
+ann_weights[4173] = 21'b100000000000101011111;
+
+ann_weights[4174] = 21'b100000000000010100010;
+
+ann_weights[4175] = 21'b100000000001001010001;
+
+ann_weights[4176] = 21'b100000000000001100100;
+
+ann_weights[4177] = 21'b100000000000011110100;
+
+ann_weights[4178] = 21'b000000000000000011111;
+
+ann_weights[4179] = 21'b100000000001011101001;
+
+ann_weights[4180] = 21'b100000000000110011011;
+
+ann_weights[4181] = 21'b100000000000001011010;
+
+ann_weights[4182] = 21'b000000000001001011100;
+
+ann_weights[4183] = 21'b100000000000101001000;
+
+ann_weights[4184] = 21'b100000000000110010101;
+
+ann_weights[4185] = 21'b100000000000111010001;
+
+ann_weights[4186] = 21'b100000000001000000111;
+
+ann_weights[4187] = 21'b100000000000100001110;
+
+ann_weights[4188] = 21'b100000000000101000001;
+
+ann_weights[4189] = 21'b100000000000101000111;
+
+ann_weights[4190] = 21'b100000000000011000100;
+
+ann_weights[4191] = 21'b100000000000001011010;
+
+ann_weights[4192] = 21'b000000000000100001110;
+
+ann_weights[4193] = 21'b100000000000001000001;
+
+ann_weights[4194] = 21'b100000000000010010000;
+
+ann_weights[4195] = 21'b100000000000011110101;
+
+ann_weights[4196] = 21'b100000000000100001101;
+
+ann_weights[4197] = 21'b100000000000001101100;
+
+ann_weights[4198] = 21'b100000000000100000100;
+
+ann_weights[4199] = 21'b100000000000011000001;
+
+ann_weights[4200] = 21'b100000000000000100100;
+
+ann_weights[4201] = 21'b100000000000001001111;
+
+ann_weights[4202] = 21'b000000000000000001011;
+
+ann_weights[4203] = 21'b100000000000000110010;
+
+ann_weights[4204] = 21'b100000000000011011101;
+
+ann_weights[4205] = 21'b000000000000001100010;
+
+ann_weights[4206] = 21'b100000000000010010001;
+
+ann_weights[4207] = 21'b000000000000001110111;
+
+ann_weights[4208] = 21'b100000000000001110000;
+
+ann_weights[4209] = 21'b100000000000000110001;
+
+ann_weights[4210] = 21'b000000000000001000111;
+
+ann_weights[4211] = 21'b000000000000000001010;
+
+ann_weights[4212] = 21'b100000000000000100001;
+
+ann_weights[4213] = 21'b000000000000001111011;
+
+ann_weights[4214] = 21'b100000000000000000100;
+
+ann_weights[4215] = 21'b100000000000001110101;
+
+ann_weights[4216] = 21'b100000000000000000011;
+
+ann_weights[4217] = 21'b100000000000000101100;
+
+ann_weights[4218] = 21'b100000000000001010111;
+
+ann_weights[4219] = 21'b000000000000000111010;
+
+ann_weights[4220] = 21'b100000000000010010000;
+
+ann_weights[4221] = 21'b000000000000001101000;
+
+ann_weights[4222] = 21'b100000000000000000110;
+
+ann_weights[4223] = 21'b000000000000011110100;
+
+ann_weights[4224] = 21'b000000000000001111010;
+
+ann_weights[4225] = 21'b100000000000101111011;
+
+ann_weights[4226] = 21'b100000000000000010001;
+
+ann_weights[4227] = 21'b000000000000010101010;
+
+ann_weights[4228] = 21'b100000000000011100000;
+
+ann_weights[4229] = 21'b100000000001000010111;
+
+ann_weights[4230] = 21'b100000000000111010000;
+
+ann_weights[4231] = 21'b000000000000010001101;
+
+ann_weights[4232] = 21'b000000000000000100110;
+
+ann_weights[4233] = 21'b100000000000001000011;
+
+ann_weights[4234] = 21'b000000000000000011011;
+
+ann_weights[4235] = 21'b100000000000010000111;
+
+ann_weights[4236] = 21'b100000000001001000000;
+
+ann_weights[4237] = 21'b000000000000010110000;
+
+ann_weights[4238] = 21'b100000000000010111110;
+
+ann_weights[4239] = 21'b100000000000000110111;
+
+ann_weights[4240] = 21'b100000000000000010000;
+
+ann_weights[4241] = 21'b100000000000000000001;
+
+ann_weights[4242] = 21'b000000000000000001111;
+
+ann_weights[4243] = 21'b100000000000001111101;
+
+ann_weights[4244] = 21'b000000000000010111000;
+
+ann_weights[4245] = 21'b100000000000010000111;
+
+ann_weights[4246] = 21'b100000000001101000100;
+
+ann_weights[4247] = 21'b000000000000000011000;
+
+ann_weights[4248] = 21'b100000000000111011111;
+
+ann_weights[4249] = 21'b000000000000001011100;
+
+ann_weights[4250] = 21'b000000000000010101000;
+
+ann_weights[4251] = 21'b100000000000110001101;
+
+ann_weights[4252] = 21'b000000000000001111110;
+
+ann_weights[4253] = 21'b100000000000010000110;
+
+ann_weights[4254] = 21'b000000000000000101110;
+
+ann_weights[4255] = 21'b100000000000100111010;
+
+ann_weights[4256] = 21'b100000000000001011100;
+
+ann_weights[4257] = 21'b100000000000001011000;
+
+ann_weights[4258] = 21'b100000000000110010110;
+
+ann_weights[4259] = 21'b000000000000001101001;
+
+ann_weights[4260] = 21'b100000000000000100100;
+
+ann_weights[4261] = 21'b100000000001001110000;
+
+ann_weights[4262] = 21'b000000000000010100011;
+
+ann_weights[4263] = 21'b100000000000011001110;
+
+ann_weights[4264] = 21'b000000000000010101101;
+
+ann_weights[4265] = 21'b100000000000011111011;
+
+ann_weights[4266] = 21'b000000000000000111101;
+
+ann_weights[4267] = 21'b100000000000000010010;
+
+ann_weights[4268] = 21'b100000000000101100001;
+
+ann_weights[4269] = 21'b000000000000000001010;
+
+ann_weights[4270] = 21'b000000000000100011000;
+
+ann_weights[4271] = 21'b100000000000010010111;
+
+ann_weights[4272] = 21'b100000000000000101101;
+
+ann_weights[4273] = 21'b100000000000101101001;
+
+ann_weights[4274] = 21'b000000000000100100010;
+
+ann_weights[4275] = 21'b100000000000011100000;
+
+ann_weights[4276] = 21'b000000000000011000101;
+
+ann_weights[4277] = 21'b100000000000011011111;
+
+ann_weights[4278] = 21'b100000000000100001000;
+
+ann_weights[4279] = 21'b000000000000000100100;
+
+ann_weights[4280] = 21'b000000000000010110000;
+
+ann_weights[4281] = 21'b100000000000001110010;
+
+ann_weights[4282] = 21'b100000000000000100011;
+
+ann_weights[4283] = 21'b100000000000101111101;
+
+ann_weights[4284] = 21'b000000000000100000111;
+
+ann_weights[4285] = 21'b100000000000000110111;
+
+ann_weights[4286] = 21'b000000000000010010011;
+
+ann_weights[4287] = 21'b100000000000100000000;
+
+ann_weights[4288] = 21'b100000000000100001011;
+
+ann_weights[4289] = 21'b000000000000000101010;
+
+ann_weights[4290] = 21'b000000000000011000001;
+
+ann_weights[4291] = 21'b100000000000011010100;
+
+ann_weights[4292] = 21'b100000000000000101011;
+
+ann_weights[4293] = 21'b100000000000011100110;
+
+ann_weights[4294] = 21'b000000000000100001010;
+
+ann_weights[4295] = 21'b000000000000010010101;
+
+ann_weights[4296] = 21'b000000000000001110110;
+
+ann_weights[4297] = 21'b100000000000100110001;
+
+ann_weights[4298] = 21'b100000000000001011100;
+
+ann_weights[4299] = 21'b100000000000001110111;
+
+ann_weights[4300] = 21'b000000000000011111110;
+
+ann_weights[4301] = 21'b100000000000101100111;
+
+ann_weights[4302] = 21'b100000000000000110000;
+
+ann_weights[4303] = 21'b100000000000010110010;
+
+ann_weights[4304] = 21'b000000000000010110010;
+
+ann_weights[4305] = 21'b000000000000001110011;
+
+ann_weights[4306] = 21'b000000000000100001000;
+
+ann_weights[4307] = 21'b100000000000100111010;
+
+ann_weights[4308] = 21'b100000000000001001110;
+
+ann_weights[4309] = 21'b000000000000000101101;
+
+ann_weights[4310] = 21'b000000000000000101100;
+
+ann_weights[4311] = 21'b100000000000011011100;
+
+ann_weights[4312] = 21'b100000000000000011111;
+
+ann_weights[4313] = 21'b100000000000000001011;
+
+ann_weights[4314] = 21'b000000000000010100101;
+
+ann_weights[4315] = 21'b000000000000001001001;
+
+ann_weights[4316] = 21'b000000000000101000111;
+
+ann_weights[4317] = 21'b100000000000111110111;
+
+ann_weights[4318] = 21'b100000000000000001111;
+
+ann_weights[4319] = 21'b100000000000000000111;
+
+ann_weights[4320] = 21'b100000000000001110010;
+
+ann_weights[4321] = 21'b100000000000000110111;
+
+ann_weights[4322] = 21'b100000000000000001011;
+
+ann_weights[4323] = 21'b000000000000000111100;
+
+ann_weights[4324] = 21'b000000000000001001011;
+
+ann_weights[4325] = 21'b000000000000001101000;
+
+ann_weights[4326] = 21'b000000000000001111100;
+
+ann_weights[4327] = 21'b100000000001000111101;
+
+ann_weights[4328] = 21'b000000000000010100000;
+
+ann_weights[4329] = 21'b100000000000000111110;
+
+ann_weights[4330] = 21'b100000000001000110011;
+
+ann_weights[4331] = 21'b000000000000101111011;
+
+ann_weights[4332] = 21'b000000000000010110100;
+
+ann_weights[4333] = 21'b000000000000001110101;
+
+ann_weights[4334] = 21'b100000000000001001110;
+
+ann_weights[4335] = 21'b100000000000001110010;
+
+ann_weights[4336] = 21'b000000000000000100101;
+
+ann_weights[4337] = 21'b100000000000110110010;
+
+ann_weights[4338] = 21'b000000000000100010000;
+
+ann_weights[4339] = 21'b100000000000011011100;
+
+ann_weights[4340] = 21'b100000000001101110011;
+
+ann_weights[4341] = 21'b000000000000111010100;
+
+ann_weights[4342] = 21'b100000000000000000001;
+
+ann_weights[4343] = 21'b000000000000000100100;
+
+ann_weights[4344] = 21'b000000000000000101111;
+
+ann_weights[4345] = 21'b100000000000100010001;
+
+ann_weights[4346] = 21'b000000000000000010010;
+
+ann_weights[4347] = 21'b100000000000011110110;
+
+ann_weights[4348] = 21'b000000000000011101101;
+
+ann_weights[4349] = 21'b100000000000001110100;
+
+ann_weights[4350] = 21'b100000000001001101100;
+
+ann_weights[4351] = 21'b000000000000011111000;
+
+ann_weights[4352] = 21'b100000000000000100001;
+
+ann_weights[4353] = 21'b000000000000001000000;
+
+ann_weights[4354] = 21'b000000000000100011110;
+
+ann_weights[4355] = 21'b100000000000100100010;
+
+ann_weights[4356] = 21'b000000000000001001111;
+
+ann_weights[4357] = 21'b100000000000001010100;
+
+ann_weights[4358] = 21'b000000000000000100110;
+
+ann_weights[4359] = 21'b000000000000000100101;
+
+ann_weights[4360] = 21'b100000000001000010101;
+
+ann_weights[4361] = 21'b000000000000000100111;
+
+ann_weights[4362] = 21'b100000000000001000010;
+
+ann_weights[4363] = 21'b100000000000010010100;
+
+ann_weights[4364] = 21'b000000000000110100011;
+
+ann_weights[4365] = 21'b100000000000100000001;
+
+ann_weights[4366] = 21'b100000000000000101001;
+
+ann_weights[4367] = 21'b000000000000000100000;
+
+ann_weights[4368] = 21'b100000000000001110100;
+
+ann_weights[4369] = 21'b000000000000100100010;
+
+ann_weights[4370] = 21'b100000000000011111010;
+
+ann_weights[4371] = 21'b100000000000101100011;
+
+ann_weights[4372] = 21'b100000000000010010110;
+
+ann_weights[4373] = 21'b100000000000001110101;
+
+ann_weights[4374] = 21'b000000000000101000011;
+
+ann_weights[4375] = 21'b100000000000010011110;
+
+ann_weights[4376] = 21'b100000000000010010001;
+
+ann_weights[4377] = 21'b000000000000100100000;
+
+ann_weights[4378] = 21'b100000000000010010100;
+
+ann_weights[4379] = 21'b000000000000011001100;
+
+ann_weights[4380] = 21'b100000000000000001011;
+
+ann_weights[4381] = 21'b100000000001001010000;
+
+ann_weights[4382] = 21'b100000000000000110011;
+
+ann_weights[4383] = 21'b100000000000000010101;
+
+ann_weights[4384] = 21'b000000000000010001001;
+
+ann_weights[4385] = 21'b100000000000000000101;
+
+ann_weights[4386] = 21'b100000000000000111010;
+
+ann_weights[4387] = 21'b000000000000110011111;
+
+ann_weights[4388] = 21'b100000000000011001101;
+
+ann_weights[4389] = 21'b000000000000001010000;
+
+ann_weights[4390] = 21'b000000000000000000110;
+
+ann_weights[4391] = 21'b100000000001011011001;
+
+ann_weights[4392] = 21'b100000000000001001000;
+
+ann_weights[4393] = 21'b000000000000010000101;
+
+ann_weights[4394] = 21'b000000000000001110110;
+
+ann_weights[4395] = 21'b100000000000000101111;
+
+ann_weights[4396] = 21'b100000000000000111101;
+
+ann_weights[4397] = 21'b000000000000101100000;
+
+ann_weights[4398] = 21'b100000000000010111010;
+
+ann_weights[4399] = 21'b100000000000000100000;
+
+ann_weights[4400] = 21'b000000000000001101111;
+
+ann_weights[4401] = 21'b100000000001001100100;
+
+ann_weights[4402] = 21'b100000000000010110010;
+
+ann_weights[4403] = 21'b000000000000000101010;
+
+ann_weights[4404] = 21'b000000000000000001001;
+
+ann_weights[4405] = 21'b100000000000001000001;
+
+ann_weights[4406] = 21'b000000000000000010110;
+
+ann_weights[4407] = 21'b000000000000101001111;
+
+ann_weights[4408] = 21'b100000000000100100100;
+
+ann_weights[4409] = 21'b000000000000000110111;
+
+ann_weights[4410] = 21'b000000000000000101011;
+
+ann_weights[4411] = 21'b100000000000100011010;
+
+ann_weights[4412] = 21'b100000000000010100011;
+
+ann_weights[4413] = 21'b000000000000000010110;
+
+ann_weights[4414] = 21'b100000000000000110101;
+
+ann_weights[4415] = 21'b100000000000000101100;
+
+ann_weights[4416] = 21'b000000000000010010000;
+
+ann_weights[4417] = 21'b000000000000100110011;
+
+ann_weights[4418] = 21'b100000000000101111101;
+
+ann_weights[4419] = 21'b100000000000010010000;
+
+ann_weights[4420] = 21'b000000000000000111110;
+
+ann_weights[4421] = 21'b100000000000111101000;
+
+ann_weights[4422] = 21'b100000000000011010101;
+
+ann_weights[4423] = 21'b000000000000001110100;
+
+ann_weights[4424] = 21'b000000000000000101111;
+
+ann_weights[4425] = 21'b100000000000000011000;
+
+ann_weights[4426] = 21'b000000000000000011000;
+
+ann_weights[4427] = 21'b000000000000011010111;
+
+ann_weights[4428] = 21'b100000000000100100110;
+
+ann_weights[4429] = 21'b100000000000001111110;
+
+ann_weights[4430] = 21'b000000000000011111100;
+
+ann_weights[4431] = 21'b100000000001001001101;
+
+ann_weights[4432] = 21'b100000000000000101110;
+
+ann_weights[4433] = 21'b000000000000010011010;
+
+ann_weights[4434] = 21'b100000000000001111010;
+
+ann_weights[4435] = 21'b000000000000001001001;
+
+ann_weights[4436] = 21'b000000000000001101001;
+
+ann_weights[4437] = 21'b000000000000001000100;
+
+ann_weights[4438] = 21'b100000000000101010001;
+
+ann_weights[4439] = 21'b100000000000111101010;
+
+ann_weights[4440] = 21'b000000000000010101001;
+
+ann_weights[4441] = 21'b100000000000110011000;
+
+ann_weights[4442] = 21'b000000000000100011111;
+
+ann_weights[4443] = 21'b000000000000000111011;
+
+ann_weights[4444] = 21'b100000000001001000110;
+
+ann_weights[4445] = 21'b000000000000000101010;
+
+ann_weights[4446] = 21'b000000000000000100111;
+
+ann_weights[4447] = 21'b100000000000011011110;
+
+ann_weights[4448] = 21'b100000000000110101111;
+
+ann_weights[4449] = 21'b100000000001110001110;
+
+ann_weights[4450] = 21'b100000000000001000010;
+
+ann_weights[4451] = 21'b100000000000101000110;
+
+ann_weights[4452] = 21'b000000000001000000010;
+
+ann_weights[4453] = 21'b100000000001010001001;
+
+ann_weights[4454] = 21'b100000000000111010100;
+
+ann_weights[4455] = 21'b100000000000110101101;
+
+ann_weights[4456] = 21'b100000000000000000111;
+
+ann_weights[4457] = 21'b100000000000111000010;
+
+ann_weights[4458] = 21'b100000000000010010101;
+
+ann_weights[4459] = 21'b100000000001001100110;
+
+ann_weights[4460] = 21'b100000000001000001110;
+
+ann_weights[4461] = 21'b100000000000011110110;
+
+ann_weights[4462] = 21'b000000000001010011011;
+
+ann_weights[4463] = 21'b100000000000001011100;
+
+ann_weights[4464] = 21'b100000000000001010111;
+
+ann_weights[4465] = 21'b100000000000110001111;
+
+ann_weights[4466] = 21'b100000000000111111110;
+
+ann_weights[4467] = 21'b100000000000100110111;
+
+ann_weights[4468] = 21'b100000000001001111000;
+
+ann_weights[4469] = 21'b100000000000011100011;
+
+ann_weights[4470] = 21'b100000000000100000111;
+
+ann_weights[4471] = 21'b100000000000001100110;
+
+ann_weights[4472] = 21'b000000000000100001101;
+
+ann_weights[4473] = 21'b100000000000010011001;
+
+ann_weights[4474] = 21'b100000000000011001101;
+
+ann_weights[4475] = 21'b100000000000100001100;
+
+ann_weights[4476] = 21'b100000000000011110011;
+
+ann_weights[4477] = 21'b100000000000001100011;
+
+ann_weights[4478] = 21'b100000000000100111001;
+
+ann_weights[4479] = 21'b100000000000010001010;
+
+ann_weights[4480] = 21'b100000000000000010101;
+
+ann_weights[4481] = 21'b100000000000001001000;
+
+ann_weights[4482] = 21'b000000000000001001110;
+
+ann_weights[4483] = 21'b100000000000000111001;
+
+ann_weights[4484] = 21'b100000000000000101011;
+
+ann_weights[4485] = 21'b100000000000001101011;
+
+ann_weights[4486] = 21'b100000000000001001001;
+
+ann_weights[4487] = 21'b000000000000001100111;
+
+ann_weights[4488] = 21'b100000000000010101101;
+
+ann_weights[4489] = 21'b100000000000010110101;
+
+ann_weights[4490] = 21'b000000000000000001000;
+
+ann_weights[4491] = 21'b000000000000001101100;
+
+ann_weights[4492] = 21'b100000000000001011001;
+
+ann_weights[4493] = 21'b000000000000001110111;
+
+ann_weights[4494] = 21'b000000000000000111100;
+
+ann_weights[4495] = 21'b100000000000000111101;
+
+ann_weights[4496] = 21'b000000000000000111010;
+
+ann_weights[4497] = 21'b100000000000000110011;
+
+ann_weights[4498] = 21'b100000000000010101000;
+
+ann_weights[4499] = 21'b100000000000010111000;
+
+ann_weights[4500] = 21'b100000000000011010001;
+
+ann_weights[4501] = 21'b000000000000001110111;
+
+ann_weights[4502] = 21'b100000000000001000110;
+
+ann_weights[4503] = 21'b000000000000100011100;
+
+ann_weights[4504] = 21'b100000000000001001010;
+
+ann_weights[4505] = 21'b100000000000101010010;
+
+ann_weights[4506] = 21'b100000000000010000010;
+
+ann_weights[4507] = 21'b100000000000000101001;
+
+ann_weights[4508] = 21'b100000000000100111011;
+
+ann_weights[4509] = 21'b100000000000110111000;
+
+ann_weights[4510] = 21'b100000000000100000001;
+
+ann_weights[4511] = 21'b100000000000001001011;
+
+ann_weights[4512] = 21'b000000000000100100001;
+
+ann_weights[4513] = 21'b000000000000100010001;
+
+ann_weights[4514] = 21'b100000000000010110101;
+
+ann_weights[4515] = 21'b100000000000000001001;
+
+ann_weights[4516] = 21'b100000000001000101000;
+
+ann_weights[4517] = 21'b100000000000000000101;
+
+ann_weights[4518] = 21'b100000000000010010100;
+
+ann_weights[4519] = 21'b100000000000010001100;
+
+ann_weights[4520] = 21'b000000000000001111111;
+
+ann_weights[4521] = 21'b100000000000010001010;
+
+ann_weights[4522] = 21'b000000000000101000101;
+
+ann_weights[4523] = 21'b000000000000011100000;
+
+ann_weights[4524] = 21'b100000000000100100011;
+
+ann_weights[4525] = 21'b100000000000010010000;
+
+ann_weights[4526] = 21'b100000000001000000010;
+
+ann_weights[4527] = 21'b000000000000000100011;
+
+ann_weights[4528] = 21'b100000000000111001000;
+
+ann_weights[4529] = 21'b000000000000000101100;
+
+ann_weights[4530] = 21'b000000000000011110001;
+
+ann_weights[4531] = 21'b100000000000110111000;
+
+ann_weights[4532] = 21'b000000000000010101111;
+
+ann_weights[4533] = 21'b000000000000000010101;
+
+ann_weights[4534] = 21'b100000000000000101001;
+
+ann_weights[4535] = 21'b100000000000011010110;
+
+ann_weights[4536] = 21'b100000000000000001110;
+
+ann_weights[4537] = 21'b100000000000001011111;
+
+ann_weights[4538] = 21'b100000000000101111110;
+
+ann_weights[4539] = 21'b100000000000001010011;
+
+ann_weights[4540] = 21'b000000000000010000000;
+
+ann_weights[4541] = 21'b100000000001000100111;
+
+ann_weights[4542] = 21'b000000000000010000101;
+
+ann_weights[4543] = 21'b100000000000011000011;
+
+ann_weights[4544] = 21'b000000000000000110011;
+
+ann_weights[4545] = 21'b100000000000011100001;
+
+ann_weights[4546] = 21'b000000000000010110011;
+
+ann_weights[4547] = 21'b000000000000000100100;
+
+ann_weights[4548] = 21'b100000000000010110011;
+
+ann_weights[4549] = 21'b100000000000010000100;
+
+ann_weights[4550] = 21'b000000000000011100010;
+
+ann_weights[4551] = 21'b100000000000100110110;
+
+ann_weights[4552] = 21'b000000000000000001111;
+
+ann_weights[4553] = 21'b100000000000100100000;
+
+ann_weights[4554] = 21'b000000000000011010001;
+
+ann_weights[4555] = 21'b100000000000110001111;
+
+ann_weights[4556] = 21'b000000000000010110001;
+
+ann_weights[4557] = 21'b000000000000001000000;
+
+ann_weights[4558] = 21'b100000000000010100101;
+
+ann_weights[4559] = 21'b100000000000000110001;
+
+ann_weights[4560] = 21'b000000000000010101010;
+
+ann_weights[4561] = 21'b100000000000010111010;
+
+ann_weights[4562] = 21'b100000000000010001000;
+
+ann_weights[4563] = 21'b100000000000110010111;
+
+ann_weights[4564] = 21'b000000000000100011100;
+
+ann_weights[4565] = 21'b100000000000101101111;
+
+ann_weights[4566] = 21'b000000000000011000001;
+
+ann_weights[4567] = 21'b100000000000010111111;
+
+ann_weights[4568] = 21'b000000000000000010100;
+
+ann_weights[4569] = 21'b000000000000001001000;
+
+ann_weights[4570] = 21'b000000000000100010111;
+
+ann_weights[4571] = 21'b100000000000010000011;
+
+ann_weights[4572] = 21'b000000000000001001010;
+
+ann_weights[4573] = 21'b100000000000011111100;
+
+ann_weights[4574] = 21'b000000000000011000101;
+
+ann_weights[4575] = 21'b100000000000100100010;
+
+ann_weights[4576] = 21'b000000000000011101111;
+
+ann_weights[4577] = 21'b100000000000011001100;
+
+ann_weights[4578] = 21'b100000000000000001110;
+
+ann_weights[4579] = 21'b100000000000000111101;
+
+ann_weights[4580] = 21'b000000000000011010110;
+
+ann_weights[4581] = 21'b100000000000011001011;
+
+ann_weights[4582] = 21'b000000000000010010100;
+
+ann_weights[4583] = 21'b100000000000011100010;
+
+ann_weights[4584] = 21'b000000000000001000000;
+
+ann_weights[4585] = 21'b100000000000010000110;
+
+ann_weights[4586] = 21'b000000000000110011011;
+
+ann_weights[4587] = 21'b100000000000101100000;
+
+ann_weights[4588] = 21'b100000000000000011100;
+
+ann_weights[4589] = 21'b000000000000000001110;
+
+ann_weights[4590] = 21'b000000000000010001010;
+
+ann_weights[4591] = 21'b100000000000001110110;
+
+ann_weights[4592] = 21'b000000000000010100001;
+
+ann_weights[4593] = 21'b100000000000010000100;
+
+ann_weights[4594] = 21'b000000000000000011110;
+
+ann_weights[4595] = 21'b100000000000010000001;
+
+ann_weights[4596] = 21'b000000000000110100100;
+
+ann_weights[4597] = 21'b100000000001001011010;
+
+ann_weights[4598] = 21'b000000000000001101101;
+
+ann_weights[4599] = 21'b000000000000001010001;
+
+ann_weights[4600] = 21'b100000000000101110000;
+
+ann_weights[4601] = 21'b100000000000000101100;
+
+ann_weights[4602] = 21'b000000000000100000111;
+
+ann_weights[4603] = 21'b100000000000000011000;
+
+ann_weights[4604] = 21'b100000000000000001010;
+
+ann_weights[4605] = 21'b100000000000000100110;
+
+ann_weights[4606] = 21'b000000000000000011001;
+
+ann_weights[4607] = 21'b100000000000100101011;
+
+ann_weights[4608] = 21'b000000000000011111001;
+
+ann_weights[4609] = 21'b100000000000001001000;
+
+ann_weights[4610] = 21'b100000000001100101010;
+
+ann_weights[4611] = 21'b000000000000101111100;
+
+ann_weights[4612] = 21'b000000000000010011010;
+
+ann_weights[4613] = 21'b000000000000001110011;
+
+ann_weights[4614] = 21'b000000000000000010010;
+
+ann_weights[4615] = 21'b100000000000100001101;
+
+ann_weights[4616] = 21'b100000000000000100010;
+
+ann_weights[4617] = 21'b100000000000011011111;
+
+ann_weights[4618] = 21'b000000000000001111111;
+
+ann_weights[4619] = 21'b100000000000100001000;
+
+ann_weights[4620] = 21'b100000000001100010010;
+
+ann_weights[4621] = 21'b000000000000111000010;
+
+ann_weights[4622] = 21'b000000000000001111001;
+
+ann_weights[4623] = 21'b100000000000001011111;
+
+ann_weights[4624] = 21'b000000000000010001101;
+
+ann_weights[4625] = 21'b100000000000011111011;
+
+ann_weights[4626] = 21'b000000000000001011011;
+
+ann_weights[4627] = 21'b100000000000010001000;
+
+ann_weights[4628] = 21'b000000000000000110011;
+
+ann_weights[4629] = 21'b100000000000011000011;
+
+ann_weights[4630] = 21'b100000000000111001100;
+
+ann_weights[4631] = 21'b100000000000000001111;
+
+ann_weights[4632] = 21'b100000000000000011001;
+
+ann_weights[4633] = 21'b100000000000010011000;
+
+ann_weights[4634] = 21'b000000000000110111000;
+
+ann_weights[4635] = 21'b100000000000011001110;
+
+ann_weights[4636] = 21'b000000000000000001101;
+
+ann_weights[4637] = 21'b100000000000000011111;
+
+ann_weights[4638] = 21'b100000000000000011001;
+
+ann_weights[4639] = 21'b000000000000001001100;
+
+ann_weights[4640] = 21'b100000000000100100111;
+
+ann_weights[4641] = 21'b100000000000100000110;
+
+ann_weights[4642] = 21'b000000000000001010010;
+
+ann_weights[4643] = 21'b100000000000010100000;
+
+ann_weights[4644] = 21'b000000000000101010000;
+
+ann_weights[4645] = 21'b100000000000011010101;
+
+ann_weights[4646] = 21'b100000000000001111001;
+
+ann_weights[4647] = 21'b000000000000000110010;
+
+ann_weights[4648] = 21'b000000000000000101101;
+
+ann_weights[4649] = 21'b000000000000001100111;
+
+ann_weights[4650] = 21'b100000000000000101011;
+
+ann_weights[4651] = 21'b100000000001011000111;
+
+ann_weights[4652] = 21'b000000000000001101111;
+
+ann_weights[4653] = 21'b100000000000000111011;
+
+ann_weights[4654] = 21'b000000000000011100001;
+
+ann_weights[4655] = 21'b100000000000010001010;
+
+ann_weights[4656] = 21'b100000000000010011110;
+
+ann_weights[4657] = 21'b000000000000011111100;
+
+ann_weights[4658] = 21'b100000000000010001100;
+
+ann_weights[4659] = 21'b000000000000001100000;
+
+ann_weights[4660] = 21'b100000000000001000110;
+
+ann_weights[4661] = 21'b100000000001010011101;
+
+ann_weights[4662] = 21'b000000000000000000100;
+
+ann_weights[4663] = 21'b000000000000010010001;
+
+ann_weights[4664] = 21'b000000000000010011100;
+
+ann_weights[4665] = 21'b100000000000000101010;
+
+ann_weights[4666] = 21'b000000000000000100000;
+
+ann_weights[4667] = 21'b000000000000011010110;
+
+ann_weights[4668] = 21'b100000000000011011001;
+
+ann_weights[4669] = 21'b000000000000000011010;
+
+ann_weights[4670] = 21'b000000000000000110001;
+
+ann_weights[4671] = 21'b100000000000111010100;
+
+ann_weights[4672] = 21'b100000000000000110011;
+
+ann_weights[4673] = 21'b000000000000010011100;
+
+ann_weights[4674] = 21'b000000000000000101000;
+
+ann_weights[4675] = 21'b000000000000000011000;
+
+ann_weights[4676] = 21'b000000000000001100011;
+
+ann_weights[4677] = 21'b000000000000010111110;
+
+ann_weights[4678] = 21'b100000000000100000010;
+
+ann_weights[4679] = 21'b100000000000010000111;
+
+ann_weights[4680] = 21'b000000000000001101000;
+
+ann_weights[4681] = 21'b100000000000110111001;
+
+ann_weights[4682] = 21'b100000000000001100110;
+
+ann_weights[4683] = 21'b000000000000010010011;
+
+ann_weights[4684] = 21'b000000000000001011101;
+
+ann_weights[4685] = 21'b100000000000000100110;
+
+ann_weights[4686] = 21'b000000000000000111010;
+
+ann_weights[4687] = 21'b000000000000011011111;
+
+ann_weights[4688] = 21'b100000000000101011111;
+
+ann_weights[4689] = 21'b100000000000010000011;
+
+ann_weights[4690] = 21'b000000000000010010011;
+
+ann_weights[4691] = 21'b100000000000100000100;
+
+ann_weights[4692] = 21'b000000000000001110110;
+
+ann_weights[4693] = 21'b000000000000010100110;
+
+ann_weights[4694] = 21'b000000000000000010000;
+
+ann_weights[4695] = 21'b100000000000000100001;
+
+ann_weights[4696] = 21'b100000000000001000100;
+
+ann_weights[4697] = 21'b000000000000010001100;
+
+ann_weights[4698] = 21'b100000000000101111000;
+
+ann_weights[4699] = 21'b100000000000100001011;
+
+ann_weights[4700] = 21'b000000000000010000101;
+
+ann_weights[4701] = 21'b100000000000110101111;
+
+ann_weights[4702] = 21'b000000000000001101011;
+
+ann_weights[4703] = 21'b000000000000100000000;
+
+ann_weights[4704] = 21'b100000000000000100101;
+
+ann_weights[4705] = 21'b000000000000001100010;
+
+ann_weights[4706] = 21'b100000000000000001110;
+
+ann_weights[4707] = 21'b000000000000000110010;
+
+ann_weights[4708] = 21'b100000000000101000000;
+
+ann_weights[4709] = 21'b100000000000010100101;
+
+ann_weights[4710] = 21'b000000000000010011100;
+
+ann_weights[4711] = 21'b100000000000110100010;
+
+ann_weights[4712] = 21'b000000000000000100001;
+
+ann_weights[4713] = 21'b000000000000100011100;
+
+ann_weights[4714] = 21'b100000000000011110011;
+
+ann_weights[4715] = 21'b000000000000001001001;
+
+ann_weights[4716] = 21'b100000000000000100101;
+
+ann_weights[4717] = 21'b100000000000010001110;
+
+ann_weights[4718] = 21'b100000000000001101101;
+
+ann_weights[4719] = 21'b100000000000111111001;
+
+ann_weights[4720] = 21'b100000000000000000100;
+
+ann_weights[4721] = 21'b100000000000011100011;
+
+ann_weights[4722] = 21'b000000000000101111011;
+
+ann_weights[4723] = 21'b000000000000100010001;
+
+ann_weights[4724] = 21'b100000000000110011011;
+
+ann_weights[4725] = 21'b000000000000000000110;
+
+ann_weights[4726] = 21'b000000000000000011011;
+
+ann_weights[4727] = 21'b100000000000101001100;
+
+ann_weights[4728] = 21'b100000000000100000000;
+
+ann_weights[4729] = 21'b100000000001100001000;
+
+ann_weights[4730] = 21'b100000000000101110110;
+
+ann_weights[4731] = 21'b100000000000110000101;
+
+ann_weights[4732] = 21'b000000000001100101010;
+
+ann_weights[4733] = 21'b100000000001010100100;
+
+ann_weights[4734] = 21'b100000000000110001011;
+
+ann_weights[4735] = 21'b100000000000101111001;
+
+ann_weights[4736] = 21'b100000000000001000101;
+
+ann_weights[4737] = 21'b100000000001010011100;
+
+ann_weights[4738] = 21'b100000000000110011010;
+
+ann_weights[4739] = 21'b100000000001011110101;
+
+ann_weights[4740] = 21'b100000000000110000111;
+
+ann_weights[4741] = 21'b100000000000010010111;
+
+ann_weights[4742] = 21'b000000000001011101110;
+
+ann_weights[4743] = 21'b100000000000111011100;
+
+ann_weights[4744] = 21'b100000000000011011111;
+
+ann_weights[4745] = 21'b100000000001000001001;
+
+ann_weights[4746] = 21'b100000000001010111001;
+
+ann_weights[4747] = 21'b100000000000111101001;
+
+ann_weights[4748] = 21'b100000000001010001110;
+
+ann_weights[4749] = 21'b100000000000111100010;
+
+ann_weights[4750] = 21'b100000000000010010000;
+
+ann_weights[4751] = 21'b100000000000101110001;
+
+ann_weights[4752] = 21'b000000000000110011101;
+
+ann_weights[4753] = 21'b100000000000011001111;
+
+ann_weights[4754] = 21'b100000000000010011001;
+
+ann_weights[4755] = 21'b100000000000011000101;
+
+ann_weights[4756] = 21'b100000000000101110100;
+
+ann_weights[4757] = 21'b100000000000010011111;
+
+ann_weights[4758] = 21'b100000000000100101001;
+
+ann_weights[4759] = 21'b100000000000011100001;
+
+ann_weights[4760] = 21'b100000000000001010111;
+
+ann_weights[4761] = 21'b100000000000000001100;
+
+ann_weights[4762] = 21'b000000000000000010001;
+
+ann_weights[4763] = 21'b100000000000001010000;
+
+ann_weights[4764] = 21'b100000000000000000101;
+
+ann_weights[4765] = 21'b000000000000000000000;
+
+ann_weights[4766] = 21'b000000000000000010001;
+
+ann_weights[4767] = 21'b100000000000000011000;
+
+ann_weights[4768] = 21'b000000000000000010000;
+
+ann_weights[4769] = 21'b100000000000000101100;
+
+ann_weights[4770] = 21'b100000000000001111001;
+
+ann_weights[4771] = 21'b000000000000010110010;
+
+ann_weights[4772] = 21'b100000000000010101111;
+
+ann_weights[4773] = 21'b000000000000011011100;
+
+ann_weights[4774] = 21'b100000000000000100001;
+
+ann_weights[4775] = 21'b100000000000001111001;
+
+ann_weights[4776] = 21'b100000000000001111011;
+
+ann_weights[4777] = 21'b000000000000000001110;
+
+ann_weights[4778] = 21'b100000000000010110011;
+
+ann_weights[4779] = 21'b100000000000001100010;
+
+ann_weights[4780] = 21'b100000000000101010110;
+
+ann_weights[4781] = 21'b100000000000000001010;
+
+ann_weights[4782] = 21'b000000000000000011101;
+
+ann_weights[4783] = 21'b000000000000010011010;
+
+ann_weights[4784] = 21'b000000000000000101010;
+
+ann_weights[4785] = 21'b100000000000110111011;
+
+ann_weights[4786] = 21'b100000000000011101110;
+
+ann_weights[4787] = 21'b100000000000011001111;
+
+ann_weights[4788] = 21'b100000000000100000101;
+
+ann_weights[4789] = 21'b100000000000101001010;
+
+ann_weights[4790] = 21'b100000000000011100001;
+
+ann_weights[4791] = 21'b100000000000001110110;
+
+ann_weights[4792] = 21'b000000000000011010001;
+
+ann_weights[4793] = 21'b000000000000101111011;
+
+ann_weights[4794] = 21'b100000000001000001111;
+
+ann_weights[4795] = 21'b000000000000001100100;
+
+ann_weights[4796] = 21'b100000000000111111101;
+
+ann_weights[4797] = 21'b100000000000011110000;
+
+ann_weights[4798] = 21'b100000000000100111111;
+
+ann_weights[4799] = 21'b100000000000100010110;
+
+ann_weights[4800] = 21'b100000000000000010000;
+
+ann_weights[4801] = 21'b100000000000010111000;
+
+ann_weights[4802] = 21'b000000000000100100100;
+
+ann_weights[4803] = 21'b000000000000011011011;
+
+ann_weights[4804] = 21'b100000000000100111100;
+
+ann_weights[4805] = 21'b100000000000001001101;
+
+ann_weights[4806] = 21'b100000000001011111011;
+
+ann_weights[4807] = 21'b000000000000010000100;
+
+ann_weights[4808] = 21'b100000000000101010000;
+
+ann_weights[4809] = 21'b100000000000011010100;
+
+ann_weights[4810] = 21'b000000000000000111111;
+
+ann_weights[4811] = 21'b100000000001001111111;
+
+ann_weights[4812] = 21'b000000000000011000010;
+
+ann_weights[4813] = 21'b000000000000010000111;
+
+ann_weights[4814] = 21'b100000000000011111111;
+
+ann_weights[4815] = 21'b000000000000001111001;
+
+ann_weights[4816] = 21'b100000000000010001000;
+
+ann_weights[4817] = 21'b000000000000000100100;
+
+ann_weights[4818] = 21'b100000000000101010000;
+
+ann_weights[4819] = 21'b100000000000010111100;
+
+ann_weights[4820] = 21'b000000000000010110000;
+
+ann_weights[4821] = 21'b100000000001001100110;
+
+ann_weights[4822] = 21'b000000000000011110100;
+
+ann_weights[4823] = 21'b100000000000001111111;
+
+ann_weights[4824] = 21'b100000000000001100110;
+
+ann_weights[4825] = 21'b000000000000011010101;
+
+ann_weights[4826] = 21'b000000000000000111100;
+
+ann_weights[4827] = 21'b100000000000011111001;
+
+ann_weights[4828] = 21'b100000000000011110011;
+
+ann_weights[4829] = 21'b100000000000010101011;
+
+ann_weights[4830] = 21'b000000000000010011100;
+
+ann_weights[4831] = 21'b100000000000110001101;
+
+ann_weights[4832] = 21'b000000000000001010000;
+
+ann_weights[4833] = 21'b100000000000001110110;
+
+ann_weights[4834] = 21'b000000000000001000001;
+
+ann_weights[4835] = 21'b100000000000011001111;
+
+ann_weights[4836] = 21'b000000000000001011000;
+
+ann_weights[4837] = 21'b100000000000011100110;
+
+ann_weights[4838] = 21'b000000000000001001101;
+
+ann_weights[4839] = 21'b000000000000000000101;
+
+ann_weights[4840] = 21'b000000000000001010000;
+
+ann_weights[4841] = 21'b100000000000011110101;
+
+ann_weights[4842] = 21'b000000000000000000111;
+
+ann_weights[4843] = 21'b100000000000100101001;
+
+ann_weights[4844] = 21'b000000000000011110101;
+
+ann_weights[4845] = 21'b100000000000110011000;
+
+ann_weights[4846] = 21'b000000000000011101010;
+
+ann_weights[4847] = 21'b100000000000010010100;
+
+ann_weights[4848] = 21'b000000000000001110110;
+
+ann_weights[4849] = 21'b100000000000000110001;
+
+ann_weights[4850] = 21'b000000000000011111011;
+
+ann_weights[4851] = 21'b100000000000010110100;
+
+ann_weights[4852] = 21'b000000000000000001010;
+
+ann_weights[4853] = 21'b100000000000110101100;
+
+ann_weights[4854] = 21'b000000000000000011001;
+
+ann_weights[4855] = 21'b100000000000110000000;
+
+ann_weights[4856] = 21'b000000000000011110000;
+
+ann_weights[4857] = 21'b100000000000100100101;
+
+ann_weights[4858] = 21'b000000000000010000101;
+
+ann_weights[4859] = 21'b100000000000000000001;
+
+ann_weights[4860] = 21'b000000000000101010111;
+
+ann_weights[4861] = 21'b100000000000001111100;
+
+ann_weights[4862] = 21'b000000000000011010001;
+
+ann_weights[4863] = 21'b100000000001000101001;
+
+ann_weights[4864] = 21'b100000000000001010111;
+
+ann_weights[4865] = 21'b100000000000101010001;
+
+ann_weights[4866] = 21'b000000000000110000010;
+
+ann_weights[4867] = 21'b100000000000110011000;
+
+ann_weights[4868] = 21'b000000000000001100101;
+
+ann_weights[4869] = 21'b000000000000001000100;
+
+ann_weights[4870] = 21'b000000000000000101010;
+
+ann_weights[4871] = 21'b100000000000100010110;
+
+ann_weights[4872] = 21'b000000000000010100100;
+
+ann_weights[4873] = 21'b100000000000110110000;
+
+ann_weights[4874] = 21'b100000000000001110110;
+
+ann_weights[4875] = 21'b100000000000100101011;
+
+ann_weights[4876] = 21'b000000000000111100010;
+
+ann_weights[4877] = 21'b100000000000100100010;
+
+ann_weights[4878] = 21'b000000000000010111011;
+
+ann_weights[4879] = 21'b100000000000000110111;
+
+ann_weights[4880] = 21'b100000000000011111111;
+
+ann_weights[4881] = 21'b100000000000000011000;
+
+ann_weights[4882] = 21'b000000000000100010110;
+
+ann_weights[4883] = 21'b100000000000100101100;
+
+ann_weights[4884] = 21'b100000000000000100100;
+
+ann_weights[4885] = 21'b100000000000111100001;
+
+ann_weights[4886] = 21'b000000000000010100011;
+
+ann_weights[4887] = 21'b100000000000001011100;
+
+ann_weights[4888] = 21'b000000000000011011111;
+
+ann_weights[4889] = 21'b100000000000000011001;
+
+ann_weights[4890] = 21'b100000000001001111001;
+
+ann_weights[4891] = 21'b000000000000100101001;
+
+ann_weights[4892] = 21'b000000000000010101110;
+
+ann_weights[4893] = 21'b100000000000100000011;
+
+ann_weights[4894] = 21'b000000000000011111011;
+
+ann_weights[4895] = 21'b100000000000100111100;
+
+ann_weights[4896] = 21'b000000000000000010001;
+
+ann_weights[4897] = 21'b100000000000000100010;
+
+ann_weights[4898] = 21'b000000000000010110101;
+
+ann_weights[4899] = 21'b100000000000001101101;
+
+ann_weights[4900] = 21'b100000000001001000001;
+
+ann_weights[4901] = 21'b000000000000110010010;
+
+ann_weights[4902] = 21'b000000000000001101011;
+
+ann_weights[4903] = 21'b100000000000101000101;
+
+ann_weights[4904] = 21'b000000000000110010001;
+
+ann_weights[4905] = 21'b100000000000101011111;
+
+ann_weights[4906] = 21'b000000000000000100101;
+
+ann_weights[4907] = 21'b000000000000000010000;
+
+ann_weights[4908] = 21'b100000000000000011110;
+
+ann_weights[4909] = 21'b100000000000001110100;
+
+ann_weights[4910] = 21'b100000000000101100110;
+
+ann_weights[4911] = 21'b100000000000000111011;
+
+ann_weights[4912] = 21'b000000000000000011011;
+
+ann_weights[4913] = 21'b100000000000100000110;
+
+ann_weights[4914] = 21'b000000000000101110000;
+
+ann_weights[4915] = 21'b100000000000001010000;
+
+ann_weights[4916] = 21'b100000000000000100110;
+
+ann_weights[4917] = 21'b000000000000000110101;
+
+ann_weights[4918] = 21'b100000000000010000101;
+
+ann_weights[4919] = 21'b000000000000010000001;
+
+ann_weights[4920] = 21'b100000000000010010011;
+
+ann_weights[4921] = 21'b100000000000101111011;
+
+ann_weights[4922] = 21'b000000000000000101001;
+
+ann_weights[4923] = 21'b100000000000001001000;
+
+ann_weights[4924] = 21'b000000000000100110001;
+
+ann_weights[4925] = 21'b100000000000000101111;
+
+ann_weights[4926] = 21'b100000000000010001110;
+
+ann_weights[4927] = 21'b100000000000000000101;
+
+ann_weights[4928] = 21'b000000000000000000101;
+
+ann_weights[4929] = 21'b000000000000000100101;
+
+ann_weights[4930] = 21'b000000000000001010100;
+
+ann_weights[4931] = 21'b100000000001001001001;
+
+ann_weights[4932] = 21'b100000000000000001100;
+
+ann_weights[4933] = 21'b000000000000000111101;
+
+ann_weights[4934] = 21'b000000000000011001100;
+
+ann_weights[4935] = 21'b000000000000001101100;
+
+ann_weights[4936] = 21'b100000000000000001101;
+
+ann_weights[4937] = 21'b000000000000000001010;
+
+ann_weights[4938] = 21'b100000000000001110010;
+
+ann_weights[4939] = 21'b000000000000001101000;
+
+ann_weights[4940] = 21'b100000000000000101100;
+
+ann_weights[4941] = 21'b100000000000101011000;
+
+ann_weights[4942] = 21'b000000000000001110000;
+
+ann_weights[4943] = 21'b000000000000001011001;
+
+ann_weights[4944] = 21'b000000000000001001101;
+
+ann_weights[4945] = 21'b000000000000001111011;
+
+ann_weights[4946] = 21'b000000000000001110010;
+
+ann_weights[4947] = 21'b000000000000001011010;
+
+ann_weights[4948] = 21'b100000000000100101001;
+
+ann_weights[4949] = 21'b100000000000001001101;
+
+ann_weights[4950] = 21'b000000000000001000110;
+
+ann_weights[4951] = 21'b100000000000100000111;
+
+ann_weights[4952] = 21'b100000000000000011010;
+
+ann_weights[4953] = 21'b000000000000010101111;
+
+ann_weights[4954] = 21'b000000000000000001101;
+
+ann_weights[4955] = 21'b100000000000000001000;
+
+ann_weights[4956] = 21'b000000000000000100001;
+
+ann_weights[4957] = 21'b000000000000000000111;
+
+ann_weights[4958] = 21'b100000000000011101110;
+
+ann_weights[4959] = 21'b100000000000000110111;
+
+ann_weights[4960] = 21'b000000000000000000011;
+
+ann_weights[4961] = 21'b100000000000010111111;
+
+ann_weights[4962] = 21'b000000000000000010000;
+
+ann_weights[4963] = 21'b000000000000000100110;
+
+ann_weights[4964] = 21'b000000000000000011010;
+
+ann_weights[4965] = 21'b000000000000001011101;
+
+ann_weights[4966] = 21'b100000000000000010110;
+
+ann_weights[4967] = 21'b000000000000000111101;
+
+ann_weights[4968] = 21'b100000000000011000110;
+
+ann_weights[4969] = 21'b100000000000001010101;
+
+ann_weights[4970] = 21'b000000000000000110010;
+
+ann_weights[4971] = 21'b100000000000001100011;
+
+ann_weights[4972] = 21'b000000000000001010110;
+
+ann_weights[4973] = 21'b000000000000001011000;
+
+ann_weights[4974] = 21'b000000000000001000000;
+
+ann_weights[4975] = 21'b000000000000000110110;
+
+ann_weights[4976] = 21'b100000000000000110100;
+
+ann_weights[4977] = 21'b100000000000000011110;
+
+ann_weights[4978] = 21'b100000000000001111110;
+
+ann_weights[4979] = 21'b100000000000100001000;
+
+ann_weights[4980] = 21'b000000000000010000110;
+
+ann_weights[4981] = 21'b100000000000001000101;
+
+ann_weights[4982] = 21'b000000000000010000011;
+
+ann_weights[4983] = 21'b000000000000010101100;
+
+ann_weights[4984] = 21'b100000000000011000000;
+
+ann_weights[4985] = 21'b000000000000000101010;
+
+ann_weights[4986] = 21'b000000000000000101101;
+
+ann_weights[4987] = 21'b100000000000000110011;
+
+ann_weights[4988] = 21'b100000000000001101111;
+
+ann_weights[4989] = 21'b100000000000100111100;
+
+ann_weights[4990] = 21'b100000000000000011011;
+
+ann_weights[4991] = 21'b100000000000010100101;
+
+ann_weights[4992] = 21'b000000000000001111111;
+
+ann_weights[4993] = 21'b000000000000100011011;
+
+ann_weights[4994] = 21'b100000000000010111110;
+
+ann_weights[4995] = 21'b000000000000000100100;
+
+ann_weights[4996] = 21'b100000000000000100101;
+
+ann_weights[4997] = 21'b100000000000001110011;
+
+ann_weights[4998] = 21'b100000000000001010101;
+
+ann_weights[4999] = 21'b100000000001001111101;
+
+ann_weights[5000] = 21'b000000000000000000111;
+
+ann_weights[5001] = 21'b100000000000010100001;
+
+ann_weights[5002] = 21'b000000000000100011000;
+
+ann_weights[5003] = 21'b100000000000010100111;
+
+ann_weights[5004] = 21'b100000000000101100000;
+
+ann_weights[5005] = 21'b000000000000001110000;
+
+ann_weights[5006] = 21'b100000000000000000111;
+
+ann_weights[5007] = 21'b100000000000010000001;
+
+ann_weights[5008] = 21'b100000000000000101010;
+
+ann_weights[5009] = 21'b100000000001100110011;
+
+ann_weights[5010] = 21'b100000000000100011101;
+
+ann_weights[5011] = 21'b100000000000111000001;
+
+ann_weights[5012] = 21'b000000000001101000110;
+
+ann_weights[5013] = 21'b100000000001011000010;
+
+ann_weights[5014] = 21'b100000000001000010100;
+
+ann_weights[5015] = 21'b100000000001000001110;
+
+ann_weights[5016] = 21'b100000000000000001111;
+
+ann_weights[5017] = 21'b000000000000000111101;
+
+ann_weights[5018] = 21'b100000000001100110110;
+
+ann_weights[5019] = 21'b100000000000111110010;
+
+ann_weights[5020] = 21'b100000000000110000110;
+
+ann_weights[5021] = 21'b100000000000010101111;
+
+ann_weights[5022] = 21'b000000000001000000101;
+
+ann_weights[5023] = 21'b100000000001000010111;
+
+ann_weights[5024] = 21'b100000000000101001001;
+
+ann_weights[5025] = 21'b100000000001001110101;
+
+ann_weights[5026] = 21'b100000000001001010101;
+
+ann_weights[5027] = 21'b000000000000010101100;
+
+ann_weights[5028] = 21'b100000000001000111101;
+
+ann_weights[5029] = 21'b100000000000100111010;
+
+ann_weights[5030] = 21'b000000000000001110010;
+
+ann_weights[5031] = 21'b100000000000100110001;
+
+ann_weights[5032] = 21'b000000000000101101011;
+
+ann_weights[5033] = 21'b100000000000100011000;
+
+ann_weights[5034] = 21'b100000000000010110011;
+
+ann_weights[5035] = 21'b100000000000011011100;
+
+ann_weights[5036] = 21'b100000000000111011001;
+
+ann_weights[5037] = 21'b100000000000001111101;
+
+ann_weights[5038] = 21'b100000000000011101110;
+
+ann_weights[5039] = 21'b100000000000011110100;
+
+ann_weights[5040] = 21'b100000000000010011111;
+
+ann_weights[5041] = 21'b100000000000000100110;
+
+ann_weights[5042] = 21'b100000000000010101110;
+
+ann_weights[5043] = 21'b100000000000010110111;
+
+ann_weights[5044] = 21'b100000000000010010011;
+
+ann_weights[5045] = 21'b100000000000010100010;
+
+ann_weights[5046] = 21'b000000000000000000000;
+
+ann_weights[5047] = 21'b000000000000010010110;
+
+ann_weights[5048] = 21'b100000000000010000011;
+
+ann_weights[5049] = 21'b100000000000000000011;
+
+ann_weights[5050] = 21'b100000000000010100001;
+
+ann_weights[5051] = 21'b000000000000001010100;
+
+ann_weights[5052] = 21'b100000000000100101110;
+
+ann_weights[5053] = 21'b000000000000010110011;
+
+ann_weights[5054] = 21'b100000000000000111110;
+
+ann_weights[5055] = 21'b100000000000010100100;
+
+ann_weights[5056] = 21'b100000000000010000110;
+
+ann_weights[5057] = 21'b000000000000001010000;
+
+ann_weights[5058] = 21'b100000000000100011000;
+
+ann_weights[5059] = 21'b100000000000011001100;
+
+ann_weights[5060] = 21'b100000000000110000110;
+
+ann_weights[5061] = 21'b100000000000000011001;
+
+ann_weights[5062] = 21'b100000000000010110100;
+
+ann_weights[5063] = 21'b000000000000001100101;
+
+ann_weights[5064] = 21'b100000000000010000010;
+
+ann_weights[5065] = 21'b100000000000100001010;
+
+ann_weights[5066] = 21'b100000000000001110110;
+
+ann_weights[5067] = 21'b000000000000011110111;
+
+ann_weights[5068] = 21'b100000000000011011000;
+
+ann_weights[5069] = 21'b100000000000110010100;
+
+ann_weights[5070] = 21'b100000000001000001011;
+
+ann_weights[5071] = 21'b100000000000011110110;
+
+ann_weights[5072] = 21'b000000000000001101011;
+
+ann_weights[5073] = 21'b000000000001000111101;
+
+ann_weights[5074] = 21'b100000000000110100100;
+
+ann_weights[5075] = 21'b100000000000001000111;
+
+ann_weights[5076] = 21'b100000000000100100000;
+
+ann_weights[5077] = 21'b100000000000010000011;
+
+ann_weights[5078] = 21'b100000000001100110000;
+
+ann_weights[5079] = 21'b100000000000111111111;
+
+ann_weights[5080] = 21'b100000000000010000000;
+
+ann_weights[5081] = 21'b100000000001000101110;
+
+ann_weights[5082] = 21'b000000000000100100100;
+
+ann_weights[5083] = 21'b000000000000011000111;
+
+ann_weights[5084] = 21'b100000000000011001101;
+
+ann_weights[5085] = 21'b000000000000011001001;
+
+ann_weights[5086] = 21'b100000000001000110010;
+
+ann_weights[5087] = 21'b100000000000000101101;
+
+ann_weights[5088] = 21'b100000000000110101001;
+
+ann_weights[5089] = 21'b100000000000111010100;
+
+ann_weights[5090] = 21'b000000000000001000111;
+
+ann_weights[5091] = 21'b100000000001100001110;
+
+ann_weights[5092] = 21'b000000000000100110011;
+
+ann_weights[5093] = 21'b000000000000011010111;
+
+ann_weights[5094] = 21'b100000000000010101010;
+
+ann_weights[5095] = 21'b000000000000100011110;
+
+ann_weights[5096] = 21'b100000000000101100000;
+
+ann_weights[5097] = 21'b100000000000001101011;
+
+ann_weights[5098] = 21'b100000000000010101101;
+
+ann_weights[5099] = 21'b100000000000101111110;
+
+ann_weights[5100] = 21'b100000000000000101110;
+
+ann_weights[5101] = 21'b100000000001101010010;
+
+ann_weights[5102] = 21'b000000000000010111000;
+
+ann_weights[5103] = 21'b000000000000001111011;
+
+ann_weights[5104] = 21'b100000000000010000110;
+
+ann_weights[5105] = 21'b000000000000100110011;
+
+ann_weights[5106] = 21'b100000000000011001111;
+
+ann_weights[5107] = 21'b100000000000101110111;
+
+ann_weights[5108] = 21'b100000000000010001001;
+
+ann_weights[5109] = 21'b100000000000001010001;
+
+ann_weights[5110] = 21'b000000000000001101111;
+
+ann_weights[5111] = 21'b100000000000110010111;
+
+ann_weights[5112] = 21'b000000000000100001001;
+
+ann_weights[5113] = 21'b100000000000010010000;
+
+ann_weights[5114] = 21'b100000000000000111100;
+
+ann_weights[5115] = 21'b000000000000010010110;
+
+ann_weights[5116] = 21'b100000000000000000101;
+
+ann_weights[5117] = 21'b100000000000100110100;
+
+ann_weights[5118] = 21'b100000000000000011010;
+
+ann_weights[5119] = 21'b100000000000001001001;
+
+ann_weights[5120] = 21'b000000000000011010110;
+
+ann_weights[5121] = 21'b100000000000001111100;
+
+ann_weights[5122] = 21'b000000000000001001010;
+
+ann_weights[5123] = 21'b100000000000010101000;
+
+ann_weights[5124] = 21'b100000000000000010111;
+
+ann_weights[5125] = 21'b100000000000001010110;
+
+ann_weights[5126] = 21'b000000000000001111011;
+
+ann_weights[5127] = 21'b100000000000101011010;
+
+ann_weights[5128] = 21'b000000000000000111000;
+
+ann_weights[5129] = 21'b100000000000001000001;
+
+ann_weights[5130] = 21'b000000000000011000111;
+
+ann_weights[5131] = 21'b000000000000000011001;
+
+ann_weights[5132] = 21'b000000000000001101011;
+
+ann_weights[5133] = 21'b100000000000101010010;
+
+ann_weights[5134] = 21'b100000000000000010001;
+
+ann_weights[5135] = 21'b100000000000010011100;
+
+ann_weights[5136] = 21'b000000000000001100001;
+
+ann_weights[5137] = 21'b100000000000101011101;
+
+ann_weights[5138] = 21'b000000000000011111101;
+
+ann_weights[5139] = 21'b100000000000000110110;
+
+ann_weights[5140] = 21'b000000000000101000111;
+
+ann_weights[5141] = 21'b100000000000011010110;
+
+ann_weights[5142] = 21'b000000000000010101110;
+
+ann_weights[5143] = 21'b100000000000101111100;
+
+ann_weights[5144] = 21'b100000000000100000110;
+
+ann_weights[5145] = 21'b100000000000011101111;
+
+ann_weights[5146] = 21'b000000000000100101000;
+
+ann_weights[5147] = 21'b100000000000110101101;
+
+ann_weights[5148] = 21'b000000000000010011101;
+
+ann_weights[5149] = 21'b000000000000010001101;
+
+ann_weights[5150] = 21'b000000000000000000111;
+
+ann_weights[5151] = 21'b100000000000001110110;
+
+ann_weights[5152] = 21'b000000000000010010100;
+
+ann_weights[5153] = 21'b100000000000111000000;
+
+ann_weights[5154] = 21'b100000000000001111111;
+
+ann_weights[5155] = 21'b100000000000011100101;
+
+ann_weights[5156] = 21'b000000000000011010010;
+
+ann_weights[5157] = 21'b100000000000010101000;
+
+ann_weights[5158] = 21'b000000000000010111110;
+
+ann_weights[5159] = 21'b100000000000000010110;
+
+ann_weights[5160] = 21'b100000000000011100010;
+
+ann_weights[5161] = 21'b100000000000000001011;
+
+ann_weights[5162] = 21'b000000000000100001000;
+
+ann_weights[5163] = 21'b100000000000110010000;
+
+ann_weights[5164] = 21'b000000000000000101001;
+
+ann_weights[5165] = 21'b100000000000011011101;
+
+ann_weights[5166] = 21'b000000000000101011101;
+
+ann_weights[5167] = 21'b100000000000010110001;
+
+ann_weights[5168] = 21'b000000000000001101011;
+
+ann_weights[5169] = 21'b100000000000011110100;
+
+ann_weights[5170] = 21'b100000000001001101001;
+
+ann_weights[5171] = 21'b000000000000011011000;
+
+ann_weights[5172] = 21'b000000000000100000010;
+
+ann_weights[5173] = 21'b100000000000110100110;
+
+ann_weights[5174] = 21'b000000000000010101011;
+
+ann_weights[5175] = 21'b100000000000001010110;
+
+ann_weights[5176] = 21'b000000000000011001001;
+
+ann_weights[5177] = 21'b000000000000000011000;
+
+ann_weights[5178] = 21'b100000000000001001100;
+
+ann_weights[5179] = 21'b100000000000010100010;
+
+ann_weights[5180] = 21'b100000000000110010100;
+
+ann_weights[5181] = 21'b000000000000011111010;
+
+ann_weights[5182] = 21'b000000000000001001011;
+
+ann_weights[5183] = 21'b100000000000100000010;
+
+ann_weights[5184] = 21'b000000000000100001000;
+
+ann_weights[5185] = 21'b000000000000000010100;
+
+ann_weights[5186] = 21'b000000000000001000111;
+
+ann_weights[5187] = 21'b000000000000001000000;
+
+ann_weights[5188] = 21'b100000000000010010010;
+
+ann_weights[5189] = 21'b000000000000001000110;
+
+ann_weights[5190] = 21'b100000000000011111000;
+
+ann_weights[5191] = 21'b100000000000001011101;
+
+ann_weights[5192] = 21'b000000000000000010110;
+
+ann_weights[5193] = 21'b000000000000000101101;
+
+ann_weights[5194] = 21'b000000000000011110111;
+
+ann_weights[5195] = 21'b000000000000001000000;
+
+ann_weights[5196] = 21'b100000000000000100100;
+
+ann_weights[5197] = 21'b100000000000000100100;
+
+ann_weights[5198] = 21'b100000000000000000001;
+
+ann_weights[5199] = 21'b000000000000000110101;
+
+ann_weights[5200] = 21'b100000000000000110011;
+
+ann_weights[5201] = 21'b100000000000101001111;
+
+ann_weights[5202] = 21'b000000000000010101111;
+
+ann_weights[5203] = 21'b000000000000100010000;
+
+ann_weights[5204] = 21'b000000000000011100001;
+
+ann_weights[5205] = 21'b000000000000001000001;
+
+ann_weights[5206] = 21'b000000000000010001000;
+
+ann_weights[5207] = 21'b100000000000001000011;
+
+ann_weights[5208] = 21'b100000000000001011011;
+
+ann_weights[5209] = 21'b100000000000000000111;
+
+ann_weights[5210] = 21'b000000000000000010010;
+
+ann_weights[5211] = 21'b100000000000011100010;
+
+ann_weights[5212] = 21'b000000000000011001111;
+
+ann_weights[5213] = 21'b000000000000011111100;
+
+ann_weights[5214] = 21'b100000000000001010110;
+
+ann_weights[5215] = 21'b000000000000001011000;
+
+ann_weights[5216] = 21'b000000000000010010000;
+
+ann_weights[5217] = 21'b100000000000001011000;
+
+ann_weights[5218] = 21'b100000000000001111100;
+
+ann_weights[5219] = 21'b100000000000001001001;
+
+ann_weights[5220] = 21'b100000000000000111010;
+
+ann_weights[5221] = 21'b100000000000001010101;
+
+ann_weights[5222] = 21'b000000000000000110100;
+
+ann_weights[5223] = 21'b000000000000011000011;
+
+ann_weights[5224] = 21'b100000000000000100011;
+
+ann_weights[5225] = 21'b000000000000000010110;
+
+ann_weights[5226] = 21'b000000000000010101110;
+
+ann_weights[5227] = 21'b100000000000010010000;
+
+ann_weights[5228] = 21'b100000000000000100101;
+
+ann_weights[5229] = 21'b100000000000001001110;
+
+ann_weights[5230] = 21'b100000000000001000001;
+
+ann_weights[5231] = 21'b100000000000001000111;
+
+ann_weights[5232] = 21'b000000000000000011010;
+
+ann_weights[5233] = 21'b000000000000100000011;
+
+ann_weights[5234] = 21'b100000000000010010111;
+
+ann_weights[5235] = 21'b000000000000000111011;
+
+ann_weights[5236] = 21'b100000000000000110011;
+
+ann_weights[5237] = 21'b100000000000001001000;
+
+ann_weights[5238] = 21'b100000000000000111101;
+
+ann_weights[5239] = 21'b100000000000001100111;
+
+ann_weights[5240] = 21'b100000000000000100100;
+
+ann_weights[5241] = 21'b000000000000000000110;
+
+ann_weights[5242] = 21'b100000000000000001101;
+
+ann_weights[5243] = 21'b000000000000001011001;
+
+ann_weights[5244] = 21'b100000000000000110101;
+
+ann_weights[5245] = 21'b000000000000000011011;
+
+ann_weights[5246] = 21'b100000000000000001001;
+
+ann_weights[5247] = 21'b100000000000000110001;
+
+ann_weights[5248] = 21'b100000000000000010110;
+
+ann_weights[5249] = 21'b100000000000000101101;
+
+ann_weights[5250] = 21'b100000000000000011001;
+
+ann_weights[5251] = 21'b100000000000000101101;
+
+ann_weights[5252] = 21'b000000000000000100110;
+
+ann_weights[5253] = 21'b000000000000011110000;
+
+ann_weights[5254] = 21'b100000000000001110100;
+
+ann_weights[5255] = 21'b000000000000001110111;
+
+ann_weights[5256] = 21'b100000000000000010011;
+
+ann_weights[5257] = 21'b100000000000011000000;
+
+ann_weights[5258] = 21'b100000000000011101000;
+
+ann_weights[5259] = 21'b100000000000100011101;
+
+ann_weights[5260] = 21'b000000000000001100100;
+
+ann_weights[5261] = 21'b100000000000010101110;
+
+ann_weights[5262] = 21'b000000000000011000101;
+
+ann_weights[5263] = 21'b000000000000100101011;
+
+ann_weights[5264] = 21'b100000000000101110001;
+
+ann_weights[5265] = 21'b000000000000001011110;
+
+ann_weights[5266] = 21'b100000000000000100110;
+
+ann_weights[5267] = 21'b100000000000100110001;
+
+ann_weights[5268] = 21'b100000000000001110001;
+
+ann_weights[5269] = 21'b100000000000100110001;
+
+ann_weights[5270] = 21'b100000000000000101101;
+
+ann_weights[5271] = 21'b100000000000010101111;
+
+ann_weights[5272] = 21'b000000000000100010011;
+
+ann_weights[5273] = 21'b000000000000001010101;
+
+ann_weights[5274] = 21'b100000000000101001100;
+
+ann_weights[5275] = 21'b000000000000010100101;
+
+ann_weights[5276] = 21'b100000000000001011011;
+
+ann_weights[5277] = 21'b100000000000110101101;
+
+ann_weights[5278] = 21'b000000000000000101111;
+
+ann_weights[5279] = 21'b100000000001000010001;
+
+ann_weights[5280] = 21'b100000000000010000111;
+
+ann_weights[5281] = 21'b100000000000001010000;
+
+ann_weights[5282] = 21'b000000000000111011101;
+
+ann_weights[5283] = 21'b100000000000101110000;
+
+ann_weights[5284] = 21'b100000000000101101111;
+
+ann_weights[5285] = 21'b000000000000001100001;
+
+ann_weights[5286] = 21'b100000000000000000000;
+
+ann_weights[5287] = 21'b100000000000101110111;
+
+ann_weights[5288] = 21'b100000000000010100001;
+
+ann_weights[5289] = 21'b100000000001011100111;
+
+ann_weights[5290] = 21'b100000000000100111110;
+
+ann_weights[5291] = 21'b100000000000001010010;
+
+ann_weights[5292] = 21'b000000000001010101101;
+
+ann_weights[5293] = 21'b100000000001101110010;
+
+ann_weights[5294] = 21'b100000000001010011011;
+
+ann_weights[5295] = 21'b100000000000101100101;
+
+ann_weights[5296] = 21'b000000000000000100111;
+
+ann_weights[5297] = 21'b100000000000010111110;
+
+ann_weights[5298] = 21'b100000000001101010000;
+
+ann_weights[5299] = 21'b100000000000110111010;
+
+ann_weights[5300] = 21'b100000000000100011001;
+
+ann_weights[5301] = 21'b100000000000001011110;
+
+ann_weights[5302] = 21'b000000000000100110000;
+
+ann_weights[5303] = 21'b100000000000111110101;
+
+ann_weights[5304] = 21'b100000000000001111111;
+
+ann_weights[5305] = 21'b100000000000110111010;
+
+ann_weights[5306] = 21'b100000000000101100111;
+
+ann_weights[5307] = 21'b000000000000011011000;
+
+ann_weights[5308] = 21'b100000000000111100100;
+
+ann_weights[5309] = 21'b100000000000101010010;
+
+ann_weights[5310] = 21'b100000000000011001100;
+
+ann_weights[5311] = 21'b000000000000010010111;
+
+ann_weights[5312] = 21'b000000000000100011010;
+
+ann_weights[5313] = 21'b100000000000010011101;
+
+ann_weights[5314] = 21'b100000000000000111001;
+
+ann_weights[5315] = 21'b100000000000100110110;
+
+ann_weights[5316] = 21'b100000000000100010001;
+
+ann_weights[5317] = 21'b100000000000010101110;
+
+ann_weights[5318] = 21'b100000000000011011100;
+
+ann_weights[5319] = 21'b100000000000011111000;
+
+ann_weights[5320] = 21'b100000000000000110110;
+
+ann_weights[5321] = 21'b000000000000000101111;
+
+ann_weights[5322] = 21'b100000000000001111010;
+
+ann_weights[5323] = 21'b100000000000000000001;
+
+ann_weights[5324] = 21'b100000000000000000011;
+
+ann_weights[5325] = 21'b100000000000001001011;
+
+ann_weights[5326] = 21'b000000000000000001110;
+
+ann_weights[5327] = 21'b000000000000000010110;
+
+ann_weights[5328] = 21'b100000000000010101110;
+
+ann_weights[5329] = 21'b000000000000000110001;
+
+ann_weights[5330] = 21'b000000000000011000110;
+
+ann_weights[5331] = 21'b000000000000010010110;
+
+ann_weights[5332] = 21'b100000000000010110101;
+
+ann_weights[5333] = 21'b000000000000000011011;
+
+ann_weights[5334] = 21'b100000000000001010101;
+
+ann_weights[5335] = 21'b100000000000100110110;
+
+ann_weights[5336] = 21'b100000000000001111100;
+
+ann_weights[5337] = 21'b000000000000011000110;
+
+ann_weights[5338] = 21'b100000000000010100101;
+
+ann_weights[5339] = 21'b100000000000010111110;
+
+ann_weights[5340] = 21'b100000000000011100101;
+
+ann_weights[5341] = 21'b000000000000000011010;
+
+ann_weights[5342] = 21'b100000000000011100100;
+
+ann_weights[5343] = 21'b100000000000000111011;
+
+ann_weights[5344] = 21'b100000000000001010001;
+
+ann_weights[5345] = 21'b000000000000001111001;
+
+ann_weights[5346] = 21'b100000000000011110000;
+
+ann_weights[5347] = 21'b000000000000100110111;
+
+ann_weights[5348] = 21'b100000000000110010111;
+
+ann_weights[5349] = 21'b100000000000111001101;
+
+ann_weights[5350] = 21'b100000000000101011010;
+
+ann_weights[5351] = 21'b100000000000011001101;
+
+ann_weights[5352] = 21'b100000000000001101010;
+
+ann_weights[5353] = 21'b000000000000111100110;
+
+ann_weights[5354] = 21'b100000000000010010110;
+
+ann_weights[5355] = 21'b000000000000000000001;
+
+ann_weights[5356] = 21'b100000000000111010010;
+
+ann_weights[5357] = 21'b100000000000010110101;
+
+ann_weights[5358] = 21'b100000000001000001111;
+
+ann_weights[5359] = 21'b100000000000101101001;
+
+ann_weights[5360] = 21'b100000000000000100011;
+
+ann_weights[5361] = 21'b100000000001011001110;
+
+ann_weights[5362] = 21'b000000000000001101001;
+
+ann_weights[5363] = 21'b000000000000011100100;
+
+ann_weights[5364] = 21'b100000000000100100010;
+
+ann_weights[5365] = 21'b000000000000010000111;
+
+ann_weights[5366] = 21'b100000000000101110101;
+
+ann_weights[5367] = 21'b100000000000001100110;
+
+ann_weights[5368] = 21'b100000000000110010001;
+
+ann_weights[5369] = 21'b100000000000111000001;
+
+ann_weights[5370] = 21'b000000000000000001101;
+
+ann_weights[5371] = 21'b100000000001101101111;
+
+ann_weights[5372] = 21'b000000000000010010001;
+
+ann_weights[5373] = 21'b000000000000101111001;
+
+ann_weights[5374] = 21'b100000000000000111110;
+
+ann_weights[5375] = 21'b000000000000010011110;
+
+ann_weights[5376] = 21'b100000000000101010101;
+
+ann_weights[5377] = 21'b100000000000011111100;
+
+ann_weights[5378] = 21'b000000000000001001010;
+
+ann_weights[5379] = 21'b100000000000100101011;
+
+ann_weights[5380] = 21'b000000000000001001110;
+
+ann_weights[5381] = 21'b100000000000111001101;
+
+ann_weights[5382] = 21'b000000000000001100000;
+
+ann_weights[5383] = 21'b000000000000001110101;
+
+ann_weights[5384] = 21'b100000000000011011000;
+
+ann_weights[5385] = 21'b000000000000010101111;
+
+ann_weights[5386] = 21'b100000000000010010110;
+
+ann_weights[5387] = 21'b100000000000110111100;
+
+ann_weights[5388] = 21'b100000000000001001101;
+
+ann_weights[5389] = 21'b100000000000011110001;
+
+ann_weights[5390] = 21'b000000000000010001101;
+
+ann_weights[5391] = 21'b100000000000001101011;
+
+ann_weights[5392] = 21'b000000000000010110110;
+
+ann_weights[5393] = 21'b100000000000000111001;
+
+ann_weights[5394] = 21'b100000000000011111011;
+
+ann_weights[5395] = 21'b000000000000010101001;
+
+ann_weights[5396] = 21'b100000000000000010000;
+
+ann_weights[5397] = 21'b100000000000111100111;
+
+ann_weights[5398] = 21'b100000000000001100001;
+
+ann_weights[5399] = 21'b100000000000001001010;
+
+ann_weights[5400] = 21'b000000000000001010101;
+
+ann_weights[5401] = 21'b100000000000010000001;
+
+ann_weights[5402] = 21'b000000000000010101001;
+
+ann_weights[5403] = 21'b000000000000000011010;
+
+ann_weights[5404] = 21'b100000000000101110111;
+
+ann_weights[5405] = 21'b000000000000010011111;
+
+ann_weights[5406] = 21'b100000000000000011011;
+
+ann_weights[5407] = 21'b100000000000101101000;
+
+ann_weights[5408] = 21'b000000000000000001110;
+
+ann_weights[5409] = 21'b100000000000100000000;
+
+ann_weights[5410] = 21'b000000000000001101100;
+
+ann_weights[5411] = 21'b100000000000001000001;
+
+ann_weights[5412] = 21'b000000000000010000010;
+
+ann_weights[5413] = 21'b100000000000010000001;
+
+ann_weights[5414] = 21'b100000000000111100000;
+
+ann_weights[5415] = 21'b000000000000000001101;
+
+ann_weights[5416] = 21'b000000000000010010000;
+
+ann_weights[5417] = 21'b100000000000101100101;
+
+ann_weights[5418] = 21'b000000000000001001001;
+
+ann_weights[5419] = 21'b100000000000011101100;
+
+ann_weights[5420] = 21'b000000000000011011101;
+
+ann_weights[5421] = 21'b100000000000000111110;
+
+ann_weights[5422] = 21'b000000000000010010000;
+
+ann_weights[5423] = 21'b100000000000011000010;
+
+ann_weights[5424] = 21'b100000000000110111010;
+
+ann_weights[5425] = 21'b100000000000000000101;
+
+ann_weights[5426] = 21'b000000000000011111100;
+
+ann_weights[5427] = 21'b100000000000110001111;
+
+ann_weights[5428] = 21'b000000000000001100000;
+
+ann_weights[5429] = 21'b100000000000100010101;
+
+ann_weights[5430] = 21'b000000000000011101010;
+
+ann_weights[5431] = 21'b100000000000000001111;
+
+ann_weights[5432] = 21'b000000000000011011011;
+
+ann_weights[5433] = 21'b100000000000100110011;
+
+ann_weights[5434] = 21'b100000000000011110100;
+
+ann_weights[5435] = 21'b000000000000000000100;
+
+ann_weights[5436] = 21'b000000000000111001010;
+
+ann_weights[5437] = 21'b100000000000011010000;
+
+ann_weights[5438] = 21'b100000000000000010011;
+
+ann_weights[5439] = 21'b100000000000011101111;
+
+ann_weights[5440] = 21'b000000000000001000110;
+
+ann_weights[5441] = 21'b100000000000001010000;
+
+ann_weights[5442] = 21'b000000000000011101100;
+
+ann_weights[5443] = 21'b100000000000101010100;
+
+ann_weights[5444] = 21'b100000000000101001010;
+
+ann_weights[5445] = 21'b000000000000000001001;
+
+ann_weights[5446] = 21'b000000000000101000111;
+
+ann_weights[5447] = 21'b100000000000000100110;
+
+ann_weights[5448] = 21'b100000000000000101111;
+
+ann_weights[5449] = 21'b100000000000101110011;
+
+ann_weights[5450] = 21'b100000000000010100110;
+
+ann_weights[5451] = 21'b000000000000001011111;
+
+ann_weights[5452] = 21'b000000000000011001110;
+
+ann_weights[5453] = 21'b100000000000010111000;
+
+ann_weights[5454] = 21'b100000000000001010001;
+
+ann_weights[5455] = 21'b000000000000000110110;
+
+ann_weights[5456] = 21'b000000000000010011110;
+
+ann_weights[5457] = 21'b100000000000000001001;
+
+ann_weights[5458] = 21'b100000000000001110000;
+
+ann_weights[5459] = 21'b100000000000010110010;
+
+ann_weights[5460] = 21'b100000000000001101001;
+
+ann_weights[5461] = 21'b100000000000000110111;
+
+ann_weights[5462] = 21'b000000000000010101000;
+
+ann_weights[5463] = 21'b100000000000001001001;
+
+ann_weights[5464] = 21'b000000000000000001110;
+
+ann_weights[5465] = 21'b100000000000000101100;
+
+ann_weights[5466] = 21'b000000000000010001111;
+
+ann_weights[5467] = 21'b000000000000000111100;
+
+ann_weights[5468] = 21'b100000000000010110101;
+
+ann_weights[5469] = 21'b100000000000001001000;
+
+ann_weights[5470] = 21'b100000000000010000110;
+
+ann_weights[5471] = 21'b100000000000000111101;
+
+ann_weights[5472] = 21'b000000000000001101101;
+
+ann_weights[5473] = 21'b000000000000001010000;
+
+ann_weights[5474] = 21'b000000000000001001101;
+
+ann_weights[5475] = 21'b000000000000000111100;
+
+ann_weights[5476] = 21'b000000000000011000011;
+
+ann_weights[5477] = 21'b100000000000010011111;
+
+ann_weights[5478] = 21'b100000000000001111101;
+
+ann_weights[5479] = 21'b100000000000011010011;
+
+ann_weights[5480] = 21'b100000000000001000000;
+
+ann_weights[5481] = 21'b000000000000000010101;
+
+ann_weights[5482] = 21'b000000000000010111100;
+
+ann_weights[5483] = 21'b000000000000010100110;
+
+ann_weights[5484] = 21'b000000000000000101011;
+
+ann_weights[5485] = 21'b000000000000000101001;
+
+ann_weights[5486] = 21'b000000000000011001101;
+
+ann_weights[5487] = 21'b100000000000010101001;
+
+ann_weights[5488] = 21'b100000000000000000001;
+
+ann_weights[5489] = 21'b100000000000001000111;
+
+ann_weights[5490] = 21'b100000000000000111101;
+
+ann_weights[5491] = 21'b100000000000000100101;
+
+ann_weights[5492] = 21'b000000000000010100111;
+
+ann_weights[5493] = 21'b000000000000011001100;
+
+ann_weights[5494] = 21'b100000000000001111011;
+
+ann_weights[5495] = 21'b100000000000000111001;
+
+ann_weights[5496] = 21'b000000000000011001111;
+
+ann_weights[5497] = 21'b100000000000011110010;
+
+ann_weights[5498] = 21'b100000000000001000101;
+
+ann_weights[5499] = 21'b100000000000010000111;
+
+ann_weights[5500] = 21'b000000000000000101011;
+
+ann_weights[5501] = 21'b000000000000010000001;
+
+ann_weights[5502] = 21'b000000000000001101011;
+
+ann_weights[5503] = 21'b000000000000011001010;
+
+ann_weights[5504] = 21'b100000000000010110011;
+
+ann_weights[5505] = 21'b000000000000001010010;
+
+ann_weights[5506] = 21'b000000000000001100111;
+
+ann_weights[5507] = 21'b100000000000100011001;
+
+ann_weights[5508] = 21'b000000000000000001110;
+
+ann_weights[5509] = 21'b100000000000001011111;
+
+ann_weights[5510] = 21'b100000000000000011101;
+
+ann_weights[5511] = 21'b000000000000011000011;
+
+ann_weights[5512] = 21'b100000000000000010010;
+
+ann_weights[5513] = 21'b000000000000001101101;
+
+ann_weights[5514] = 21'b100000000000010110011;
+
+ann_weights[5515] = 21'b100000000000000011001;
+
+ann_weights[5516] = 21'b000000000000000110110;
+
+ann_weights[5517] = 21'b100000000000010011000;
+
+ann_weights[5518] = 21'b100000000000000011011;
+
+ann_weights[5519] = 21'b100000000000001000100;
+
+ann_weights[5520] = 21'b100000000000001000111;
+
+ann_weights[5521] = 21'b000000000000000010001;
+
+ann_weights[5522] = 21'b000000000000010010111;
+
+ann_weights[5523] = 21'b000000000000010000011;
+
+ann_weights[5524] = 21'b100000000000010101010;
+
+ann_weights[5525] = 21'b000000000000010011110;
+
+ann_weights[5526] = 21'b100000000000000000110;
+
+ann_weights[5527] = 21'b100000000000100011000;
+
+ann_weights[5528] = 21'b000000000000000011111;
+
+ann_weights[5529] = 21'b100000000000001100001;
+
+ann_weights[5530] = 21'b000000000000000101110;
+
+ann_weights[5531] = 21'b000000000000001000101;
+
+ann_weights[5532] = 21'b000000000000011001001;
+
+ann_weights[5533] = 21'b000000000000010010000;
+
+ann_weights[5534] = 21'b100000000000010111111;
+
+ann_weights[5535] = 21'b000000000000000110111;
+
+ann_weights[5536] = 21'b000000000000000111100;
+
+ann_weights[5537] = 21'b100000000000111010011;
+
+ann_weights[5538] = 21'b000000000000000000001;
+
+ann_weights[5539] = 21'b100000000000100011001;
+
+ann_weights[5540] = 21'b000000000000010000010;
+
+ann_weights[5541] = 21'b100000000000000111010;
+
+ann_weights[5542] = 21'b000000000000100010111;
+
+ann_weights[5543] = 21'b000000000000001000010;
+
+ann_weights[5544] = 21'b100000000000111100011;
+
+ann_weights[5545] = 21'b000000000000001101000;
+
+ann_weights[5546] = 21'b000000000000000100101;
+
+ann_weights[5547] = 21'b100000000000110101011;
+
+ann_weights[5548] = 21'b000000000000010010101;
+
+ann_weights[5549] = 21'b100000000000101011010;
+
+ann_weights[5550] = 21'b100000000000000110100;
+
+ann_weights[5551] = 21'b100000000000010100100;
+
+ann_weights[5552] = 21'b000000000000011001111;
+
+ann_weights[5553] = 21'b000000000000000010100;
+
+ann_weights[5554] = 21'b100000000000111001011;
+
+ann_weights[5555] = 21'b000000000000001111111;
+
+ann_weights[5556] = 21'b100000000000000010001;
+
+ann_weights[5557] = 21'b100000000001000011110;
+
+ann_weights[5558] = 21'b000000000000001100100;
+
+ann_weights[5559] = 21'b100000000000100001001;
+
+ann_weights[5560] = 21'b100000000000001111100;
+
+ann_weights[5561] = 21'b000000000000000111110;
+
+ann_weights[5562] = 21'b000000000000100100110;
+
+ann_weights[5563] = 21'b100000000000011101111;
+
+ann_weights[5564] = 21'b100000000000111100110;
+
+ann_weights[5565] = 21'b000000000000010101000;
+
+ann_weights[5566] = 21'b100000000000001110110;
+
+ann_weights[5567] = 21'b100000000000100100100;
+
+ann_weights[5568] = 21'b100000000000001000000;
+
+ann_weights[5569] = 21'b100000000000101111100;
+
+ann_weights[5570] = 21'b100000000000110110100;
+
+ann_weights[5571] = 21'b000000000000000001010;
+
+ann_weights[5572] = 21'b000000000001010000100;
+
+ann_weights[5573] = 21'b100000000001110100100;
+
+ann_weights[5574] = 21'b100000000001000010011;
+
+ann_weights[5575] = 21'b100000000000010000000;
+
+ann_weights[5576] = 21'b100000000000100101110;
+
+ann_weights[5577] = 21'b100000000000100100100;
+
+ann_weights[5578] = 21'b100000000001100001010;
+
+ann_weights[5579] = 21'b100000000000010111010;
+
+ann_weights[5580] = 21'b100000000000100010011;
+
+ann_weights[5581] = 21'b000000000000000011010;
+
+ann_weights[5582] = 21'b000000000000110010000;
+
+ann_weights[5583] = 21'b100000000000101001100;
+
+ann_weights[5584] = 21'b100000000000011001100;
+
+ann_weights[5585] = 21'b100000000000101011111;
+
+ann_weights[5586] = 21'b100000000000101101001;
+
+ann_weights[5587] = 21'b100000000000010110101;
+
+ann_weights[5588] = 21'b100000000000101110001;
+
+ann_weights[5589] = 21'b100000000000011011111;
+
+ann_weights[5590] = 21'b100000000000001010010;
+
+ann_weights[5591] = 21'b000000000000001110101;
+
+ann_weights[5592] = 21'b000000000000010000101;
+
+ann_weights[5593] = 21'b100000000000001110100;
+
+ann_weights[5594] = 21'b100000000000000011101;
+
+ann_weights[5595] = 21'b100000000000010010011;
+
+ann_weights[5596] = 21'b100000000000001111111;
+
+ann_weights[5597] = 21'b100000000000010110011;
+
+ann_weights[5598] = 21'b100000000000001100101;
+
+ann_weights[5599] = 21'b100000000000010101001;
+
+ann_weights[5600] = 21'b100000000000000111000;
+
+ann_weights[5601] = 21'b000000000000001000100;
+
+ann_weights[5602] = 21'b000000000000000110101;
+
+ann_weights[5603] = 21'b100000000000000110001;
+
+ann_weights[5604] = 21'b100000000000000111101;
+
+ann_weights[5605] = 21'b100000000000000011111;
+
+ann_weights[5606] = 21'b000000000000001000010;
+
+ann_weights[5607] = 21'b100000000000000100110;
+
+ann_weights[5608] = 21'b100000000000000110001;
+
+ann_weights[5609] = 21'b000000000000001010101;
+
+ann_weights[5610] = 21'b000000000000010101010;
+
+ann_weights[5611] = 21'b100000000000010000111;
+
+ann_weights[5612] = 21'b100000000000010011011;
+
+ann_weights[5613] = 21'b000000000000000011011;
+
+ann_weights[5614] = 21'b100000000000001101010;
+
+ann_weights[5615] = 21'b100000000000001101000;
+
+ann_weights[5616] = 21'b100000000000011001011;
+
+ann_weights[5617] = 21'b100000000000000100010;
+
+ann_weights[5618] = 21'b100000000000011000000;
+
+ann_weights[5619] = 21'b100000000000001011100;
+
+ann_weights[5620] = 21'b100000000000001100000;
+
+ann_weights[5621] = 21'b100000000000100100110;
+
+ann_weights[5622] = 21'b100000000000000010100;
+
+ann_weights[5623] = 21'b100000000000001101010;
+
+ann_weights[5624] = 21'b100000000000001100101;
+
+ann_weights[5625] = 21'b000000000000001001100;
+
+ann_weights[5626] = 21'b100000000000100010111;
+
+ann_weights[5627] = 21'b100000000000011110101;
+
+ann_weights[5628] = 21'b100000000001000101110;
+
+ann_weights[5629] = 21'b100000000000101111110;
+
+ann_weights[5630] = 21'b100000000000101101011;
+
+ann_weights[5631] = 21'b100000000000011110110;
+
+ann_weights[5632] = 21'b100000000000000010110;
+
+ann_weights[5633] = 21'b000000000000111100101;
+
+ann_weights[5634] = 21'b100000000000001100101;
+
+ann_weights[5635] = 21'b000000000000000110010;
+
+ann_weights[5636] = 21'b100000000000111100000;
+
+ann_weights[5637] = 21'b100000000001001010100;
+
+ann_weights[5638] = 21'b100000000001000001011;
+
+ann_weights[5639] = 21'b100000000001001100101;
+
+ann_weights[5640] = 21'b100000000000001000110;
+
+ann_weights[5641] = 21'b100000000000101001110;
+
+ann_weights[5642] = 21'b000000000000010000110;
+
+ann_weights[5643] = 21'b000000000000100011011;
+
+ann_weights[5644] = 21'b100000000000100001110;
+
+ann_weights[5645] = 21'b000000000000000110001;
+
+ann_weights[5646] = 21'b100000000000110011011;
+
+ann_weights[5647] = 21'b100000000001000011011;
+
+ann_weights[5648] = 21'b100000000000011100010;
+
+ann_weights[5649] = 21'b100000000000100110111;
+
+ann_weights[5650] = 21'b000000000000000001011;
+
+ann_weights[5651] = 21'b100000000000111100000;
+
+ann_weights[5652] = 21'b000000000000000111011;
+
+ann_weights[5653] = 21'b000000000000011010101;
+
+ann_weights[5654] = 21'b100000000000100011000;
+
+ann_weights[5655] = 21'b000000000000010101100;
+
+ann_weights[5656] = 21'b100000000000110101011;
+
+ann_weights[5657] = 21'b100000000000111010010;
+
+ann_weights[5658] = 21'b100000000000001100001;
+
+ann_weights[5659] = 21'b100000000000000011010;
+
+ann_weights[5660] = 21'b000000000000000011100;
+
+ann_weights[5661] = 21'b100000000000010010011;
+
+ann_weights[5662] = 21'b000000000000010110001;
+
+ann_weights[5663] = 21'b000000000000101000000;
+
+ann_weights[5664] = 21'b100000000000100000100;
+
+ann_weights[5665] = 21'b000000000000010100100;
+
+ann_weights[5666] = 21'b100000000000100100010;
+
+ann_weights[5667] = 21'b100000000001000111001;
+
+ann_weights[5668] = 21'b000000000000000100101;
+
+ann_weights[5669] = 21'b100000000000010011011;
+
+ann_weights[5670] = 21'b100000000000000101000;
+
+ann_weights[5671] = 21'b000000000000000001110;
+
+ann_weights[5672] = 21'b000000000000100101010;
+
+ann_weights[5673] = 21'b000000000000010100001;
+
+ann_weights[5674] = 21'b100000000000111100111;
+
+ann_weights[5675] = 21'b100000000000000010000;
+
+ann_weights[5676] = 21'b100000000000010001010;
+
+ann_weights[5677] = 21'b100000000001000000111;
+
+ann_weights[5678] = 21'b000000000000010101101;
+
+ann_weights[5679] = 21'b100000000000100000010;
+
+ann_weights[5680] = 21'b000000000000000010011;
+
+ann_weights[5681] = 21'b000000000000000111111;
+
+ann_weights[5682] = 21'b000000000000010010101;
+
+ann_weights[5683] = 21'b000000000000001011011;
+
+ann_weights[5684] = 21'b100000000000110110001;
+
+ann_weights[5685] = 21'b000000000000010110111;
+
+ann_weights[5686] = 21'b100000000000001011010;
+
+ann_weights[5687] = 21'b100000000000100000010;
+
+ann_weights[5688] = 21'b100000000000000100010;
+
+ann_weights[5689] = 21'b100000000000100110000;
+
+ann_weights[5690] = 21'b000000000000010001110;
+
+ann_weights[5691] = 21'b000000000000001011001;
+
+ann_weights[5692] = 21'b000000000000011011001;
+
+ann_weights[5693] = 21'b000000000000001110000;
+
+ann_weights[5694] = 21'b100000000000110110010;
+
+ann_weights[5695] = 21'b000000000000010000101;
+
+ann_weights[5696] = 21'b000000000000001100111;
+
+ann_weights[5697] = 21'b100000000000011101000;
+
+ann_weights[5698] = 21'b100000000000000001010;
+
+ann_weights[5699] = 21'b100000000000110101101;
+
+ann_weights[5700] = 21'b000000000000100111010;
+
+ann_weights[5701] = 21'b100000000000000000011;
+
+ann_weights[5702] = 21'b000000000000010100010;
+
+ann_weights[5703] = 21'b100000000000000101100;
+
+ann_weights[5704] = 21'b100000000000111000101;
+
+ann_weights[5705] = 21'b000000000000000000100;
+
+ann_weights[5706] = 21'b000000000000011101010;
+
+ann_weights[5707] = 21'b100000000000011011110;
+
+ann_weights[5708] = 21'b100000000000001000000;
+
+ann_weights[5709] = 21'b100000000000111110110;
+
+ann_weights[5710] = 21'b000000000000100011010;
+
+ann_weights[5711] = 21'b000000000000001110110;
+
+ann_weights[5712] = 21'b000000000000010111100;
+
+ann_weights[5713] = 21'b100000000000010100110;
+
+ann_weights[5714] = 21'b100000000000100100111;
+
+ann_weights[5715] = 21'b000000000000001011110;
+
+ann_weights[5716] = 21'b000000000000011001000;
+
+ann_weights[5717] = 21'b100000000000011110000;
+
+ann_weights[5718] = 21'b100000000000010000101;
+
+ann_weights[5719] = 21'b100000000000110101111;
+
+ann_weights[5720] = 21'b000000000000101000110;
+
+ann_weights[5721] = 21'b000000000000000010100;
+
+ann_weights[5722] = 21'b000000000000001001101;
+
+ann_weights[5723] = 21'b100000000000011111110;
+
+ann_weights[5724] = 21'b100000000000100011000;
+
+ann_weights[5725] = 21'b000000000000001010000;
+
+ann_weights[5726] = 21'b000000000000110111010;
+
+ann_weights[5727] = 21'b000000000000000001000;
+
+ann_weights[5728] = 21'b100000000000001011101;
+
+ann_weights[5729] = 21'b100000000000111011110;
+
+ann_weights[5730] = 21'b000000000000001000100;
+
+ann_weights[5731] = 21'b100000000000000001001;
+
+ann_weights[5732] = 21'b000000000000001101010;
+
+ann_weights[5733] = 21'b100000000000000110100;
+
+ann_weights[5734] = 21'b100000000000011100111;
+
+ann_weights[5735] = 21'b100000000000000100001;
+
+ann_weights[5736] = 21'b000000000000100001001;
+
+ann_weights[5737] = 21'b000000000000000111001;
+
+ann_weights[5738] = 21'b100000000000000101000;
+
+ann_weights[5739] = 21'b100000000000010001100;
+
+ann_weights[5740] = 21'b100000000000000001010;
+
+ann_weights[5741] = 21'b000000000000000000001;
+
+ann_weights[5742] = 21'b000000000000000001111;
+
+ann_weights[5743] = 21'b100000000000000001110;
+
+ann_weights[5744] = 21'b000000000000000000101;
+
+ann_weights[5745] = 21'b100000000000000001000;
+
+ann_weights[5746] = 21'b000000000000110000110;
+
+ann_weights[5747] = 21'b000000000000000111011;
+
+ann_weights[5748] = 21'b100000000000001101111;
+
+ann_weights[5749] = 21'b100000000000011110110;
+
+ann_weights[5750] = 21'b100000000000000101010;
+
+ann_weights[5751] = 21'b100000000000000101001;
+
+ann_weights[5752] = 21'b000000000000001011110;
+
+ann_weights[5753] = 21'b000000000000000111001;
+
+ann_weights[5754] = 21'b000000000000000111100;
+
+ann_weights[5755] = 21'b100000000000000001101;
+
+ann_weights[5756] = 21'b000000000000011100011;
+
+ann_weights[5757] = 21'b100000000000010110100;
+
+ann_weights[5758] = 21'b000000000000000001010;
+
+ann_weights[5759] = 21'b100000000000010011110;
+
+ann_weights[5760] = 21'b000000000000000001000;
+
+ann_weights[5761] = 21'b000000000000011010010;
+
+ann_weights[5762] = 21'b000000000000000110111;
+
+ann_weights[5763] = 21'b000000000000010100111;
+
+ann_weights[5764] = 21'b000000000000000101000;
+
+ann_weights[5765] = 21'b000000000000000110111;
+
+ann_weights[5766] = 21'b000000000000011000000;
+
+ann_weights[5767] = 21'b100000000000100100111;
+
+ann_weights[5768] = 21'b100000000000001111011;
+
+ann_weights[5769] = 21'b100000000000010101110;
+
+ann_weights[5770] = 21'b100000000000001000111;
+
+ann_weights[5771] = 21'b000000000000010001010;
+
+ann_weights[5772] = 21'b000000000000000001101;
+
+ann_weights[5773] = 21'b000000000000011001110;
+
+ann_weights[5774] = 21'b000000000000000001111;
+
+ann_weights[5775] = 21'b000000000000010010110;
+
+ann_weights[5776] = 21'b000000000000000010011;
+
+ann_weights[5777] = 21'b100000000000011101101;
+
+ann_weights[5778] = 21'b100000000000000010110;
+
+ann_weights[5779] = 21'b100000000000010101011;
+
+ann_weights[5780] = 21'b100000000000010101100;
+
+ann_weights[5781] = 21'b000000000000101010101;
+
+ann_weights[5782] = 21'b000000000000001100111;
+
+ann_weights[5783] = 21'b000000000000011110001;
+
+ann_weights[5784] = 21'b100000000000000001110;
+
+ann_weights[5785] = 21'b000000000000000011110;
+
+ann_weights[5786] = 21'b000000000000011010010;
+
+ann_weights[5787] = 21'b100000000000111110011;
+
+ann_weights[5788] = 21'b100000000000000000100;
+
+ann_weights[5789] = 21'b100000000000011010111;
+
+ann_weights[5790] = 21'b100000000000010000100;
+
+ann_weights[5791] = 21'b000000000000010110010;
+
+ann_weights[5792] = 21'b000000000000010100110;
+
+ann_weights[5793] = 21'b000000000000000111100;
+
+ann_weights[5794] = 21'b100000000000100000001;
+
+ann_weights[5795] = 21'b000000000000000001111;
+
+ann_weights[5796] = 21'b000000000000000111110;
+
+ann_weights[5797] = 21'b100000000000110101000;
+
+ann_weights[5798] = 21'b000000000000000010010;
+
+ann_weights[5799] = 21'b100000000000000101111;
+
+ann_weights[5800] = 21'b100000000000001100111;
+
+ann_weights[5801] = 21'b000000000000001011011;
+
+ann_weights[5802] = 21'b000000000000001101110;
+
+ann_weights[5803] = 21'b000000000000010110010;
+
+ann_weights[5804] = 21'b100000000000011000111;
+
+ann_weights[5805] = 21'b000000000000000111110;
+
+ann_weights[5806] = 21'b100000000000000000110;
+
+ann_weights[5807] = 21'b100000000001001000010;
+
+ann_weights[5808] = 21'b000000000000001100010;
+
+ann_weights[5809] = 21'b100000000000010110001;
+
+ann_weights[5810] = 21'b000000000000000000010;
+
+ann_weights[5811] = 21'b000000000000000001111;
+
+ann_weights[5812] = 21'b000000000000010001101;
+
+ann_weights[5813] = 21'b000000000000000100101;
+
+ann_weights[5814] = 21'b100000000000010010110;
+
+ann_weights[5815] = 21'b000000000000000001000;
+
+ann_weights[5816] = 21'b000000000000000010010;
+
+ann_weights[5817] = 21'b100000000000111000000;
+
+ann_weights[5818] = 21'b000000000000000100001;
+
+ann_weights[5819] = 21'b100000000000101011000;
+
+ann_weights[5820] = 21'b000000000000000010011;
+
+ann_weights[5821] = 21'b100000000000010001100;
+
+ann_weights[5822] = 21'b000000000000010011010;
+
+ann_weights[5823] = 21'b100000000000001100111;
+
+ann_weights[5824] = 21'b100000000000101111100;
+
+ann_weights[5825] = 21'b000000000000100101010;
+
+ann_weights[5826] = 21'b100000000000001101010;
+
+ann_weights[5827] = 21'b100000000001010010011;
+
+ann_weights[5828] = 21'b000000000000001010011;
+
+ann_weights[5829] = 21'b100000000000100101110;
+
+ann_weights[5830] = 21'b100000000000010010001;
+
+ann_weights[5831] = 21'b100000000000010001110;
+
+ann_weights[5832] = 21'b000000000000010101111;
+
+ann_weights[5833] = 21'b100000000000001100101;
+
+ann_weights[5834] = 21'b100000000000111010000;
+
+ann_weights[5835] = 21'b000000000000010101010;
+
+ann_weights[5836] = 21'b100000000000010011000;
+
+ann_weights[5837] = 21'b100000000001001111011;
+
+ann_weights[5838] = 21'b000000000000001111110;
+
+ann_weights[5839] = 21'b100000000000011101111;
+
+ann_weights[5840] = 21'b100000000000010010001;
+
+ann_weights[5841] = 21'b000000000000000100100;
+
+ann_weights[5842] = 21'b000000000000011011100;
+
+ann_weights[5843] = 21'b100000000000100100000;
+
+ann_weights[5844] = 21'b100000000000101100100;
+
+ann_weights[5845] = 21'b000000000000000110001;
+
+ann_weights[5846] = 21'b100000000000100011100;
+
+ann_weights[5847] = 21'b100000000000011001000;
+
+ann_weights[5848] = 21'b100000000000011101110;
+
+ann_weights[5849] = 21'b000000000000001101010;
+
+ann_weights[5850] = 21'b100000000000110101000;
+
+ann_weights[5851] = 21'b000000000000001110110;
+
+ann_weights[5852] = 21'b000000000000101010010;
+
+ann_weights[5853] = 21'b100000000001011110010;
+
+ann_weights[5854] = 21'b100000000000111010000;
+
+ann_weights[5855] = 21'b000000000000001001100;
+
+ann_weights[5856] = 21'b100000000000010111100;
+
+ann_weights[5857] = 21'b100000000000110100110;
+
+ann_weights[5858] = 21'b100000000001011000101;
+
+ann_weights[5859] = 21'b000000000000010011101;
+
+ann_weights[5860] = 21'b100000000000010100111;
+
+ann_weights[5861] = 21'b000000000000010001000;
+
+ann_weights[5862] = 21'b000000000000001110101;
+
+ann_weights[5863] = 21'b100000000000000111001;
+
+ann_weights[5864] = 21'b100000000000100110101;
+
+ann_weights[5865] = 21'b100000000000101010100;
+
+ann_weights[5866] = 21'b100000000000100001000;
+
+ann_weights[5867] = 21'b100000000000000111011;
+
+ann_weights[5868] = 21'b100000000000101100111;
+
+ann_weights[5869] = 21'b100000000000010111000;
+
+ann_weights[5870] = 21'b100000000000001111010;
+
+ann_weights[5871] = 21'b000000000000001101101;
+
+ann_weights[5872] = 21'b100000000000000111010;
+
+ann_weights[5873] = 21'b100000000000010011110;
+
+ann_weights[5874] = 21'b100000000000010110110;
+
+ann_weights[5875] = 21'b000000000000010000010;
+
+ann_weights[5876] = 21'b000000000000000001110;
+
+ann_weights[5877] = 21'b100000000000000101100;
+
+ann_weights[5878] = 21'b100000000000011011111;
+
+ann_weights[5879] = 21'b100000000000000100111;
+
+ann_weights[5880] = 21'b000000000000000111011;
+
+ann_weights[5881] = 21'b000000000000010010001;
+
+ann_weights[5882] = 21'b100000000000001001011;
+
+ann_weights[5883] = 21'b100000000000001001101;
+
+ann_weights[5884] = 21'b000000000000000111000;
+
+ann_weights[5885] = 21'b000000000000000001001;
+
+ann_weights[5886] = 21'b000000000000000101111;
+
+ann_weights[5887] = 21'b100000000000010000010;
+
+ann_weights[5888] = 21'b100000000000000100110;
+
+ann_weights[5889] = 21'b000000000000000011111;
+
+ann_weights[5890] = 21'b100000000000010100010;
+
+ann_weights[5891] = 21'b000000000000001011101;
+
+ann_weights[5892] = 21'b000000000000000100001;
+
+ann_weights[5893] = 21'b000000000000000101010;
+
+ann_weights[5894] = 21'b100000000000001001101;
+
+ann_weights[5895] = 21'b100000000000010000011;
+
+ann_weights[5896] = 21'b100000000000001111000;
+
+ann_weights[5897] = 21'b100000000000100101001;
+
+ann_weights[5898] = 21'b100000000000001111011;
+
+ann_weights[5899] = 21'b100000000000011010110;
+
+ann_weights[5900] = 21'b100000000000001101110;
+
+ann_weights[5901] = 21'b100000000000000110000;
+
+ann_weights[5902] = 21'b000000000000000011001;
+
+ann_weights[5903] = 21'b000000000000010110100;
+
+ann_weights[5904] = 21'b100000000000000101111;
+
+ann_weights[5905] = 21'b100000000000100100011;
+
+ann_weights[5906] = 21'b100000000000011111010;
+
+ann_weights[5907] = 21'b100000000000110001110;
+
+ann_weights[5908] = 21'b100000000000110011000;
+
+ann_weights[5909] = 21'b100000000000101011000;
+
+ann_weights[5910] = 21'b100000000000001101100;
+
+ann_weights[5911] = 21'b100000000000000111000;
+
+ann_weights[5912] = 21'b000000000000010001111;
+
+ann_weights[5913] = 21'b000000000000100001001;
+
+ann_weights[5914] = 21'b100000000000100011101;
+
+ann_weights[5915] = 21'b100000000000000010111;
+
+ann_weights[5916] = 21'b100000000000101001101;
+
+ann_weights[5917] = 21'b100000000001000111101;
+
+ann_weights[5918] = 21'b100000000000111111111;
+
+ann_weights[5919] = 21'b100000000000111111010;
+
+ann_weights[5920] = 21'b100000000000010101000;
+
+ann_weights[5921] = 21'b000000000000000110001;
+
+ann_weights[5922] = 21'b000000000000000111100;
+
+ann_weights[5923] = 21'b000000000000010110011;
+
+ann_weights[5924] = 21'b100000000000110111011;
+
+ann_weights[5925] = 21'b000000000000001101110;
+
+ann_weights[5926] = 21'b100000000001010001100;
+
+ann_weights[5927] = 21'b100000000000110101011;
+
+ann_weights[5928] = 21'b100000000000100010101;
+
+ann_weights[5929] = 21'b100000000000101000010;
+
+ann_weights[5930] = 21'b100000000000000000001;
+
+ann_weights[5931] = 21'b000000000000011001000;
+
+ann_weights[5932] = 21'b000000000000000100101;
+
+ann_weights[5933] = 21'b000000000000000011000;
+
+ann_weights[5934] = 21'b100000000000011000000;
+
+ann_weights[5935] = 21'b100000000000001000100;
+
+ann_weights[5936] = 21'b100000000001001110010;
+
+ann_weights[5937] = 21'b100000000000101001110;
+
+ann_weights[5938] = 21'b100000000000000101110;
+
+ann_weights[5939] = 21'b100000000000000101011;
+
+ann_weights[5940] = 21'b000000000000001011100;
+
+ann_weights[5941] = 21'b000000000000011110100;
+
+ann_weights[5942] = 21'b000000000000001001000;
+
+ann_weights[5943] = 21'b000000000000001101110;
+
+ann_weights[5944] = 21'b100000000001000101111;
+
+ann_weights[5945] = 21'b000000000000000000110;
+
+ann_weights[5946] = 21'b100000000000111111100;
+
+ann_weights[5947] = 21'b100000000000110010110;
+
+ann_weights[5948] = 21'b000000000000001100011;
+
+ann_weights[5949] = 21'b100000000000011100101;
+
+ann_weights[5950] = 21'b100000000000000010011;
+
+ann_weights[5951] = 21'b000000000000000110001;
+
+ann_weights[5952] = 21'b000000000000001110010;
+
+ann_weights[5953] = 21'b000000000000000100011;
+
+ann_weights[5954] = 21'b100000000001001011001;
+
+ann_weights[5955] = 21'b000000000000000011000;
+
+ann_weights[5956] = 21'b100000000000001101000;
+
+ann_weights[5957] = 21'b100000000000101001101;
+
+ann_weights[5958] = 21'b000000000000001011011;
+
+ann_weights[5959] = 21'b100000000000011101111;
+
+ann_weights[5960] = 21'b000000000000000101001;
+
+ann_weights[5961] = 21'b000000000000000100111;
+
+ann_weights[5962] = 21'b000000000000000100001;
+
+ann_weights[5963] = 21'b000000000000001001110;
+
+ann_weights[5964] = 21'b100000000000101001100;
+
+ann_weights[5965] = 21'b000000000000001110010;
+
+ann_weights[5966] = 21'b100000000000000100101;
+
+ann_weights[5967] = 21'b100000000000010100111;
+
+ann_weights[5968] = 21'b000000000000000001000;
+
+ann_weights[5969] = 21'b100000000000011101010;
+
+ann_weights[5970] = 21'b000000000000000011110;
+
+ann_weights[5971] = 21'b000000000000000001111;
+
+ann_weights[5972] = 21'b000000000000011000010;
+
+ann_weights[5973] = 21'b100000000000000110010;
+
+ann_weights[5974] = 21'b100000000000010011011;
+
+ann_weights[5975] = 21'b000000000000001100101;
+
+ann_weights[5976] = 21'b100000000000000011110;
+
+ann_weights[5977] = 21'b100000000000010111010;
+
+ann_weights[5978] = 21'b100000000000000000000;
+
+ann_weights[5979] = 21'b100000000000010001110;
+
+ann_weights[5980] = 21'b000000000000010011001;
+
+ann_weights[5981] = 21'b000000000000010101101;
+
+ann_weights[5982] = 21'b000000000000010011001;
+
+ann_weights[5983] = 21'b100000000000001000010;
+
+ann_weights[5984] = 21'b100000000000100001011;
+
+ann_weights[5985] = 21'b000000000000001111001;
+
+ann_weights[5986] = 21'b000000000000010101110;
+
+ann_weights[5987] = 21'b100000000000010001110;
+
+ann_weights[5988] = 21'b100000000000000011001;
+
+ann_weights[5989] = 21'b100000000000100000000;
+
+ann_weights[5990] = 21'b000000000000100001111;
+
+ann_weights[5991] = 21'b100000000000001101110;
+
+ann_weights[5992] = 21'b000000000000010100010;
+
+ann_weights[5993] = 21'b100000000000001101001;
+
+ann_weights[5994] = 21'b100000000000010000001;
+
+ann_weights[5995] = 21'b000000000000001000110;
+
+ann_weights[5996] = 21'b000000000000100010001;
+
+ann_weights[5997] = 21'b100000000000001111100;
+
+ann_weights[5998] = 21'b100000000000001001100;
+
+ann_weights[5999] = 21'b100000000000100111110;
+
+ann_weights[6000] = 21'b000000000000100010011;
+
+ann_weights[6001] = 21'b100000000000011000101;
+
+ann_weights[6002] = 21'b000000000000001010010;
+
+ann_weights[6003] = 21'b100000000000001100000;
+
+ann_weights[6004] = 21'b100000000000011111101;
+
+ann_weights[6005] = 21'b000000000000000111011;
+
+ann_weights[6006] = 21'b000000000000101100101;
+
+ann_weights[6007] = 21'b100000000000000000001;
+
+ann_weights[6008] = 21'b100000000000000100001;
+
+ann_weights[6009] = 21'b100000000000011111110;
+
+ann_weights[6010] = 21'b000000000000000010000;
+
+ann_weights[6011] = 21'b100000000000010001100;
+
+ann_weights[6012] = 21'b000000000000001000000;
+
+ann_weights[6013] = 21'b100000000000001111011;
+
+ann_weights[6014] = 21'b100000000000011100010;
+
+ann_weights[6015] = 21'b000000000000001000110;
+
+ann_weights[6016] = 21'b000000000000101111001;
+
+ann_weights[6017] = 21'b100000000000010000001;
+
+ann_weights[6018] = 21'b000000000000000101101;
+
+ann_weights[6019] = 21'b100000000000100010010;
+
+ann_weights[6020] = 21'b000000000000001001101;
+
+ann_weights[6021] = 21'b100000000000001001110;
+
+ann_weights[6022] = 21'b100000000000000101001;
+
+ann_weights[6023] = 21'b100000000000000100100;
+
+ann_weights[6024] = 21'b100000000000010101100;
+
+ann_weights[6025] = 21'b000000000000000100011;
+
+ann_weights[6026] = 21'b000000000000110001000;
+
+ann_weights[6027] = 21'b100000000000000101000;
+
+ann_weights[6028] = 21'b100000000000000001100;
+
+ann_weights[6029] = 21'b100000000000010110001;
+
+ann_weights[6030] = 21'b000000000000000110001;
+
+ann_weights[6031] = 21'b000000000000000101001;
+
+ann_weights[6032] = 21'b100000000000001101000;
+
+ann_weights[6033] = 21'b000000000000000010100;
+
+ann_weights[6034] = 21'b100000000000001100000;
+
+ann_weights[6035] = 21'b000000000000001001110;
+
+ann_weights[6036] = 21'b000000000000100001100;
+
+ann_weights[6037] = 21'b100000000000000111010;
+
+ann_weights[6038] = 21'b100000000000000100011;
+
+ann_weights[6039] = 21'b100000000000001111010;
+
+ann_weights[6040] = 21'b100000000000000000111;
+
+ann_weights[6041] = 21'b000000000000000010000;
+
+ann_weights[6042] = 21'b000000000000000010010;
+
+ann_weights[6043] = 21'b000000000000000101011;
+
+ann_weights[6044] = 21'b100000000000010000101;
+
+ann_weights[6045] = 21'b000000000000000011001;
+
+ann_weights[6046] = 21'b000000000000010011111;
+
+ann_weights[6047] = 21'b100000000000011000111;
+
+ann_weights[6048] = 21'b100000000000001000011;
+
+ann_weights[6049] = 21'b100000000000001111000;
+
+ann_weights[6050] = 21'b100000000000010000001;
+
+ann_weights[6051] = 21'b000000000000011001101;
+
+ann_weights[6052] = 21'b000000000000001110110;
+
+ann_weights[6053] = 21'b000000000000001001111;
+
+ann_weights[6054] = 21'b100000000000000010100;
+
+ann_weights[6055] = 21'b000000000000001110111;
+
+ann_weights[6056] = 21'b000000000000011111100;
+
+ann_weights[6057] = 21'b100000000000100010110;
+
+ann_weights[6058] = 21'b100000000000000010101;
+
+ann_weights[6059] = 21'b100000000000010111001;
+
+ann_weights[6060] = 21'b100000000000011110110;
+
+ann_weights[6061] = 21'b000000000000011001111;
+
+ann_weights[6062] = 21'b000000000000011001111;
+
+ann_weights[6063] = 21'b000000000000010010100;
+
+ann_weights[6064] = 21'b100000000000010010100;
+
+ann_weights[6065] = 21'b100000000000000001010;
+
+ann_weights[6066] = 21'b000000000000010010110;
+
+ann_weights[6067] = 21'b100000000000110010000;
+
+ann_weights[6068] = 21'b100000000000000000010;
+
+ann_weights[6069] = 21'b100000000000011011111;
+
+ann_weights[6070] = 21'b100000000000011111110;
+
+ann_weights[6071] = 21'b000000000000011100101;
+
+ann_weights[6072] = 21'b000000000000100101100;
+
+ann_weights[6073] = 21'b000000000000011100100;
+
+ann_weights[6074] = 21'b100000000000000110111;
+
+ann_weights[6075] = 21'b000000000000000111011;
+
+ann_weights[6076] = 21'b000000000000001111110;
+
+ann_weights[6077] = 21'b100000000000110101001;
+
+ann_weights[6078] = 21'b100000000000001111111;
+
+ann_weights[6079] = 21'b100000000000011111100;
+
+ann_weights[6080] = 21'b100000000000001011110;
+
+ann_weights[6081] = 21'b000000000000010111001;
+
+ann_weights[6082] = 21'b000000000000001010111;
+
+ann_weights[6083] = 21'b000000000000000000001;
+
+ann_weights[6084] = 21'b100000000000001110011;
+
+ann_weights[6085] = 21'b000000000000001100001;
+
+ann_weights[6086] = 21'b000000000000000000110;
+
+ann_weights[6087] = 21'b100000000000110101010;
+
+ann_weights[6088] = 21'b000000000000000011000;
+
+ann_weights[6089] = 21'b100000000000010101010;
+
+ann_weights[6090] = 21'b100000000000000111011;
+
+ann_weights[6091] = 21'b000000000000010100010;
+
+ann_weights[6092] = 21'b000000000000001101100;
+
+ann_weights[6093] = 21'b100000000000010010111;
+
+ann_weights[6094] = 21'b100000000000000000011;
+
+ann_weights[6095] = 21'b000000000000010001000;
+
+ann_weights[6096] = 21'b100000000000010111000;
+
+ann_weights[6097] = 21'b100000000000111111011;
+
+ann_weights[6098] = 21'b100000000000000100010;
+
+ann_weights[6099] = 21'b100000000000010101110;
+
+ann_weights[6100] = 21'b100000000000001110011;
+
+ann_weights[6101] = 21'b100000000000100010011;
+
+ann_weights[6102] = 21'b000000000000010001110;
+
+ann_weights[6103] = 21'b100000000000001101010;
+
+ann_weights[6104] = 21'b100000000000001111110;
+
+ann_weights[6105] = 21'b000000000000011111100;
+
+ann_weights[6106] = 21'b100000000000010011011;
+
+ann_weights[6107] = 21'b100000000001000111100;
+
+ann_weights[6108] = 21'b000000000000000101100;
+
+ann_weights[6109] = 21'b100000000000011100110;
+
+ann_weights[6110] = 21'b100000000000001011111;
+
+ann_weights[6111] = 21'b100000000000010111001;
+
+ann_weights[6112] = 21'b000000000000101000100;
+
+ann_weights[6113] = 21'b100000000000100010001;
+
+ann_weights[6114] = 21'b100000000000001101010;
+
+ann_weights[6115] = 21'b000000000000010000100;
+
+ann_weights[6116] = 21'b100000000000010001101;
+
+ann_weights[6117] = 21'b100000000001010001011;
+
+ann_weights[6118] = 21'b100000000000001011101;
+
+ann_weights[6119] = 21'b100000000000010010001;
+
+ann_weights[6120] = 21'b100000000000101100010;
+
+ann_weights[6121] = 21'b000000000000000001101;
+
+ann_weights[6122] = 21'b000000000000100110101;
+
+ann_weights[6123] = 21'b100000000000111100100;
+
+ann_weights[6124] = 21'b100000000000011011101;
+
+ann_weights[6125] = 21'b000000000000001110011;
+
+ann_weights[6126] = 21'b100000000000100100100;
+
+ann_weights[6127] = 21'b100000000000100010010;
+
+ann_weights[6128] = 21'b100000000001000010010;
+
+ann_weights[6129] = 21'b000000000000010100101;
+
+ann_weights[6130] = 21'b100000000000101000001;
+
+ann_weights[6131] = 21'b000000000000010010111;
+
+ann_weights[6132] = 21'b000000000000100100011;
+
+ann_weights[6133] = 21'b100000000001100100100;
+
+ann_weights[6134] = 21'b100000000000101101110;
+
+ann_weights[6135] = 21'b000000000000000000111;
+
+ann_weights[6136] = 21'b100000000000100000100;
+
+ann_weights[6137] = 21'b100000000000010100111;
+
+ann_weights[6138] = 21'b100000000001000001110;
+
+ann_weights[6139] = 21'b100000000000000100011;
+
+ann_weights[6140] = 21'b000000000000001011101;
+
+ann_weights[6141] = 21'b100000000000000111111;
+
+ann_weights[6142] = 21'b000000000000011001001;
+
+ann_weights[6143] = 21'b100000000000001111001;
+
+ann_weights[6144] = 21'b100000000000100001011;
+
+ann_weights[6145] = 21'b000000000000000010011;
+
+ann_weights[6146] = 21'b100000000000000100101;
+
+ann_weights[6147] = 21'b100000000000100011000;
+
+ann_weights[6148] = 21'b100000000000110001011;
+
+ann_weights[6149] = 21'b100000000000010001010;
+
+ann_weights[6150] = 21'b000000000000001111011;
+
+ann_weights[6151] = 21'b100000000000001000111;
+
+ann_weights[6152] = 21'b100000000000000011111;
+
+ann_weights[6153] = 21'b100000000000000000101;
+
+ann_weights[6154] = 21'b000000000000000100101;
+
+ann_weights[6155] = 21'b100000000000001010001;
+
+ann_weights[6156] = 21'b000000000000000101011;
+
+ann_weights[6157] = 21'b000000000000000111100;
+
+ann_weights[6158] = 21'b000000000000000001011;
+
+ann_weights[6159] = 21'b000000000000000100100;
+
+ann_weights[6160] = 21'b100000000000000100001;
+
+ann_weights[6161] = 21'b000000000000010011001;
+
+ann_weights[6162] = 21'b100000000000010100010;
+
+ann_weights[6163] = 21'b100000000000010000010;
+
+ann_weights[6164] = 21'b100000000000000000110;
+
+ann_weights[6165] = 21'b100000000000000110101;
+
+ann_weights[6166] = 21'b100000000000000010110;
+
+ann_weights[6167] = 21'b000000000000000010101;
+
+ann_weights[6168] = 21'b100000000000010100111;
+
+ann_weights[6169] = 21'b000000000000000011110;
+
+ann_weights[6170] = 21'b100000000000000011101;
+
+ann_weights[6171] = 21'b000000000000000101001;
+
+ann_weights[6172] = 21'b100000000000000100001;
+
+ann_weights[6173] = 21'b000000000000010001000;
+
+ann_weights[6174] = 21'b000000000000000000100;
+
+ann_weights[6175] = 21'b100000000000010111101;
+
+ann_weights[6176] = 21'b000000000000000100010;
+
+ann_weights[6177] = 21'b100000000000001111010;
+
+ann_weights[6178] = 21'b100000000000001001000;
+
+ann_weights[6179] = 21'b000000000000000000100;
+
+ann_weights[6180] = 21'b100000000000101000100;
+
+ann_weights[6181] = 21'b100000000000001110101;
+
+ann_weights[6182] = 21'b000000000000000010000;
+
+ann_weights[6183] = 21'b000000000000010110110;
+
+ann_weights[6184] = 21'b100000000000000010111;
+
+ann_weights[6185] = 21'b100000000001000001110;
+
+ann_weights[6186] = 21'b100000000000000010100;
+
+ann_weights[6187] = 21'b100000000000110001111;
+
+ann_weights[6188] = 21'b100000000000101000001;
+
+ann_weights[6189] = 21'b100000000000100001101;
+
+ann_weights[6190] = 21'b100000000000110010100;
+
+ann_weights[6191] = 21'b000000000000000010000;
+
+ann_weights[6192] = 21'b000000000000001000100;
+
+ann_weights[6193] = 21'b000000000000101011010;
+
+ann_weights[6194] = 21'b100000000000100101101;
+
+ann_weights[6195] = 21'b000000000000000110000;
+
+ann_weights[6196] = 21'b100000000000100111001;
+
+ann_weights[6197] = 21'b100000000001000100110;
+
+ann_weights[6198] = 21'b100000000000011100010;
+
+ann_weights[6199] = 21'b100000000000100000100;
+
+ann_weights[6200] = 21'b100000000000101011110;
+
+ann_weights[6201] = 21'b000000000000010110011;
+
+ann_weights[6202] = 21'b000000000000010101010;
+
+ann_weights[6203] = 21'b000000000000010010010;
+
+ann_weights[6204] = 21'b100000000000111101110;
+
+ann_weights[6205] = 21'b000000000000001111011;
+
+ann_weights[6206] = 21'b100000000001001111011;
+
+ann_weights[6207] = 21'b100000000000101010010;
+
+ann_weights[6208] = 21'b100000000000100000010;
+
+ann_weights[6209] = 21'b100000000000011010010;
+
+ann_weights[6210] = 21'b100000000000010100010;
+
+ann_weights[6211] = 21'b000000000001001011011;
+
+ann_weights[6212] = 21'b000000000000001001100;
+
+ann_weights[6213] = 21'b000000000000001011000;
+
+ann_weights[6214] = 21'b100000000001001011101;
+
+ann_weights[6215] = 21'b100000000000001011001;
+
+ann_weights[6216] = 21'b100000000001010101101;
+
+ann_weights[6217] = 21'b000000000000000000101;
+
+ann_weights[6218] = 21'b100000000000011111100;
+
+ann_weights[6219] = 21'b100000000000100111100;
+
+ann_weights[6220] = 21'b000000000000001000111;
+
+ann_weights[6221] = 21'b000000000000100000101;
+
+ann_weights[6222] = 21'b000000000000010100001;
+
+ann_weights[6223] = 21'b000000000000000111100;
+
+ann_weights[6224] = 21'b100000000000110111110;
+
+ann_weights[6225] = 21'b100000000000010110110;
+
+ann_weights[6226] = 21'b100000000001110100011;
+
+ann_weights[6227] = 21'b100000000000000110110;
+
+ann_weights[6228] = 21'b100000000000000100111;
+
+ann_weights[6229] = 21'b100000000000011001111;
+
+ann_weights[6230] = 21'b000000000000000011101;
+
+ann_weights[6231] = 21'b000000000000001110000;
+
+ann_weights[6232] = 21'b000000000000010111111;
+
+ann_weights[6233] = 21'b000000000000010001111;
+
+ann_weights[6234] = 21'b100000000000101000111;
+
+ann_weights[6235] = 21'b100000000000000100110;
+
+ann_weights[6236] = 21'b100000000000101101001;
+
+ann_weights[6237] = 21'b000000000000000000101;
+
+ann_weights[6238] = 21'b000000000000001010100;
+
+ann_weights[6239] = 21'b100000000000010100010;
+
+ann_weights[6240] = 21'b000000000000000100000;
+
+ann_weights[6241] = 21'b000000000000000110001;
+
+ann_weights[6242] = 21'b000000000000011010100;
+
+ann_weights[6243] = 21'b100000000000000111001;
+
+ann_weights[6244] = 21'b100000000000011000010;
+
+ann_weights[6245] = 21'b100000000000000100000;
+
+ann_weights[6246] = 21'b100000000000010110100;
+
+ann_weights[6247] = 21'b100000000000001101110;
+
+ann_weights[6248] = 21'b100000000000000111001;
+
+ann_weights[6249] = 21'b100000000000000000010;
+
+ann_weights[6250] = 21'b000000000000000011011;
+
+ann_weights[6251] = 21'b000000000000001001000;
+
+ann_weights[6252] = 21'b000000000000011110111;
+
+ann_weights[6253] = 21'b000000000000000100111;
+
+ann_weights[6254] = 21'b100000000000100101010;
+
+ann_weights[6255] = 21'b100000000000000000011;
+
+ann_weights[6256] = 21'b100000000000000000111;
+
+ann_weights[6257] = 21'b100000000000001111011;
+
+ann_weights[6258] = 21'b100000000000001000011;
+
+ann_weights[6259] = 21'b100000000000000010000;
+
+ann_weights[6260] = 21'b000000000000001101110;
+
+ann_weights[6261] = 21'b100000000000001101011;
+
+ann_weights[6262] = 21'b000000000000001010110;
+
+ann_weights[6263] = 21'b100000000000000100010;
+
+ann_weights[6264] = 21'b100000000000011010111;
+
+ann_weights[6265] = 21'b100000000000000011110;
+
+ann_weights[6266] = 21'b000000000000000011111;
+
+ann_weights[6267] = 21'b100000000000001100000;
+
+ann_weights[6268] = 21'b100000000000000110010;
+
+ann_weights[6269] = 21'b100000000000000001001;
+
+ann_weights[6270] = 21'b000000000000011011001;
+
+ann_weights[6271] = 21'b100000000000011111000;
+
+ann_weights[6272] = 21'b000000000000001110101;
+
+ann_weights[6273] = 21'b000000000000000111110;
+
+ann_weights[6274] = 21'b100000000000001000001;
+
+ann_weights[6275] = 21'b000000000000001010000;
+
+ann_weights[6276] = 21'b000000000000000001110;
+
+ann_weights[6277] = 21'b100000000000001000101;
+
+ann_weights[6278] = 21'b000000000000001000001;
+
+ann_weights[6279] = 21'b100000000000000100001;
+
+ann_weights[6280] = 21'b000000000000010100110;
+
+ann_weights[6281] = 21'b100000000000110010111;
+
+ann_weights[6282] = 21'b000000000000000100000;
+
+ann_weights[6283] = 21'b100000000000000111001;
+
+ann_weights[6284] = 21'b100000000000011001001;
+
+ann_weights[6285] = 21'b000000000000010111101;
+
+ann_weights[6286] = 21'b000000000000010010000;
+
+ann_weights[6287] = 21'b100000000000001100010;
+
+ann_weights[6288] = 21'b000000000000001011000;
+
+ann_weights[6289] = 21'b100000000000001000110;
+
+ann_weights[6290] = 21'b000000000000100000001;
+
+ann_weights[6291] = 21'b100000000000101110000;
+
+ann_weights[6292] = 21'b100000000000000100111;
+
+ann_weights[6293] = 21'b100000000000000011101;
+
+ann_weights[6294] = 21'b100000000000010110001;
+
+ann_weights[6295] = 21'b000000000000001110110;
+
+ann_weights[6296] = 21'b000000000000001001111;
+
+ann_weights[6297] = 21'b100000000000011010001;
+
+ann_weights[6298] = 21'b000000000000010101101;
+
+ann_weights[6299] = 21'b100000000000010000111;
+
+ann_weights[6300] = 21'b000000000000001100111;
+
+ann_weights[6301] = 21'b100000000000001010100;
+
+ann_weights[6302] = 21'b100000000000001010011;
+
+ann_weights[6303] = 21'b100000000000001001000;
+
+ann_weights[6304] = 21'b100000000000001111000;
+
+ann_weights[6305] = 21'b000000000000001110000;
+
+ann_weights[6306] = 21'b000000000000001100001;
+
+ann_weights[6307] = 21'b100000000000010101000;
+
+ann_weights[6308] = 21'b000000000000010100000;
+
+ann_weights[6309] = 21'b100000000000001001001;
+
+ann_weights[6310] = 21'b000000000000000100011;
+
+ann_weights[6311] = 21'b000000000000000010101;
+
+ann_weights[6312] = 21'b100000000000010100000;
+
+ann_weights[6313] = 21'b000000000000001010110;
+
+ann_weights[6314] = 21'b100000000000001011110;
+
+ann_weights[6315] = 21'b000000000000000111101;
+
+ann_weights[6316] = 21'b000000000000001011010;
+
+ann_weights[6317] = 21'b000000000000000100001;
+
+ann_weights[6318] = 21'b000000000000000101001;
+
+ann_weights[6319] = 21'b100000000000011111000;
+
+ann_weights[6320] = 21'b100000000000000110111;
+
+ann_weights[6321] = 21'b000000000000000010111;
+
+ann_weights[6322] = 21'b000000000000000001111;
+
+ann_weights[6323] = 21'b000000000000000110010;
+
+ann_weights[6324] = 21'b100000000000000110101;
+
+ann_weights[6325] = 21'b000000000000001000111;
+
+ann_weights[6326] = 21'b000000000000001000011;
+
+ann_weights[6327] = 21'b100000000000001111010;
+
+ann_weights[6328] = 21'b100000000000000110100;
+
+ann_weights[6329] = 21'b100000000000010110011;
+
+ann_weights[6330] = 21'b100000000000000001101;
+
+ann_weights[6331] = 21'b000000000000010110010;
+
+ann_weights[6332] = 21'b000000000000000000101;
+
+ann_weights[6333] = 21'b000000000000001001010;
+
+ann_weights[6334] = 21'b000000000000000101000;
+
+ann_weights[6335] = 21'b000000000000000100001;
+
+ann_weights[6336] = 21'b100000000000000110001;
+
+ann_weights[6337] = 21'b100000000000010011010;
+
+ann_weights[6338] = 21'b100000000000000110010;
+
+ann_weights[6339] = 21'b100000000000011101011;
+
+ann_weights[6340] = 21'b100000000000001010001;
+
+ann_weights[6341] = 21'b000000000000011000011;
+
+ann_weights[6342] = 21'b000000000000001111010;
+
+ann_weights[6343] = 21'b000000000000000010101;
+
+ann_weights[6344] = 21'b100000000000000000011;
+
+ann_weights[6345] = 21'b000000000000000111000;
+
+ann_weights[6346] = 21'b100000000000000101111;
+
+ann_weights[6347] = 21'b100000000000100000100;
+
+ann_weights[6348] = 21'b000000000000000100110;
+
+ann_weights[6349] = 21'b100000000000100001001;
+
+ann_weights[6350] = 21'b100000000000001111101;
+
+ann_weights[6351] = 21'b000000000000010101111;
+
+ann_weights[6352] = 21'b000000000000010101001;
+
+ann_weights[6353] = 21'b000000000000001001001;
+
+ann_weights[6354] = 21'b000000000000001011001;
+
+ann_weights[6355] = 21'b000000000000001111001;
+
+ann_weights[6356] = 21'b100000000000000111000;
+
+ann_weights[6357] = 21'b100000000000100001110;
+
+ann_weights[6358] = 21'b000000000000000010110;
+
+ann_weights[6359] = 21'b100000000000101001100;
+
+ann_weights[6360] = 21'b100000000000011001010;
+
+ann_weights[6361] = 21'b000000000000011000100;
+
+ann_weights[6362] = 21'b000000000000011001100;
+
+ann_weights[6363] = 21'b000000000000001101011;
+
+ann_weights[6364] = 21'b000000000000000100111;
+
+ann_weights[6365] = 21'b000000000000001001100;
+
+ann_weights[6366] = 21'b100000000000000010110;
+
+ann_weights[6367] = 21'b100000000000101101110;
+
+ann_weights[6368] = 21'b100000000000001100101;
+
+ann_weights[6369] = 21'b100000000000001011010;
+
+ann_weights[6370] = 21'b100000000000001000011;
+
+ann_weights[6371] = 21'b100000000000000111010;
+
+ann_weights[6372] = 21'b000000000000011110101;
+
+ann_weights[6373] = 21'b100000000000001110000;
+
+ann_weights[6374] = 21'b000000000000011001000;
+
+ann_weights[6375] = 21'b000000000000001011000;
+
+ann_weights[6376] = 21'b100000000000000000111;
+
+ann_weights[6377] = 21'b100000000001000011100;
+
+ann_weights[6378] = 21'b000000000000001100000;
+
+ann_weights[6379] = 21'b100000000000010001010;
+
+ann_weights[6380] = 21'b000000000000000001010;
+
+ann_weights[6381] = 21'b100000000000100101100;
+
+ann_weights[6382] = 21'b000000000000010100111;
+
+ann_weights[6383] = 21'b100000000000010000001;
+
+ann_weights[6384] = 21'b100000000000000100110;
+
+ann_weights[6385] = 21'b000000000000000110011;
+
+ann_weights[6386] = 21'b100000000000100101101;
+
+ann_weights[6387] = 21'b100000000001001000011;
+
+ann_weights[6388] = 21'b000000000000000100000;
+
+ann_weights[6389] = 21'b000000000000000111111;
+
+ann_weights[6390] = 21'b100000000000000110101;
+
+ann_weights[6391] = 21'b100000000000010110101;
+
+ann_weights[6392] = 21'b000000000000010010111;
+
+ann_weights[6393] = 21'b100000000000011110111;
+
+ann_weights[6394] = 21'b100000000000000101111;
+
+ann_weights[6395] = 21'b000000000000100000001;
+
+ann_weights[6396] = 21'b100000000001000001000;
+
+ann_weights[6397] = 21'b100000000001001100101;
+
+ann_weights[6398] = 21'b100000000000001011111;
+
+ann_weights[6399] = 21'b000000000000010010000;
+
+ann_weights[6400] = 21'b100000000000011001011;
+
+ann_weights[6401] = 21'b000000000000000000001;
+
+ann_weights[6402] = 21'b000000000000011010100;
+
+ann_weights[6403] = 21'b100000000001000100110;
+
+ann_weights[6404] = 21'b100000000000001110000;
+
+ann_weights[6405] = 21'b000000000000001010000;
+
+ann_weights[6406] = 21'b100000000000111100000;
+
+ann_weights[6407] = 21'b100000000000100101000;
+
+ann_weights[6408] = 21'b100000000000011001010;
+
+ann_weights[6409] = 21'b000000000000100010111;
+
+ann_weights[6410] = 21'b100000000000001100001;
+
+ann_weights[6411] = 21'b000000000000010110100;
+
+ann_weights[6412] = 21'b000000000000010111110;
+
+ann_weights[6413] = 21'b100000000000101010111;
+
+ann_weights[6414] = 21'b100000000000011000001;
+
+ann_weights[6415] = 21'b000000000000001011000;
+
+ann_weights[6416] = 21'b100000000000100000110;
+
+ann_weights[6417] = 21'b100000000000010010111;
+
+ann_weights[6418] = 21'b100000000000100100001;
+
+ann_weights[6419] = 21'b100000000000000000111;
+
+ann_weights[6420] = 21'b000000000000011000100;
+
+ann_weights[6421] = 21'b000000000000011100011;
+
+ann_weights[6422] = 21'b100000000000001100101;
+
+ann_weights[6423] = 21'b100000000000001001110;
+
+ann_weights[6424] = 21'b000000000000010011011;
+
+ann_weights[6425] = 21'b000000000000001001010;
+
+ann_weights[6426] = 21'b000000000000000011100;
+
+ann_weights[6427] = 21'b100000000000011101011;
+
+ann_weights[6428] = 21'b100000000000100011101;
+
+ann_weights[6429] = 21'b100000000000011101100;
+
+ann_weights[6430] = 21'b100000000000000001101;
+
+ann_weights[6431] = 21'b100000000000001010111;
+
+ann_weights[6432] = 21'b100000000000001011000;
+
+ann_weights[6433] = 21'b100000000000000110111;
+
+ann_weights[6434] = 21'b100000000000001000100;
+
+ann_weights[6435] = 21'b100000000000001110010;
+
+ann_weights[6436] = 21'b100000000000000001011;
+
+ann_weights[6437] = 21'b000000000000000110010;
+
+ann_weights[6438] = 21'b100000000000001010011;
+
+ann_weights[6439] = 21'b100000000000001010100;
+
+ann_weights[6440] = 21'b000000000000000100011;
+
+ann_weights[6441] = 21'b000000000000000101010;
+
+ann_weights[6442] = 21'b000000000000001000011;
+
+ann_weights[6443] = 21'b100000000000000100111;
+
+ann_weights[6444] = 21'b000000000000000011100;
+
+ann_weights[6445] = 21'b100000000000000110100;
+
+ann_weights[6446] = 21'b100000000000000101100;
+
+ann_weights[6447] = 21'b000000000000000011110;
+
+ann_weights[6448] = 21'b100000000000000010100;
+
+ann_weights[6449] = 21'b000000000000000101101;
+
+ann_weights[6450] = 21'b100000000000001001110;
+
+ann_weights[6451] = 21'b100000000000001000011;
+
+ann_weights[6452] = 21'b100000000000000000101;
+
+ann_weights[6453] = 21'b100000000000000111110;
+
+ann_weights[6454] = 21'b100000000000000011111;
+
+ann_weights[6455] = 21'b100000000000000100011;
+
+ann_weights[6456] = 21'b100000000000000101011;
+
+ann_weights[6457] = 21'b000000000000001000100;
+
+ann_weights[6458] = 21'b000000000000000100101;
+
+ann_weights[6459] = 21'b100000000000000101100;
+
+ann_weights[6460] = 21'b100000000000010111010;
+
+ann_weights[6461] = 21'b100000000000011110111;
+
+ann_weights[6462] = 21'b100000000000010010101;
+
+ann_weights[6463] = 21'b000000000000101111001;
+
+ann_weights[6464] = 21'b100000000000000100111;
+
+ann_weights[6465] = 21'b100000000000001101110;
+
+ann_weights[6466] = 21'b100000000000000101010;
+
+ann_weights[6467] = 21'b100000000000100110010;
+
+ann_weights[6468] = 21'b100000000000011111110;
+
+ann_weights[6469] = 21'b100000000000101011101;
+
+ann_weights[6470] = 21'b100000000000101100010;
+
+ann_weights[6471] = 21'b100000000000100010001;
+
+ann_weights[6472] = 21'b100000000000010101101;
+
+ann_weights[6473] = 21'b000000000001000001111;
+
+ann_weights[6474] = 21'b100000000000100000011;
+
+ann_weights[6475] = 21'b000000000000010001111;
+
+ann_weights[6476] = 21'b100000000000001111110;
+
+ann_weights[6477] = 21'b100000000000110100101;
+
+ann_weights[6478] = 21'b100000000000010010001;
+
+ann_weights[6479] = 21'b100000000000011011111;
+
+ann_weights[6480] = 21'b100000000000111010111;
+
+ann_weights[6481] = 21'b100000000000010001110;
+
+ann_weights[6482] = 21'b100000000000001100101;
+
+ann_weights[6483] = 21'b000000000000101101011;
+
+ann_weights[6484] = 21'b100000000000111001010;
+
+ann_weights[6485] = 21'b000000000000011011010;
+
+ann_weights[6486] = 21'b100000000000101101001;
+
+ann_weights[6487] = 21'b000000000000001111001;
+
+ann_weights[6488] = 21'b100000000000101011001;
+
+ann_weights[6489] = 21'b100000000000100111001;
+
+ann_weights[6490] = 21'b100000000000011110100;
+
+ann_weights[6491] = 21'b000000000000100111110;
+
+ann_weights[6492] = 21'b100000000000001000111;
+
+ann_weights[6493] = 21'b000000000000010010000;
+
+ann_weights[6494] = 21'b100000000000110011111;
+
+ann_weights[6495] = 21'b000000000000001010001;
+
+ann_weights[6496] = 21'b100000000001000011010;
+
+ann_weights[6497] = 21'b000000000000011001000;
+
+ann_weights[6498] = 21'b100000000000110100000;
+
+ann_weights[6499] = 21'b100000000000011001010;
+
+ann_weights[6500] = 21'b100000000000000100001;
+
+ann_weights[6501] = 21'b000000000000100101001;
+
+ann_weights[6502] = 21'b000000000000010000000;
+
+ann_weights[6503] = 21'b000000000000100001111;
+
+ann_weights[6504] = 21'b100000000000011001111;
+
+ann_weights[6505] = 21'b100000000000001111001;
+
+ann_weights[6506] = 21'b100000000001011000100;
+
+ann_weights[6507] = 21'b000000000000011011010;
+
+ann_weights[6508] = 21'b100000000000100010000;
+
+ann_weights[6509] = 21'b100000000000010010011;
+
+ann_weights[6510] = 21'b000000000000000000010;
+
+ann_weights[6511] = 21'b000000000000000000101;
+
+ann_weights[6512] = 21'b000000000000000001110;
+
+ann_weights[6513] = 21'b000000000000011101111;
+
+ann_weights[6514] = 21'b100000000000001001011;
+
+ann_weights[6515] = 21'b100000000000001100000;
+
+ann_weights[6516] = 21'b100000000001001110010;
+
+ann_weights[6517] = 21'b000000000000010111001;
+
+ann_weights[6518] = 21'b100000000000001110100;
+
+ann_weights[6519] = 21'b100000000000010010001;
+
+ann_weights[6520] = 21'b100000000000000001000;
+
+ann_weights[6521] = 21'b100000000000001101011;
+
+ann_weights[6522] = 21'b000000000000000110010;
+
+ann_weights[6523] = 21'b100000000000000101111;
+
+ann_weights[6524] = 21'b100000000000001011011;
+
+ann_weights[6525] = 21'b100000000000000000011;
+
+ann_weights[6526] = 21'b100000000000111111001;
+
+ann_weights[6527] = 21'b100000000000000111010;
+
+ann_weights[6528] = 21'b100000000000000010010;
+
+ann_weights[6529] = 21'b000000000000000100000;
+
+ann_weights[6530] = 21'b000000000000011001010;
+
+ann_weights[6531] = 21'b100000000000000001001;
+
+ann_weights[6532] = 21'b000000000000001011110;
+
+ann_weights[6533] = 21'b000000000000001101010;
+
+ann_weights[6534] = 21'b100000000000000011001;
+
+ann_weights[6535] = 21'b000000000000010101101;
+
+ann_weights[6536] = 21'b100000000000110001000;
+
+ann_weights[6537] = 21'b100000000000000100101;
+
+ann_weights[6538] = 21'b000000000000000011111;
+
+ann_weights[6539] = 21'b100000000000010010110;
+
+ann_weights[6540] = 21'b000000000000011100101;
+
+ann_weights[6541] = 21'b100000000000001101111;
+
+ann_weights[6542] = 21'b000000000000000011101;
+
+ann_weights[6543] = 21'b000000000000010001000;
+
+ann_weights[6544] = 21'b100000000000001100000;
+
+ann_weights[6545] = 21'b000000000000001101111;
+
+ann_weights[6546] = 21'b100000000000110100010;
+
+ann_weights[6547] = 21'b100000000000010001111;
+
+ann_weights[6548] = 21'b100000000000000111000;
+
+ann_weights[6549] = 21'b100000000000001101101;
+
+ann_weights[6550] = 21'b000000000000100110110;
+
+ann_weights[6551] = 21'b100000000000011011000;
+
+ann_weights[6552] = 21'b000000000000000011100;
+
+ann_weights[6553] = 21'b000000000000010000001;
+
+ann_weights[6554] = 21'b000000000000000001011;
+
+ann_weights[6555] = 21'b000000000000010011011;
+
+ann_weights[6556] = 21'b100000000000100110110;
+
+ann_weights[6557] = 21'b100000000000001011101;
+
+ann_weights[6558] = 21'b000000000000001101000;
+
+ann_weights[6559] = 21'b100000000000000100110;
+
+ann_weights[6560] = 21'b000000000000011001010;
+
+ann_weights[6561] = 21'b100000000000001101010;
+
+ann_weights[6562] = 21'b000000000000000010011;
+
+ann_weights[6563] = 21'b100000000000000000100;
+
+ann_weights[6564] = 21'b100000000000011000011;
+
+ann_weights[6565] = 21'b000000000000010110001;
+
+ann_weights[6566] = 21'b100000000000010100111;
+
+ann_weights[6567] = 21'b100000000000010111110;
+
+ann_weights[6568] = 21'b000000000000011011011;
+
+ann_weights[6569] = 21'b100000000000001100011;
+
+ann_weights[6570] = 21'b000000000000100011011;
+
+ann_weights[6571] = 21'b100000000000011000001;
+
+ann_weights[6572] = 21'b100000000000001000000;
+
+ann_weights[6573] = 21'b100000000000000001111;
+
+ann_weights[6574] = 21'b100000000000010101101;
+
+ann_weights[6575] = 21'b100000000000000100001;
+
+ann_weights[6576] = 21'b100000000000010100001;
+
+ann_weights[6577] = 21'b100000000000010110000;
+
+ann_weights[6578] = 21'b000000000000011110111;
+
+ann_weights[6579] = 21'b100000000000010101000;
+
+ann_weights[6580] = 21'b000000000000001101011;
+
+ann_weights[6581] = 21'b100000000000010001001;
+
+ann_weights[6582] = 21'b100000000000001100110;
+
+ann_weights[6583] = 21'b100000000000000000001;
+
+ann_weights[6584] = 21'b100000000000001011100;
+
+ann_weights[6585] = 21'b000000000000010000010;
+
+ann_weights[6586] = 21'b100000000000000111001;
+
+ann_weights[6587] = 21'b100000000000000111010;
+
+ann_weights[6588] = 21'b000000000000010010000;
+
+ann_weights[6589] = 21'b100000000000010001001;
+
+ann_weights[6590] = 21'b000000000000001110101;
+
+ann_weights[6591] = 21'b000000000000000110001;
+
+ann_weights[6592] = 21'b100000000000000101011;
+
+ann_weights[6593] = 21'b100000000000001001111;
+
+ann_weights[6594] = 21'b100000000000000100100;
+
+ann_weights[6595] = 21'b000000000000001100010;
+
+ann_weights[6596] = 21'b100000000000001000101;
+
+ann_weights[6597] = 21'b100000000000000101011;
+
+ann_weights[6598] = 21'b000000000000100001110;
+
+ann_weights[6599] = 21'b100000000000001100011;
+
+ann_weights[6600] = 21'b000000000000000011011;
+
+ann_weights[6601] = 21'b000000000000001001010;
+
+ann_weights[6602] = 21'b100000000000001010001;
+
+ann_weights[6603] = 21'b100000000000001000001;
+
+ann_weights[6604] = 21'b100000000000000101010;
+
+ann_weights[6605] = 21'b000000000000001001110;
+
+ann_weights[6606] = 21'b100000000000001110010;
+
+ann_weights[6607] = 21'b100000000000001000100;
+
+ann_weights[6608] = 21'b000000000000010110011;
+
+ann_weights[6609] = 21'b100000000000010110011;
+
+ann_weights[6610] = 21'b000000000000000010000;
+
+ann_weights[6611] = 21'b000000000000100110000;
+
+ann_weights[6612] = 21'b100000000000000010101;
+
+ann_weights[6613] = 21'b000000000000000010111;
+
+ann_weights[6614] = 21'b000000000000000111010;
+
+ann_weights[6615] = 21'b000000000000000111101;
+
+ann_weights[6616] = 21'b100000000000010101000;
+
+ann_weights[6617] = 21'b100000000000011010100;
+
+ann_weights[6618] = 21'b000000000000000111010;
+
+ann_weights[6619] = 21'b100000000000001001110;
+
+ann_weights[6620] = 21'b100000000000011111000;
+
+ann_weights[6621] = 21'b000000000000010000000;
+
+ann_weights[6622] = 21'b000000000000011110010;
+
+ann_weights[6623] = 21'b000000000000010011001;
+
+ann_weights[6624] = 21'b000000000000010001110;
+
+ann_weights[6625] = 21'b100000000000001011110;
+
+ann_weights[6626] = 21'b100000000000000111010;
+
+ann_weights[6627] = 21'b100000000000011011110;
+
+ann_weights[6628] = 21'b000000000000001010011;
+
+ann_weights[6629] = 21'b100000000000001110100;
+
+ann_weights[6630] = 21'b100000000000011110100;
+
+ann_weights[6631] = 21'b000000000000001100000;
+
+ann_weights[6632] = 21'b000000000000100000110;
+
+ann_weights[6633] = 21'b100000000000000000001;
+
+ann_weights[6634] = 21'b000000000000010101011;
+
+ann_weights[6635] = 21'b100000000000001010100;
+
+ann_weights[6636] = 21'b100000000000000111110;
+
+ann_weights[6637] = 21'b100000000000101010010;
+
+ann_weights[6638] = 21'b000000000000000110010;
+
+ann_weights[6639] = 21'b100000000000000001111;
+
+ann_weights[6640] = 21'b100000000000100101011;
+
+ann_weights[6641] = 21'b100000000000001100110;
+
+ann_weights[6642] = 21'b000000000000010101101;
+
+ann_weights[6643] = 21'b100000000000000010101;
+
+ann_weights[6644] = 21'b000000000000010101000;
+
+ann_weights[6645] = 21'b000000000000001110010;
+
+ann_weights[6646] = 21'b100000000000001001010;
+
+ann_weights[6647] = 21'b100000000000110010100;
+
+ann_weights[6648] = 21'b000000000000001010000;
+
+ann_weights[6649] = 21'b100000000000000011001;
+
+ann_weights[6650] = 21'b100000000000101000111;
+
+ann_weights[6651] = 21'b100000000000100000011;
+
+ann_weights[6652] = 21'b000000000000100000010;
+
+ann_weights[6653] = 21'b100000000000010110010;
+
+ann_weights[6654] = 21'b000000000000001000001;
+
+ann_weights[6655] = 21'b100000000000000011111;
+
+ann_weights[6656] = 21'b100000000000011011111;
+
+ann_weights[6657] = 21'b100000000001001001001;
+
+ann_weights[6658] = 21'b000000000000001000000;
+
+ann_weights[6659] = 21'b000000000000001000010;
+
+ann_weights[6660] = 21'b100000000000010111101;
+
+ann_weights[6661] = 21'b100000000000100000111;
+
+ann_weights[6662] = 21'b000000000000011110010;
+
+ann_weights[6663] = 21'b100000000000011001100;
+
+ann_weights[6664] = 21'b100000000000010110111;
+
+ann_weights[6665] = 21'b000000000000000000110;
+
+ann_weights[6666] = 21'b100000000000101110010;
+
+ann_weights[6667] = 21'b100000000000110000100;
+
+ann_weights[6668] = 21'b100000000000000010110;
+
+ann_weights[6669] = 21'b000000000000011101001;
+
+ann_weights[6670] = 21'b100000000000101110111;
+
+ann_weights[6671] = 21'b100000000000111011011;
+
+ann_weights[6672] = 21'b000000000000010100000;
+
+ann_weights[6673] = 21'b100000000000101010100;
+
+ann_weights[6674] = 21'b100000000000010101010;
+
+ann_weights[6675] = 21'b000000000000010101001;
+
+ann_weights[6676] = 21'b100000000000111111100;
+
+ann_weights[6677] = 21'b100000000001010010100;
+
+ann_weights[6678] = 21'b000000000000000011001;
+
+ann_weights[6679] = 21'b000000000000010010100;
+
+ann_weights[6680] = 21'b100000000000100001111;
+
+ann_weights[6681] = 21'b100000000000100100000;
+
+ann_weights[6682] = 21'b000000000000100010010;
+
+ann_weights[6683] = 21'b100000000000011010111;
+
+ann_weights[6684] = 21'b100000000000100100001;
+
+ann_weights[6685] = 21'b000000000000000011110;
+
+ann_weights[6686] = 21'b100000000001000111000;
+
+ann_weights[6687] = 21'b100000000000101111000;
+
+ann_weights[6688] = 21'b100000000000100111101;
+
+ann_weights[6689] = 21'b000000000000001110100;
+
+ann_weights[6690] = 21'b100000000000010111011;
+
+ann_weights[6691] = 21'b100000000000000100101;
+
+ann_weights[6692] = 21'b000000000000001010000;
+
+ann_weights[6693] = 21'b100000000000011111001;
+
+ann_weights[6694] = 21'b000000000000000010001;
+
+ann_weights[6695] = 21'b000000000000000110111;
+
+ann_weights[6696] = 21'b100000000000011011000;
+
+ann_weights[6697] = 21'b100000000000101001111;
+
+ann_weights[6698] = 21'b100000000000011100011;
+
+ann_weights[6699] = 21'b100000000000001100111;
+
+ann_weights[6700] = 21'b100000000000010000110;
+
+ann_weights[6701] = 21'b000000000000010001001;
+
+ann_weights[6702] = 21'b100000000000011001100;
+
+ann_weights[6703] = 21'b000000000000000011101;
+
+ann_weights[6704] = 21'b000000000000010010010;
+
+ann_weights[6705] = 21'b000000000000000101111;
+
+ann_weights[6706] = 21'b100000000000011001001;
+
+ann_weights[6707] = 21'b100000000000010110110;
+
+ann_weights[6708] = 21'b100000000000011001011;
+
+ann_weights[6709] = 21'b100000000000010110111;
+
+ann_weights[6710] = 21'b100000000000000100011;
+
+ann_weights[6711] = 21'b100000000000001001111;
+
+ann_weights[6712] = 21'b000000000000000001100;
+
+ann_weights[6713] = 21'b100000000000000110110;
+
+ann_weights[6714] = 21'b000000000000000010111;
+
+ann_weights[6715] = 21'b000000000000000111100;
+
+ann_weights[6716] = 21'b000000000000000011001;
+
+ann_weights[6717] = 21'b100000000000000011011;
+
+ann_weights[6718] = 21'b000000000000000111000;
+
+ann_weights[6719] = 21'b000000000000001001000;
+
+ann_weights[6720] = 21'b000000000000001001000;
+
+ann_weights[6721] = 21'b000000000000001010111;
+
+ann_weights[6722] = 21'b100000000000001000011;
+
+ann_weights[6723] = 21'b100000000000000000000;
+
+ann_weights[6724] = 21'b000000000000000001111;
+
+ann_weights[6725] = 21'b000000000000000001111;
+
+ann_weights[6726] = 21'b100000000000000011001;
+
+ann_weights[6727] = 21'b000000000000000011011;
+
+ann_weights[6728] = 21'b100000000000000000010;
+
+ann_weights[6729] = 21'b000000000000000100001;
+
+ann_weights[6730] = 21'b000000000000001010011;
+
+ann_weights[6731] = 21'b000000000000000001000;
+
+ann_weights[6732] = 21'b000000000000000100101;
+
+ann_weights[6733] = 21'b100000000000000101001;
+
+ann_weights[6734] = 21'b100000000000000010101;
+
+ann_weights[6735] = 21'b100000000000000100000;
+
+ann_weights[6736] = 21'b000000000000000110100;
+
+ann_weights[6737] = 21'b000000000000000010001;
+
+ann_weights[6738] = 21'b000000000000000101111;
+
+ann_weights[6739] = 21'b100000000000000000001;
+
+ann_weights[6740] = 21'b100000000000001011010;
+
+ann_weights[6741] = 21'b100000000000000011101;
+
+ann_weights[6742] = 21'b100000000000011001011;
+
+ann_weights[6743] = 21'b000000000000001010010;
+
+ann_weights[6744] = 21'b000000000000000010000;
+
+ann_weights[6745] = 21'b100000000000011101001;
+
+ann_weights[6746] = 21'b000000000000000101110;
+
+ann_weights[6747] = 21'b100000000000000110111;
+
+ann_weights[6748] = 21'b100000000000000100111;
+
+ann_weights[6749] = 21'b100000000000100010100;
+
+ann_weights[6750] = 21'b100000000000010100010;
+
+ann_weights[6751] = 21'b100000000000100100111;
+
+ann_weights[6752] = 21'b100000000000101100011;
+
+ann_weights[6753] = 21'b000000000000100101111;
+
+ann_weights[6754] = 21'b100000000000001000101;
+
+ann_weights[6755] = 21'b000000000000001001010;
+
+ann_weights[6756] = 21'b100000000000001111101;
+
+ann_weights[6757] = 21'b000000000000001000101;
+
+ann_weights[6758] = 21'b100000000000100101000;
+
+ann_weights[6759] = 21'b100000000000111010000;
+
+ann_weights[6760] = 21'b100000000000011010000;
+
+ann_weights[6761] = 21'b100000000000111001001;
+
+ann_weights[6762] = 21'b100000000000110001100;
+
+ann_weights[6763] = 21'b000000000000111110101;
+
+ann_weights[6764] = 21'b100000000000111110000;
+
+ann_weights[6765] = 21'b000000000000000010100;
+
+ann_weights[6766] = 21'b100000000000001101101;
+
+ann_weights[6767] = 21'b000000000000010110110;
+
+ann_weights[6768] = 21'b100000000001001100101;
+
+ann_weights[6769] = 21'b100000000000001100101;
+
+ann_weights[6770] = 21'b100000000000011101111;
+
+ann_weights[6771] = 21'b100000000000001100001;
+
+ann_weights[6772] = 21'b100000000001000100001;
+
+ann_weights[6773] = 21'b000000000000011111100;
+
+ann_weights[6774] = 21'b100000000000010111010;
+
+ann_weights[6775] = 21'b000000000000000011100;
+
+ann_weights[6776] = 21'b100000000000101101010;
+
+ann_weights[6777] = 21'b000000000000111101000;
+
+ann_weights[6778] = 21'b100000000001001010000;
+
+ann_weights[6779] = 21'b100000000000000010100;
+
+ann_weights[6780] = 21'b100000000000101011010;
+
+ann_weights[6781] = 21'b000000000000000111000;
+
+ann_weights[6782] = 21'b100000000000110000010;
+
+ann_weights[6783] = 21'b000000000000101101000;
+
+ann_weights[6784] = 21'b100000000000001000101;
+
+ann_weights[6785] = 21'b100000000000000011010;
+
+ann_weights[6786] = 21'b100000000001001100010;
+
+ann_weights[6787] = 21'b000000000000110001000;
+
+ann_weights[6788] = 21'b100000000000111010010;
+
+ann_weights[6789] = 21'b000000000000000011101;
+
+ann_weights[6790] = 21'b100000000000011010101;
+
+ann_weights[6791] = 21'b100000000000010101111;
+
+ann_weights[6792] = 21'b100000000000100100100;
+
+ann_weights[6793] = 21'b000000000000110000001;
+
+ann_weights[6794] = 21'b100000000000001111100;
+
+ann_weights[6795] = 21'b000000000000000010101;
+
+ann_weights[6796] = 21'b100000000001001001111;
+
+ann_weights[6797] = 21'b000000000000101001100;
+
+ann_weights[6798] = 21'b100000000000011101111;
+
+ann_weights[6799] = 21'b000000000000010100110;
+
+ann_weights[6800] = 21'b100000000000001100011;
+
+ann_weights[6801] = 21'b100000000000100011000;
+
+ann_weights[6802] = 21'b100000000000100000101;
+
+ann_weights[6803] = 21'b000000000000011110000;
+
+ann_weights[6804] = 21'b100000000000001000101;
+
+ann_weights[6805] = 21'b100000000000000000110;
+
+ann_weights[6806] = 21'b100000000001101011101;
+
+ann_weights[6807] = 21'b000000000000010011011;
+
+ann_weights[6808] = 21'b000000000000000101010;
+
+ann_weights[6809] = 21'b000000000000000011111;
+
+ann_weights[6810] = 21'b100000000000000100110;
+
+ann_weights[6811] = 21'b100000000000010110100;
+
+ann_weights[6812] = 21'b100000000000011011010;
+
+ann_weights[6813] = 21'b000000000000010100111;
+
+ann_weights[6814] = 21'b100000000000000110010;
+
+ann_weights[6815] = 21'b000000000000010001001;
+
+ann_weights[6816] = 21'b100000000001110111100;
+
+ann_weights[6817] = 21'b100000000000000010000;
+
+ann_weights[6818] = 21'b100000000000000110100;
+
+ann_weights[6819] = 21'b100000000000001101100;
+
+ann_weights[6820] = 21'b100000000000001101010;
+
+ann_weights[6821] = 21'b100000000000101100101;
+
+ann_weights[6822] = 21'b100000000000010110110;
+
+ann_weights[6823] = 21'b000000000000100101011;
+
+ann_weights[6824] = 21'b100000000000000100100;
+
+ann_weights[6825] = 21'b000000000000011001111;
+
+ann_weights[6826] = 21'b100000000010000110101;
+
+ann_weights[6827] = 21'b000000000000001010011;
+
+ann_weights[6828] = 21'b000000000000001010000;
+
+ann_weights[6829] = 21'b100000000000000000100;
+
+ann_weights[6830] = 21'b100000000000000010001;
+
+ann_weights[6831] = 21'b100000000000100011111;
+
+ann_weights[6832] = 21'b100000000000011001101;
+
+ann_weights[6833] = 21'b000000000000011010111;
+
+ann_weights[6834] = 21'b100000000000000101011;
+
+ann_weights[6835] = 21'b000000000000001011111;
+
+ann_weights[6836] = 21'b100000000001100100101;
+
+ann_weights[6837] = 21'b000000000000001001001;
+
+ann_weights[6838] = 21'b000000000000010100010;
+
+ann_weights[6839] = 21'b100000000000001100010;
+
+ann_weights[6840] = 21'b000000000000010001110;
+
+ann_weights[6841] = 21'b100000000000100010000;
+
+ann_weights[6842] = 21'b100000000000000100011;
+
+ann_weights[6843] = 21'b000000000000010100001;
+
+ann_weights[6844] = 21'b100000000000010110001;
+
+ann_weights[6845] = 21'b000000000000001111101;
+
+ann_weights[6846] = 21'b100000000001010101010;
+
+ann_weights[6847] = 21'b100000000000000110001;
+
+ann_weights[6848] = 21'b000000000000001001001;
+
+ann_weights[6849] = 21'b100000000000011000100;
+
+ann_weights[6850] = 21'b000000000000001101111;
+
+ann_weights[6851] = 21'b100000000000110110011;
+
+ann_weights[6852] = 21'b100000000000001000100;
+
+ann_weights[6853] = 21'b000000000000010111001;
+
+ann_weights[6854] = 21'b100000000000010100111;
+
+ann_weights[6855] = 21'b000000000000010111110;
+
+ann_weights[6856] = 21'b100000000001010110001;
+
+ann_weights[6857] = 21'b000000000000001011001;
+
+ann_weights[6858] = 21'b000000000000010000010;
+
+ann_weights[6859] = 21'b100000000000011001110;
+
+ann_weights[6860] = 21'b000000000000001011101;
+
+ann_weights[6861] = 21'b100000000000101001011;
+
+ann_weights[6862] = 21'b000000000000000111100;
+
+ann_weights[6863] = 21'b000000000000010100010;
+
+ann_weights[6864] = 21'b100000000000001101101;
+
+ann_weights[6865] = 21'b000000000000011010011;
+
+ann_weights[6866] = 21'b100000000001000100000;
+
+ann_weights[6867] = 21'b000000000000001011101;
+
+ann_weights[6868] = 21'b000000000000010011011;
+
+ann_weights[6869] = 21'b100000000000011000000;
+
+ann_weights[6870] = 21'b100000000000000101010;
+
+ann_weights[6871] = 21'b100000000000100111111;
+
+ann_weights[6872] = 21'b100000000000001101001;
+
+ann_weights[6873] = 21'b000000000000001011000;
+
+ann_weights[6874] = 21'b100000000000001100010;
+
+ann_weights[6875] = 21'b000000000000010010011;
+
+ann_weights[6876] = 21'b100000000000110011111;
+
+ann_weights[6877] = 21'b000000000000000010000;
+
+ann_weights[6878] = 21'b000000000000010100110;
+
+ann_weights[6879] = 21'b100000000000010001110;
+
+ann_weights[6880] = 21'b100000000000010110001;
+
+ann_weights[6881] = 21'b100000000000111110000;
+
+ann_weights[6882] = 21'b100000000000000001111;
+
+ann_weights[6883] = 21'b000000000000000011101;
+
+ann_weights[6884] = 21'b100000000000001010010;
+
+ann_weights[6885] = 21'b000000000000001000100;
+
+ann_weights[6886] = 21'b100000000000101010100;
+
+ann_weights[6887] = 21'b000000000000000001001;
+
+ann_weights[6888] = 21'b000000000000011110000;
+
+ann_weights[6889] = 21'b100000000000001010000;
+
+ann_weights[6890] = 21'b100000000000011001101;
+
+ann_weights[6891] = 21'b100000000000000111000;
+
+ann_weights[6892] = 21'b100000000000000110001;
+
+ann_weights[6893] = 21'b000000000000010011010;
+
+ann_weights[6894] = 21'b100000000000000000011;
+
+ann_weights[6895] = 21'b000000000000010000111;
+
+ann_weights[6896] = 21'b100000000000101100001;
+
+ann_weights[6897] = 21'b100000000000000111110;
+
+ann_weights[6898] = 21'b000000000000000010100;
+
+ann_weights[6899] = 21'b000000000000001001000;
+
+ann_weights[6900] = 21'b100000000000100010010;
+
+ann_weights[6901] = 21'b100000000000000001101;
+
+ann_weights[6902] = 21'b000000000000011010110;
+
+ann_weights[6903] = 21'b100000000000010001101;
+
+ann_weights[6904] = 21'b100000000000000011111;
+
+ann_weights[6905] = 21'b000000000000010001000;
+
+ann_weights[6906] = 21'b100000000000110100111;
+
+ann_weights[6907] = 21'b100000000000011111100;
+
+ann_weights[6908] = 21'b000000000000010001001;
+
+ann_weights[6909] = 21'b100000000000000001100;
+
+ann_weights[6910] = 21'b100000000001000000111;
+
+ann_weights[6911] = 21'b100000000000000001100;
+
+ann_weights[6912] = 21'b100000000000000111010;
+
+ann_weights[6913] = 21'b100000000000001100111;
+
+ann_weights[6914] = 21'b000000000000000101111;
+
+ann_weights[6915] = 21'b000000000000000110010;
+
+ann_weights[6916] = 21'b100000000001001100101;
+
+ann_weights[6917] = 21'b100000000000011110110;
+
+ann_weights[6918] = 21'b000000000000101010000;
+
+ann_weights[6919] = 21'b000000000000000001011;
+
+ann_weights[6920] = 21'b100000000001000110100;
+
+ann_weights[6921] = 21'b100000000000001111100;
+
+ann_weights[6922] = 21'b000000000000000101001;
+
+ann_weights[6923] = 21'b100000000000011001000;
+
+ann_weights[6924] = 21'b000000000000000100100;
+
+ann_weights[6925] = 21'b100000000000000100011;
+
+ann_weights[6926] = 21'b100000000001000100100;
+
+ann_weights[6927] = 21'b100000000000010111100;
+
+ann_weights[6928] = 21'b000000000000000101100;
+
+ann_weights[6929] = 21'b000000000000100100000;
+
+ann_weights[6930] = 21'b100000000001000001000;
+
+ann_weights[6931] = 21'b100000000000001111010;
+
+ann_weights[6932] = 21'b000000000000001110011;
+
+ann_weights[6933] = 21'b100000000000001110011;
+
+ann_weights[6934] = 21'b000000000000000010010;
+
+ann_weights[6935] = 21'b000000000000000000101;
+
+ann_weights[6936] = 21'b100000000001100110110;
+
+ann_weights[6937] = 21'b100000000000100001000;
+
+ann_weights[6938] = 21'b100000000000001001111;
+
+ann_weights[6939] = 21'b000000000000011001110;
+
+ann_weights[6940] = 21'b100000000000110001101;
+
+ann_weights[6941] = 21'b100000000000100100000;
+
+ann_weights[6942] = 21'b100000000000000000110;
+
+ann_weights[6943] = 21'b100000000000011001011;
+
+ann_weights[6944] = 21'b000000000000000011000;
+
+ann_weights[6945] = 21'b000000000000010101101;
+
+ann_weights[6946] = 21'b100000000001010000101;
+
+ann_weights[6947] = 21'b100000000000110010111;
+
+ann_weights[6948] = 21'b100000000000011001011;
+
+ann_weights[6949] = 21'b000000000000101110110;
+
+ann_weights[6950] = 21'b100000000001000000101;
+
+ann_weights[6951] = 21'b100000000000101010100;
+
+ann_weights[6952] = 21'b000000000000001110111;
+
+ann_weights[6953] = 21'b100000000000010111010;
+
+ann_weights[6954] = 21'b100000000000000111110;
+
+ann_weights[6955] = 21'b000000000000010101111;
+
+ann_weights[6956] = 21'b100000000000111101101;
+
+ann_weights[6957] = 21'b100000000001011100110;
+
+ann_weights[6958] = 21'b100000000000001101010;
+
+ann_weights[6959] = 21'b000000000000101001111;
+
+ann_weights[6960] = 21'b100000000000100111110;
+
+ann_weights[6961] = 21'b100000000000010100010;
+
+ann_weights[6962] = 21'b000000000000111110011;
+
+ann_weights[6963] = 21'b100000000000101010101;
+
+ann_weights[6964] = 21'b100000000000110011110;
+
+ann_weights[6965] = 21'b000000000000001110100;
+
+ann_weights[6966] = 21'b100000000000010111000;
+
+ann_weights[6967] = 21'b100000000000101100000;
+
+ann_weights[6968] = 21'b100000000000101001001;
+
+ann_weights[6969] = 21'b100000000000010001000;
+
+ann_weights[6970] = 21'b100000000000010110110;
+
+ann_weights[6971] = 21'b000000000000010010101;
+
+ann_weights[6972] = 21'b000000000000100011100;
+
+ann_weights[6973] = 21'b100000000000011100011;
+
+ann_weights[6974] = 21'b000000000000000011110;
+
+ann_weights[6975] = 21'b100000000000110001011;
+
+ann_weights[6976] = 21'b100000000000000001001;
+
+ann_weights[6977] = 21'b100000000000011110001;
+
+ann_weights[6978] = 21'b100000000000101000110;
+
+ann_weights[6979] = 21'b100000000000011110001;
+
+ann_weights[6980] = 21'b000000000000000011100;
+
+ann_weights[6981] = 21'b000000000000011001111;
+
+ann_weights[6982] = 21'b000000000000010011010;
+
+ann_weights[6983] = 21'b100000000000000011001;
+
+ann_weights[6984] = 21'b100000000000000011010;
+
+ann_weights[6985] = 21'b100000000000001010001;
+
+ann_weights[6986] = 21'b100000000000001101111;
+
+ann_weights[6987] = 21'b100000000000000011111;
+
+ann_weights[6988] = 21'b100000000000010110000;
+
+ann_weights[6989] = 21'b100000000000001111011;
+
+ann_weights[6990] = 21'b100000000000001010110;
+
+ann_weights[6991] = 21'b100000000000000100011;
+
+ann_weights[6992] = 21'b000000000000001001000;
+
+ann_weights[6993] = 21'b000000000000000001100;
+
+ann_weights[6994] = 21'b100000000000000011101;
+
+ann_weights[6995] = 21'b100000000000000111100;
+
+ann_weights[6996] = 21'b000000000000000110001;
+
+ann_weights[6997] = 21'b000000000000000010110;
+
+ann_weights[6998] = 21'b000000000000000010001;
+
+ann_weights[6999] = 21'b100000000000001001000;
+
+ann_weights[7000] = 21'b000000000000000011011;
+
+ann_weights[7001] = 21'b100000000000000011011;
+
+ann_weights[7002] = 21'b000000000000000010001;
+
+ann_weights[7003] = 21'b000000000000000100010;
+
+ann_weights[7004] = 21'b100000000000000100110;
+
+ann_weights[7005] = 21'b000000000000001011000;
+
+ann_weights[7006] = 21'b000000000000000001101;
+
+ann_weights[7007] = 21'b100000000000000011001;
+
+ann_weights[7008] = 21'b000000000000000010000;
+
+ann_weights[7009] = 21'b100000000000001001110;
+
+ann_weights[7010] = 21'b000000000000000100010;
+
+ann_weights[7011] = 21'b000000000000001000000;
+
+ann_weights[7012] = 21'b100000000000000100010;
+
+ann_weights[7013] = 21'b100000000000001001010;
+
+ann_weights[7014] = 21'b000000000000001010111;
+
+ann_weights[7015] = 21'b000000000000000000000;
+
+ann_weights[7016] = 21'b000000000000000101101;
+
+ann_weights[7017] = 21'b000000000000000110001;
+
+ann_weights[7018] = 21'b000000000000000111000;
+
+ann_weights[7019] = 21'b100000000000000100111;
+
+ann_weights[7020] = 21'b100000000000001011011;
+
+ann_weights[7021] = 21'b000000000000000010010;
+
+ann_weights[7022] = 21'b100000000000010101000;
+
+ann_weights[7023] = 21'b000000000000100001001;
+
+ann_weights[7024] = 21'b100000000000011011001;
+
+ann_weights[7025] = 21'b100000000000001101011;
+
+ann_weights[7026] = 21'b100000000000001101001;
+
+ann_weights[7027] = 21'b100000000000100000100;
+
+ann_weights[7028] = 21'b100000000000001100111;
+
+ann_weights[7029] = 21'b000000000000000011111;
+
+ann_weights[7030] = 21'b100000000000001101101;
+
+ann_weights[7031] = 21'b100000000000100011100;
+
+ann_weights[7032] = 21'b100000000000100011101;
+
+ann_weights[7033] = 21'b100000000000000110110;
+
+ann_weights[7034] = 21'b100000000000001110010;
+
+ann_weights[7035] = 21'b000000000000001001100;
+
+ann_weights[7036] = 21'b000000000000000000010;
+
+ann_weights[7037] = 21'b000000000000011111000;
+
+ann_weights[7038] = 21'b100000000000010101011;
+
+ann_weights[7039] = 21'b100000000000111101010;
+
+ann_weights[7040] = 21'b100000000000100001011;
+
+ann_weights[7041] = 21'b100000000000110110110;
+
+ann_weights[7042] = 21'b100000000000110100000;
+
+ann_weights[7043] = 21'b100000000000001101111;
+
+ann_weights[7044] = 21'b100000000000001110110;
+
+ann_weights[7045] = 21'b000000000000000101101;
+
+ann_weights[7046] = 21'b100000000000011000001;
+
+ann_weights[7047] = 21'b000000000000011111001;
+
+ann_weights[7048] = 21'b100000000001000110101;
+
+ann_weights[7049] = 21'b000000000000000100000;
+
+ann_weights[7050] = 21'b100000000000110110100;
+
+ann_weights[7051] = 21'b100000000000111110000;
+
+ann_weights[7052] = 21'b100000000001010100100;
+
+ann_weights[7053] = 21'b000000000000011010010;
+
+ann_weights[7054] = 21'b100000000000010101111;
+
+ann_weights[7055] = 21'b100000000000001100010;
+
+ann_weights[7056] = 21'b100000000000011010011;
+
+ann_weights[7057] = 21'b000000000000011101011;
+
+ann_weights[7058] = 21'b100000000001010100100;
+
+ann_weights[7059] = 21'b000000000000110010010;
+
+ann_weights[7060] = 21'b100000000001000011100;
+
+ann_weights[7061] = 21'b100000000001001000101;
+
+ann_weights[7062] = 21'b100000000000101111101;
+
+ann_weights[7063] = 21'b000000000000101111000;
+
+ann_weights[7064] = 21'b100000000000100000011;
+
+ann_weights[7065] = 21'b100000000000000110101;
+
+ann_weights[7066] = 21'b100000000000100111110;
+
+ann_weights[7067] = 21'b000000000000001100011;
+
+ann_weights[7068] = 21'b100000000000101101011;
+
+ann_weights[7069] = 21'b000000000000011110101;
+
+ann_weights[7070] = 21'b100000000001000111110;
+
+ann_weights[7071] = 21'b100000000001010010110;
+
+ann_weights[7072] = 21'b100000000001001011001;
+
+ann_weights[7073] = 21'b000000000000111010110;
+
+ann_weights[7074] = 21'b100000000000111110000;
+
+ann_weights[7075] = 21'b100000000000001110010;
+
+ann_weights[7076] = 21'b100000000000101001110;
+
+ann_weights[7077] = 21'b000000000000010101110;
+
+ann_weights[7078] = 21'b100000000000110000110;
+
+ann_weights[7079] = 21'b000000000000011001100;
+
+ann_weights[7080] = 21'b100000000001001110011;
+
+ann_weights[7081] = 21'b100000000000111000110;
+
+ann_weights[7082] = 21'b100000000001011110111;
+
+ann_weights[7083] = 21'b000000000000111111010;
+
+ann_weights[7084] = 21'b100000000000111001010;
+
+ann_weights[7085] = 21'b100000000000010011110;
+
+ann_weights[7086] = 21'b100000000000110100101;
+
+ann_weights[7087] = 21'b000000000000100100001;
+
+ann_weights[7088] = 21'b100000000000111001011;
+
+ann_weights[7089] = 21'b000000000000010101110;
+
+ann_weights[7090] = 21'b100000000001011010010;
+
+ann_weights[7091] = 21'b100000000001010001001;
+
+ann_weights[7092] = 21'b100000000001111001111;
+
+ann_weights[7093] = 21'b000000000001000010100;
+
+ann_weights[7094] = 21'b100000000000110001010;
+
+ann_weights[7095] = 21'b000000000000001010011;
+
+ann_weights[7096] = 21'b100000000000111100001;
+
+ann_weights[7097] = 21'b000000000000100001111;
+
+ann_weights[7098] = 21'b100000000000011111001;
+
+ann_weights[7099] = 21'b000000000000010001010;
+
+ann_weights[7100] = 21'b100000000001100011111;
+
+ann_weights[7101] = 21'b100000000001101111111;
+
+ann_weights[7102] = 21'b100000000001100100001;
+
+ann_weights[7103] = 21'b000000000001000000001;
+
+ann_weights[7104] = 21'b100000000000100001110;
+
+ann_weights[7105] = 21'b000000000000001010010;
+
+ann_weights[7106] = 21'b100000000001000110101;
+
+ann_weights[7107] = 21'b000000000000011011100;
+
+ann_weights[7108] = 21'b100000000000010011010;
+
+ann_weights[7109] = 21'b000000000000010001011;
+
+ann_weights[7110] = 21'b100000000001010111000;
+
+ann_weights[7111] = 21'b100000000001111110011;
+
+ann_weights[7112] = 21'b100000000001001001111;
+
+ann_weights[7113] = 21'b000000000000110000101;
+
+ann_weights[7114] = 21'b100000000000101000011;
+
+ann_weights[7115] = 21'b000000000000000101101;
+
+ann_weights[7116] = 21'b100000000000110011101;
+
+ann_weights[7117] = 21'b000000000000100001101;
+
+ann_weights[7118] = 21'b100000000000010101101;
+
+ann_weights[7119] = 21'b000000000000001001001;
+
+ann_weights[7120] = 21'b100000000001100011110;
+
+ann_weights[7121] = 21'b100000000001010001110;
+
+ann_weights[7122] = 21'b100000000000111010000;
+
+ann_weights[7123] = 21'b000000000001000000110;
+
+ann_weights[7124] = 21'b100000000000111110110;
+
+ann_weights[7125] = 21'b000000000000011001010;
+
+ann_weights[7126] = 21'b100000000000011111001;
+
+ann_weights[7127] = 21'b000000000000100000011;
+
+ann_weights[7128] = 21'b100000000000010001111;
+
+ann_weights[7129] = 21'b000000000000001000111;
+
+ann_weights[7130] = 21'b100000000001100000001;
+
+ann_weights[7131] = 21'b100000000001010001111;
+
+ann_weights[7132] = 21'b100000000000101101010;
+
+ann_weights[7133] = 21'b000000000000111001010;
+
+ann_weights[7134] = 21'b100000000000101011101;
+
+ann_weights[7135] = 21'b000000000000011100100;
+
+ann_weights[7136] = 21'b100000000001100010100;
+
+ann_weights[7137] = 21'b000000000000010100001;
+
+ann_weights[7138] = 21'b100000000000011010110;
+
+ann_weights[7139] = 21'b000000000000001000100;
+
+ann_weights[7140] = 21'b100000000001100100111;
+
+ann_weights[7141] = 21'b100000000001001010100;
+
+ann_weights[7142] = 21'b100000000000001000001;
+
+ann_weights[7143] = 21'b000000000000010101110;
+
+ann_weights[7144] = 21'b100000000000100111110;
+
+ann_weights[7145] = 21'b000000000000001100001;
+
+ann_weights[7146] = 21'b100000000001101000110;
+
+ann_weights[7147] = 21'b000000000000010011010;
+
+ann_weights[7148] = 21'b000000000000000111001;
+
+ann_weights[7149] = 21'b000000000000001101100;
+
+ann_weights[7150] = 21'b100000000001100111101;
+
+ann_weights[7151] = 21'b100000000001001110111;
+
+ann_weights[7152] = 21'b100000000000001110011;
+
+ann_weights[7153] = 21'b000000000000001111011;
+
+ann_weights[7154] = 21'b100000000000101011111;
+
+ann_weights[7155] = 21'b000000000000100001011;
+
+ann_weights[7156] = 21'b100000000001100011100;
+
+ann_weights[7157] = 21'b000000000000011000110;
+
+ann_weights[7158] = 21'b000000000000010010101;
+
+ann_weights[7159] = 21'b000000000000001111010;
+
+ann_weights[7160] = 21'b100000000001101100111;
+
+ann_weights[7161] = 21'b100000000010001001011;
+
+ann_weights[7162] = 21'b100000000000001111000;
+
+ann_weights[7163] = 21'b000000000000010001101;
+
+ann_weights[7164] = 21'b100000000000101010011;
+
+ann_weights[7165] = 21'b000000000000100000010;
+
+ann_weights[7166] = 21'b100000000001100100111;
+
+ann_weights[7167] = 21'b000000000000010100111;
+
+ann_weights[7168] = 21'b000000000000001100110;
+
+ann_weights[7169] = 21'b000000000000010011011;
+
+ann_weights[7170] = 21'b100000000001010001001;
+
+ann_weights[7171] = 21'b100000000001110011011;
+
+ann_weights[7172] = 21'b100000000000011011011;
+
+ann_weights[7173] = 21'b100000000000000000101;
+
+ann_weights[7174] = 21'b100000000001000100000;
+
+ann_weights[7175] = 21'b000000000000011100101;
+
+ann_weights[7176] = 21'b100000000001110110001;
+
+ann_weights[7177] = 21'b000000000000010101100;
+
+ann_weights[7178] = 21'b000000000000000100010;
+
+ann_weights[7179] = 21'b000000000000010001110;
+
+ann_weights[7180] = 21'b100000000001010110111;
+
+ann_weights[7181] = 21'b100000000001101010010;
+
+ann_weights[7182] = 21'b100000000000100101000;
+
+ann_weights[7183] = 21'b000000000000000001000;
+
+ann_weights[7184] = 21'b100000000000110001111;
+
+ann_weights[7185] = 21'b000000000000010001011;
+
+ann_weights[7186] = 21'b100000000001110001001;
+
+ann_weights[7187] = 21'b000000000000001101010;
+
+ann_weights[7188] = 21'b100000000000000100111;
+
+ann_weights[7189] = 21'b000000000000011101001;
+
+ann_weights[7190] = 21'b100000000001101100100;
+
+ann_weights[7191] = 21'b100000000001010111111;
+
+ann_weights[7192] = 21'b100000000000111100100;
+
+ann_weights[7193] = 21'b000000000000001010100;
+
+ann_weights[7194] = 21'b100000000000111110111;
+
+ann_weights[7195] = 21'b000000000000001001111;
+
+ann_weights[7196] = 21'b100000000001010111100;
+
+ann_weights[7197] = 21'b000000000000000010101;
+
+ann_weights[7198] = 21'b000000000000000101000;
+
+ann_weights[7199] = 21'b000000000000101010101;
+
+ann_weights[7200] = 21'b100000000001000001101;
+
+ann_weights[7201] = 21'b100000000000111110100;
+
+ann_weights[7202] = 21'b100000000000100000000;
+
+ann_weights[7203] = 21'b100000000000000101000;
+
+ann_weights[7204] = 21'b100000000000101010010;
+
+ann_weights[7205] = 21'b100000000000000101001;
+
+ann_weights[7206] = 21'b100000000000111101000;
+
+ann_weights[7207] = 21'b100000000000011001001;
+
+ann_weights[7208] = 21'b100000000000010000010;
+
+ann_weights[7209] = 21'b000000000000110011010;
+
+ann_weights[7210] = 21'b100000000001000110000;
+
+ann_weights[7211] = 21'b100000000000101111010;
+
+ann_weights[7212] = 21'b100000000000100011000;
+
+ann_weights[7213] = 21'b100000000000011111000;
+
+ann_weights[7214] = 21'b100000000000110010010;
+
+ann_weights[7215] = 21'b000000000000011110000;
+
+ann_weights[7216] = 21'b100000000000101001010;
+
+ann_weights[7217] = 21'b000000000000000011010;
+
+ann_weights[7218] = 21'b100000000000101100111;
+
+ann_weights[7219] = 21'b000000000000110111100;
+
+ann_weights[7220] = 21'b100000000000101101110;
+
+ann_weights[7221] = 21'b100000000000100000010;
+
+ann_weights[7222] = 21'b100000000000110110001;
+
+ann_weights[7223] = 21'b100000000000001110110;
+
+ann_weights[7224] = 21'b100000000000011101101;
+
+ann_weights[7225] = 21'b000000000000100111111;
+
+ann_weights[7226] = 21'b100000000000100110000;
+
+ann_weights[7227] = 21'b100000000000000011000;
+
+ann_weights[7228] = 21'b100000000001010011011;
+
+ann_weights[7229] = 21'b000000000000010101110;
+
+ann_weights[7230] = 21'b100000000000100000000;
+
+ann_weights[7231] = 21'b100000000000011001001;
+
+ann_weights[7232] = 21'b100000000000110101000;
+
+ann_weights[7233] = 21'b100000000000101110011;
+
+ann_weights[7234] = 21'b100000000000000111100;
+
+ann_weights[7235] = 21'b000000000000011110010;
+
+ann_weights[7236] = 21'b100000000000011000100;
+
+ann_weights[7237] = 21'b100000000000100101100;
+
+ann_weights[7238] = 21'b100000000000011011001;
+
+ann_weights[7239] = 21'b000000000000010000000;
+
+ann_weights[7240] = 21'b100000000000100111000;
+
+ann_weights[7241] = 21'b100000000000010101010;
+
+ann_weights[7242] = 21'b100000000000011101111;
+
+ann_weights[7243] = 21'b100000000000011101110;
+
+ann_weights[7244] = 21'b100000000000100100001;
+
+ann_weights[7245] = 21'b000000000000100100011;
+
+ann_weights[7246] = 21'b100000000000000110110;
+
+ann_weights[7247] = 21'b100000000000001110011;
+
+ann_weights[7248] = 21'b100000000000110001000;
+
+ann_weights[7249] = 21'b100000000000001111011;
+
+ann_weights[7250] = 21'b000000000000000100001;
+
+ann_weights[7251] = 21'b100000000000001010110;
+
+ann_weights[7252] = 21'b000000000000000100111;
+
+ann_weights[7253] = 21'b100000000000000100001;
+
+ann_weights[7254] = 21'b100000000000011001001;
+
+ann_weights[7255] = 21'b100000000000001111100;
+
+ann_weights[7256] = 21'b100000000000000000010;
+
+ann_weights[7257] = 21'b100000000000010000010;
+
+ann_weights[7258] = 21'b100000000000010000000;
+
+ann_weights[7259] = 21'b100000000000001011101;
+
+ann_weights[7260] = 21'b000000000000000011100;
+
+ann_weights[7261] = 21'b000000000000000001100;
+
+ann_weights[7262] = 21'b000000000000010011101;
+
+ann_weights[7263] = 21'b100000000000000111101;
+
+ann_weights[7264] = 21'b000000000000000000000;
+
+ann_weights[7265] = 21'b000000000000000000101;
+
+ann_weights[7266] = 21'b000000000000000010011;
+
+ann_weights[7267] = 21'b100000000000001000111;
+
+ann_weights[7268] = 21'b100000000000001011100;
+
+ann_weights[7269] = 21'b100000000000010000111;
+
+ann_weights[7270] = 21'b100000000000000101111;
+
+ann_weights[7271] = 21'b100000000000000110100;
+
+ann_weights[7272] = 21'b000000000000000010000;
+
+ann_weights[7273] = 21'b000000000000001010001;
+
+ann_weights[7274] = 21'b000000000000000100111;
+
+ann_weights[7275] = 21'b000000000000000001000;
+
+ann_weights[7276] = 21'b000000000000001000000;
+
+ann_weights[7277] = 21'b000000000000001001000;
+
+ann_weights[7278] = 21'b100000000000000110110;
+
+ann_weights[7279] = 21'b100000000000000110011;
+
+ann_weights[7280] = 21'b000000000000000111100;
+
+ann_weights[7281] = 21'b000000000000001000111;
+
+ann_weights[7282] = 21'b000000000000000111101;
+
+ann_weights[7283] = 21'b000000000000000100111;
+
+ann_weights[7284] = 21'b000000000000000011010;
+
+ann_weights[7285] = 21'b100000000000000011110;
+
+ann_weights[7286] = 21'b100000000000000101010;
+
+ann_weights[7287] = 21'b000000000000000100110;
+
+ann_weights[7288] = 21'b100000000000000011110;
+
+ann_weights[7289] = 21'b000000000000000100000;
+
+ann_weights[7290] = 21'b000000000000000111001;
+
+ann_weights[7291] = 21'b000000000000000110010;
+
+ann_weights[7292] = 21'b000000000000001000101;
+
+ann_weights[7293] = 21'b100000000000000001111;
+
+ann_weights[7294] = 21'b100000000000000100101;
+
+ann_weights[7295] = 21'b100000000000001010011;
+
+ann_weights[7296] = 21'b000000000000000100110;
+
+ann_weights[7297] = 21'b100000000000000100101;
+
+ann_weights[7298] = 21'b100000000000001000101;
+
+ann_weights[7299] = 21'b100000000000001000011;
+
+ann_weights[7300] = 21'b000000000000000000000;
+
+ann_weights[7301] = 21'b100000000000000100011;
+
+ann_weights[7302] = 21'b100000000000000000000;
+
+ann_weights[7303] = 21'b100000000000000011000;
+
+ann_weights[7304] = 21'b100000000000000001000;
+
+ann_weights[7305] = 21'b000000000000000001011;
+
+ann_weights[7306] = 21'b100000000000000001011;
+
+ann_weights[7307] = 21'b100000000000000100111;
+
+ann_weights[7308] = 21'b100000000000000011000;
+
+ann_weights[7309] = 21'b000000000000000010111;
+
+ann_weights[7310] = 21'b100000000000000000000;
+
+ann_weights[7311] = 21'b100000000000010100101;
+
+ann_weights[7312] = 21'b100000000000010001100;
+
+ann_weights[7313] = 21'b100000000000001001010;
+
+ann_weights[7314] = 21'b100000000000001001101;
+
+ann_weights[7315] = 21'b100000000000000101000;
+
+ann_weights[7316] = 21'b000000000000000100111;
+
+ann_weights[7317] = 21'b100000000000010011101;
+
+ann_weights[7318] = 21'b100000000000010110010;
+
+ann_weights[7319] = 21'b000000000000011000101;
+
+ann_weights[7320] = 21'b100000000000001000100;
+
+ann_weights[7321] = 21'b100000000000100011101;
+
+ann_weights[7322] = 21'b100000000000100001101;
+
+ann_weights[7323] = 21'b100000000000001101111;
+
+ann_weights[7324] = 21'b100000000000000010000;
+
+ann_weights[7325] = 21'b100000000000001100001;
+
+ann_weights[7326] = 21'b000000000000000000011;
+
+ann_weights[7327] = 21'b100000000000101111101;
+
+ann_weights[7328] = 21'b100000000000011110100;
+
+ann_weights[7329] = 21'b000000000000101000001;
+
+ann_weights[7330] = 21'b100000000000100000101;
+
+ann_weights[7331] = 21'b100000000000101000110;
+
+ann_weights[7332] = 21'b100000000000100000101;
+
+ann_weights[7333] = 21'b000000000000000110001;
+
+ann_weights[7334] = 21'b100000000000010001011;
+
+ann_weights[7335] = 21'b100000000000100001010;
+
+ann_weights[7336] = 21'b100000000000010000001;
+
+ann_weights[7337] = 21'b100000000000001011000;
+
+ann_weights[7338] = 21'b100000000000101001110;
+
+ann_weights[7339] = 21'b000000000000101011111;
+
+ann_weights[7340] = 21'b100000000000110000110;
+
+ann_weights[7341] = 21'b100000000000101110000;
+
+ann_weights[7342] = 21'b100000000000011111000;
+
+ann_weights[7343] = 21'b000000000000001001001;
+
+ann_weights[7344] = 21'b100000000000011101010;
+
+ann_weights[7345] = 21'b100000000001001110110;
+
+ann_weights[7346] = 21'b100000000000010000110;
+
+ann_weights[7347] = 21'b100000000000011010000;
+
+ann_weights[7348] = 21'b100000000001001000110;
+
+ann_weights[7349] = 21'b000000000001000101001;
+
+ann_weights[7350] = 21'b100000000000110101000;
+
+ann_weights[7351] = 21'b100000000000011110011;
+
+ann_weights[7352] = 21'b100000000000111010100;
+
+ann_weights[7353] = 21'b000000000000000011100;
+
+ann_weights[7354] = 21'b100000000001001011001;
+
+ann_weights[7355] = 21'b100000000001000000001;
+
+ann_weights[7356] = 21'b100000000000001101100;
+
+ann_weights[7357] = 21'b000000000000000111100;
+
+ann_weights[7358] = 21'b100000000000011010000;
+
+ann_weights[7359] = 21'b000000000000111001001;
+
+ann_weights[7360] = 21'b100000000000111001011;
+
+ann_weights[7361] = 21'b100000000000110101011;
+
+ann_weights[7362] = 21'b100000000000111000010;
+
+ann_weights[7363] = 21'b100000000000001110010;
+
+ann_weights[7364] = 21'b100000000001011100011;
+
+ann_weights[7365] = 21'b100000000001000101011;
+
+ann_weights[7366] = 21'b100000000000010001111;
+
+ann_weights[7367] = 21'b000000000000011101101;
+
+ann_weights[7368] = 21'b100000000000011111011;
+
+ann_weights[7369] = 21'b000000000000101011110;
+
+ann_weights[7370] = 21'b100000000001011010111;
+
+ann_weights[7371] = 21'b100000000001010010010;
+
+ann_weights[7372] = 21'b100000000001001000010;
+
+ann_weights[7373] = 21'b100000000000010110110;
+
+ann_weights[7374] = 21'b100000000001110111101;
+
+ann_weights[7375] = 21'b100000000000101101111;
+
+ann_weights[7376] = 21'b100000000000011010001;
+
+ann_weights[7377] = 21'b000000000000010101111;
+
+ann_weights[7378] = 21'b100000000000110100110;
+
+ann_weights[7379] = 21'b000000000000101100010;
+
+ann_weights[7380] = 21'b100000000001010110101;
+
+ann_weights[7381] = 21'b100000000000111000010;
+
+ann_weights[7382] = 21'b100000000001011001000;
+
+ann_weights[7383] = 21'b100000000000001100010;
+
+ann_weights[7384] = 21'b100000000001011101111;
+
+ann_weights[7385] = 21'b100000000000010111111;
+
+ann_weights[7386] = 21'b100000000000010111001;
+
+ann_weights[7387] = 21'b000000000000010100000;
+
+ann_weights[7388] = 21'b100000000001000100111;
+
+ann_weights[7389] = 21'b000000000000110000001;
+
+ann_weights[7390] = 21'b100000000001001010011;
+
+ann_weights[7391] = 21'b100000000001010010011;
+
+ann_weights[7392] = 21'b100000000000101111100;
+
+ann_weights[7393] = 21'b100000000000000011100;
+
+ann_weights[7394] = 21'b100000000001111011100;
+
+ann_weights[7395] = 21'b000000000000001000101;
+
+ann_weights[7396] = 21'b100000000000100100111;
+
+ann_weights[7397] = 21'b000000000000011010110;
+
+ann_weights[7398] = 21'b100000000000110010110;
+
+ann_weights[7399] = 21'b000000000000100111110;
+
+ann_weights[7400] = 21'b100000000001010011011;
+
+ann_weights[7401] = 21'b100000000001011100110;
+
+ann_weights[7402] = 21'b100000000001001111101;
+
+ann_weights[7403] = 21'b100000000000011010110;
+
+ann_weights[7404] = 21'b100000000001101000101;
+
+ann_weights[7405] = 21'b000000000000000001011;
+
+ann_weights[7406] = 21'b100000000000101111010;
+
+ann_weights[7407] = 21'b000000000000001100001;
+
+ann_weights[7408] = 21'b100000000000101010001;
+
+ann_weights[7409] = 21'b000000000000110101111;
+
+ann_weights[7410] = 21'b100000000001000001101;
+
+ann_weights[7411] = 21'b100000000001011100100;
+
+ann_weights[7412] = 21'b100000000001010110000;
+
+ann_weights[7413] = 21'b100000000000010010110;
+
+ann_weights[7414] = 21'b100000000010001010100;
+
+ann_weights[7415] = 21'b100000000000001100010;
+
+ann_weights[7416] = 21'b100000000000101111010;
+
+ann_weights[7417] = 21'b000000000000100011111;
+
+ann_weights[7418] = 21'b100000000000111101110;
+
+ann_weights[7419] = 21'b000000000000110010111;
+
+ann_weights[7420] = 21'b100000000000110110111;
+
+ann_weights[7421] = 21'b100000000001001111010;
+
+ann_weights[7422] = 21'b100000000001110001011;
+
+ann_weights[7423] = 21'b100000000000010101100;
+
+ann_weights[7424] = 21'b100000000010011001011;
+
+ann_weights[7425] = 21'b100000000000011111110;
+
+ann_weights[7426] = 21'b100000000000101001010;
+
+ann_weights[7427] = 21'b000000000000011101110;
+
+ann_weights[7428] = 21'b100000000001000101011;
+
+ann_weights[7429] = 21'b000000000001000000000;
+
+ann_weights[7430] = 21'b100000000001011000110;
+
+ann_weights[7431] = 21'b100000000000101111000;
+
+ann_weights[7432] = 21'b100000000001100101100;
+
+ann_weights[7433] = 21'b100000000000011001001;
+
+ann_weights[7434] = 21'b100000000001111101110;
+
+ann_weights[7435] = 21'b100000000000000111100;
+
+ann_weights[7436] = 21'b100000000000111110110;
+
+ann_weights[7437] = 21'b000000000000101100010;
+
+ann_weights[7438] = 21'b100000000010001010101;
+
+ann_weights[7439] = 21'b000000000000100001000;
+
+ann_weights[7440] = 21'b100000000001010000010;
+
+ann_weights[7441] = 21'b100000000000110010000;
+
+ann_weights[7442] = 21'b100000000001001100010;
+
+ann_weights[7443] = 21'b000000000000000001110;
+
+ann_weights[7444] = 21'b100000000010001001101;
+
+ann_weights[7445] = 21'b100000000000000001111;
+
+ann_weights[7446] = 21'b100000000000101111101;
+
+ann_weights[7447] = 21'b000000000000101001110;
+
+ann_weights[7448] = 21'b100000000010001110011;
+
+ann_weights[7449] = 21'b000000000000100101011;
+
+ann_weights[7450] = 21'b100000000001000010100;
+
+ann_weights[7451] = 21'b100000000001011010010;
+
+ann_weights[7452] = 21'b100000000000111110000;
+
+ann_weights[7453] = 21'b100000000000001000000;
+
+ann_weights[7454] = 21'b100000000001101011100;
+
+ann_weights[7455] = 21'b100000000000010001000;
+
+ann_weights[7456] = 21'b100000000000111100100;
+
+ann_weights[7457] = 21'b000000000000100101100;
+
+ann_weights[7458] = 21'b100000000001000110001;
+
+ann_weights[7459] = 21'b000000000000100110001;
+
+ann_weights[7460] = 21'b100000000001000011110;
+
+ann_weights[7461] = 21'b100000000000101001010;
+
+ann_weights[7462] = 21'b100000000001011010100;
+
+ann_weights[7463] = 21'b100000000000000011111;
+
+ann_weights[7464] = 21'b100000000010000011101;
+
+ann_weights[7465] = 21'b100000000000101101011;
+
+ann_weights[7466] = 21'b100000000000111000011;
+
+ann_weights[7467] = 21'b000000000000110000010;
+
+ann_weights[7468] = 21'b100000000000111110010;
+
+ann_weights[7469] = 21'b000000000000100010011;
+
+ann_weights[7470] = 21'b100000000000101011100;
+
+ann_weights[7471] = 21'b100000000000110101001;
+
+ann_weights[7472] = 21'b100000000001001111000;
+
+ann_weights[7473] = 21'b100000000000000011110;
+
+ann_weights[7474] = 21'b100000000001101010100;
+
+ann_weights[7475] = 21'b100000000000010111001;
+
+ann_weights[7476] = 21'b100000000000100110010;
+
+ann_weights[7477] = 21'b000000000000100010000;
+
+ann_weights[7478] = 21'b100000000001100101011;
+
+ann_weights[7479] = 21'b000000000000010000010;
+
+ann_weights[7480] = 21'b100000000000100100100;
+
+ann_weights[7481] = 21'b100000000000101010000;
+
+ann_weights[7482] = 21'b100000000001000011100;
+
+ann_weights[7483] = 21'b000000000000000100011;
+
+ann_weights[7484] = 21'b100000000001100111011;
+
+ann_weights[7485] = 21'b000000000000000011010;
+
+ann_weights[7486] = 21'b100000000000100100101;
+
+ann_weights[7487] = 21'b000000000000000011000;
+
+ann_weights[7488] = 21'b100000000001010011111;
+
+ann_weights[7489] = 21'b000000000000101110100;
+
+ann_weights[7490] = 21'b100000000000100011100;
+
+ann_weights[7491] = 21'b100000000000010100100;
+
+ann_weights[7492] = 21'b100000000001000001000;
+
+ann_weights[7493] = 21'b100000000000000101110;
+
+ann_weights[7494] = 21'b100000000001001110001;
+
+ann_weights[7495] = 21'b000000000000001111111;
+
+ann_weights[7496] = 21'b100000000000100110011;
+
+ann_weights[7497] = 21'b000000000000010011001;
+
+ann_weights[7498] = 21'b100000000000110001010;
+
+ann_weights[7499] = 21'b000000000000011001100;
+
+ann_weights[7500] = 21'b100000000000010101011;
+
+ann_weights[7501] = 21'b100000000000011100100;
+
+ann_weights[7502] = 21'b100000000000101001011;
+
+ann_weights[7503] = 21'b100000000000001001001;
+
+ann_weights[7504] = 21'b100000000001000111010;
+
+ann_weights[7505] = 21'b000000000000001000110;
+
+ann_weights[7506] = 21'b100000000000011001110;
+
+ann_weights[7507] = 21'b000000000000011001110;
+
+ann_weights[7508] = 21'b100000000000011111001;
+
+ann_weights[7509] = 21'b000000000000000001010;
+
+ann_weights[7510] = 21'b100000000000010100110;
+
+ann_weights[7511] = 21'b100000000000001101000;
+
+ann_weights[7512] = 21'b100000000000011101110;
+
+ann_weights[7513] = 21'b100000000000101011100;
+
+ann_weights[7514] = 21'b100000000000001100010;
+
+ann_weights[7515] = 21'b100000000000001010110;
+
+ann_weights[7516] = 21'b100000000000001111011;
+
+ann_weights[7517] = 21'b000000000000001010101;
+
+ann_weights[7518] = 21'b000000000000000011100;
+
+ann_weights[7519] = 21'b000000000000001011110;
+
+ann_weights[7520] = 21'b100000000000000010001;
+
+ann_weights[7521] = 21'b100000000000000100011;
+
+ann_weights[7522] = 21'b000000000000000010101;
+
+ann_weights[7523] = 21'b000000000000001000011;
+
+ann_weights[7524] = 21'b100000000000001011110;
+
+ann_weights[7525] = 21'b100000000000010000001;
+
+ann_weights[7526] = 21'b000000000000000011010;
+
+ann_weights[7527] = 21'b100000000000001101110;
+
+ann_weights[7528] = 21'b100000000000010111101;
+
+ann_weights[7529] = 21'b000000000000000110100;
+
+ann_weights[7530] = 21'b000000000000001001101;
+
+ann_weights[7531] = 21'b000000000000000010011;
+
+ann_weights[7532] = 21'b100000000000001101110;
+
+ann_weights[7533] = 21'b000000000000000111011;
+
+ann_weights[7534] = 21'b100000000000000101010;
+
+ann_weights[7535] = 21'b100000000000001011001;
+
+ann_weights[7536] = 21'b100000000000001010011;
+
+ann_weights[7537] = 21'b000000000000001100010;
+
+ann_weights[7538] = 21'b100000000000000100011;
+
+ann_weights[7539] = 21'b100000000000010111011;
+
+ann_weights[7540] = 21'b000000000000000011011;
+
+ann_weights[7541] = 21'b000000000000000100101;
+
+ann_weights[7542] = 21'b000000000000000000101;
+
+ann_weights[7543] = 21'b000000000000000001111;
+
+ann_weights[7544] = 21'b000000000000001000100;
+
+ann_weights[7545] = 21'b000000000000001010010;
+
+ann_weights[7546] = 21'b100000000000000110100;
+
+ann_weights[7547] = 21'b000000000000000011010;
+
+ann_weights[7548] = 21'b000000000000000011010;
+
+ann_weights[7549] = 21'b100000000000000001010;
+
+ann_weights[7550] = 21'b000000000000000101110;
+
+ann_weights[7551] = 21'b000000000000000010001;
+
+ann_weights[7552] = 21'b000000000000000000100;
+
+ann_weights[7553] = 21'b100000000000000001100;
+
+ann_weights[7554] = 21'b000000000000000110001;
+
+ann_weights[7555] = 21'b100000000000001010111;
+
+ann_weights[7556] = 21'b100000000000000111111;
+
+ann_weights[7557] = 21'b100000000000000011100;
+
+ann_weights[7558] = 21'b100000000000000111101;
+
+ann_weights[7559] = 21'b100000000000000101101;
+
+ann_weights[7560] = 21'b000000000000001000001;
+
+ann_weights[7561] = 21'b100000000000001000110;
+
+ann_weights[7562] = 21'b000000000000000001001;
+
+ann_weights[7563] = 21'b100000000000000111110;
+
+ann_weights[7564] = 21'b100000000000000010010;
+
+ann_weights[7565] = 21'b000000000000000111001;
+
+ann_weights[7566] = 21'b100000000000000010111;
+
+ann_weights[7567] = 21'b100000000000000111000;
+
+ann_weights[7568] = 21'b000000000000000000101;
+
+ann_weights[7569] = 21'b000000000000001000010;
+
+ann_weights[7570] = 21'b000000000000000111101;
+
+ann_weights[7571] = 21'b100000000000000101011;
+
+ann_weights[7572] = 21'b000000000000000010100;
+
+ann_weights[7573] = 21'b100000000000000111011;
+
+ann_weights[7574] = 21'b100000000000000111000;
+
+ann_weights[7575] = 21'b000000000000000010101;
+
+ann_weights[7576] = 21'b000000000000000100111;
+
+ann_weights[7577] = 21'b100000000000000010110;
+
+ann_weights[7578] = 21'b100000000000001010010;
+
+ann_weights[7579] = 21'b100000000000000001100;
+
+ann_weights[7580] = 21'b100000000000000010000;
+
+ann_weights[7581] = 21'b000000000000000100100;
+
+ann_weights[7582] = 21'b000000000000000110101;
+
+ann_weights[7583] = 21'b100000000000000110101;
+
+ann_weights[7584] = 21'b000000000000000111110;
+
+ann_weights[7585] = 21'b000000000000000011010;
+
+ann_weights[7586] = 21'b000000000000000000000;
+
+ann_weights[7587] = 21'b000000000000000010101;
+
+ann_weights[7588] = 21'b000000000000001000101;
+
+ann_weights[7589] = 21'b100000000000001010011;
+
+ann_weights[7590] = 21'b100000000000001010100;
+
+ann_weights[7591] = 21'b100000000000000000010;
+
+ann_weights[7592] = 21'b000000000000001000111;
+
+ann_weights[7593] = 21'b000000000000000100001;
+
+ann_weights[7594] = 21'b000000000000001001001;
+
+ann_weights[7595] = 21'b000000000000000010111;
+
+ann_weights[7596] = 21'b000000000000000110110;
+
+ann_weights[7597] = 21'b000000000000000011001;
+
+ann_weights[7598] = 21'b100000000000000111110;
+
+ann_weights[7599] = 21'b100000000000000111110;
+
+ann_weights[7600] = 21'b000000000000000011011;
+
+ann_weights[7601] = 21'b000000000000000101111;
+
+ann_weights[7602] = 21'b100000000000000101100;
+
+ann_weights[7603] = 21'b100000000000001010000;
+
+ann_weights[7604] = 21'b100000000000000000000;
+
+ann_weights[7605] = 21'b000000000000000110111;
+
+ann_weights[7606] = 21'b100000000000000101110;
+
+ann_weights[7607] = 21'b000000000000011110110;
+
+ann_weights[7608] = 21'b100000000000010101001;
+
+ann_weights[7609] = 21'b100000000000011111011;
+
+ann_weights[7610] = 21'b100000000000001010010;
+
+ann_weights[7611] = 21'b000000000000000101001;
+
+ann_weights[7612] = 21'b100000000000001011110;
+
+ann_weights[7613] = 21'b100000000000000110011;
+
+ann_weights[7614] = 21'b100000000000010010101;
+
+ann_weights[7615] = 21'b100000000000010000001;
+
+ann_weights[7616] = 21'b100000000000001000010;
+
+ann_weights[7617] = 21'b000000000000100011001;
+
+ann_weights[7618] = 21'b100000000000011011111;
+
+ann_weights[7619] = 21'b100000000000100101010;
+
+ann_weights[7620] = 21'b100000000000000101001;
+
+ann_weights[7621] = 21'b100000000000001000101;
+
+ann_weights[7622] = 21'b100000000000011010101;
+
+ann_weights[7623] = 21'b100000000000010110101;
+
+ann_weights[7624] = 21'b100000000000011100111;
+
+ann_weights[7625] = 21'b100000000000011001010;
+
+ann_weights[7626] = 21'b100000000000000000011;
+
+ann_weights[7627] = 21'b000000000000100000010;
+
+ann_weights[7628] = 21'b100000000000011111100;
+
+ann_weights[7629] = 21'b000000000000000011100;
+
+ann_weights[7630] = 21'b100000000000000110101;
+
+ann_weights[7631] = 21'b100000000000000001100;
+
+ann_weights[7632] = 21'b100000000000001010100;
+
+ann_weights[7633] = 21'b100000000000001100001;
+
+ann_weights[7634] = 21'b100000000000010101111;
+
+ann_weights[7635] = 21'b100000000000001111101;
+
+ann_weights[7636] = 21'b000000000000000000001;
+
+ann_weights[7637] = 21'b000000000000001100000;
+
+ann_weights[7638] = 21'b100000000000100010110;
+
+ann_weights[7639] = 21'b000000000000001101011;
+
+ann_weights[7640] = 21'b100000000000001010010;
+
+ann_weights[7641] = 21'b100000000000001100110;
+
+ann_weights[7642] = 21'b100000000000001111010;
+
+ann_weights[7643] = 21'b100000000000101001011;
+
+ann_weights[7644] = 21'b100000000000100100101;
+
+ann_weights[7645] = 21'b100000000000101001110;
+
+ann_weights[7646] = 21'b100000000000001010100;
+
+ann_weights[7647] = 21'b000000000000010011001;
+
+ann_weights[7648] = 21'b100000000000100110101;
+
+ann_weights[7649] = 21'b100000000000001011011;
+
+ann_weights[7650] = 21'b100000000000011100111;
+
+ann_weights[7651] = 21'b100000000000010000001;
+
+ann_weights[7652] = 21'b100000000000011111000;
+
+ann_weights[7653] = 21'b100000000000101001111;
+
+ann_weights[7654] = 21'b100000000000110100101;
+
+ann_weights[7655] = 21'b100000000000100001000;
+
+ann_weights[7656] = 21'b000000000000000010000;
+
+ann_weights[7657] = 21'b000000000000010110010;
+
+ann_weights[7658] = 21'b100000000000100001001;
+
+ann_weights[7659] = 21'b000000000000000110110;
+
+ann_weights[7660] = 21'b100000000000010010110;
+
+ann_weights[7661] = 21'b100000000000001101100;
+
+ann_weights[7662] = 21'b100000000000010110001;
+
+ann_weights[7663] = 21'b100000000000101101000;
+
+ann_weights[7664] = 21'b100000000000101001111;
+
+ann_weights[7665] = 21'b000000000000000010011;
+
+ann_weights[7666] = 21'b100000000000001100111;
+
+ann_weights[7667] = 21'b000000000000100111011;
+
+ann_weights[7668] = 21'b100000000000010111111;
+
+ann_weights[7669] = 21'b100000000000001001011;
+
+ann_weights[7670] = 21'b100000000000001110100;
+
+ann_weights[7671] = 21'b100000000000100001100;
+
+ann_weights[7672] = 21'b100000000000100110101;
+
+ann_weights[7673] = 21'b100000000000110110111;
+
+ann_weights[7674] = 21'b100000000000110010000;
+
+ann_weights[7675] = 21'b100000000000000100100;
+
+ann_weights[7676] = 21'b100000000000001010110;
+
+ann_weights[7677] = 21'b000000000000010010001;
+
+ann_weights[7678] = 21'b100000000000110000100;
+
+ann_weights[7679] = 21'b100000000000001010111;
+
+ann_weights[7680] = 21'b100000000000011111100;
+
+ann_weights[7681] = 21'b100000000000011000101;
+
+ann_weights[7682] = 21'b100000000000110100101;
+
+ann_weights[7683] = 21'b100000000000111001001;
+
+ann_weights[7684] = 21'b100000000000101010111;
+
+ann_weights[7685] = 21'b100000000000001100010;
+
+ann_weights[7686] = 21'b100000000000000111011;
+
+ann_weights[7687] = 21'b000000000000001110011;
+
+ann_weights[7688] = 21'b100000000000101001010;
+
+ann_weights[7689] = 21'b100000000000000110011;
+
+ann_weights[7690] = 21'b100000000000011001001;
+
+ann_weights[7691] = 21'b100000000000011001101;
+
+ann_weights[7692] = 21'b100000000000011001001;
+
+ann_weights[7693] = 21'b100000000001000101001;
+
+ann_weights[7694] = 21'b100000000001001010110;
+
+ann_weights[7695] = 21'b100000000000010001000;
+
+ann_weights[7696] = 21'b100000000000010011110;
+
+ann_weights[7697] = 21'b000000000001001010010;
+
+ann_weights[7698] = 21'b100000000000110010100;
+
+ann_weights[7699] = 21'b100000000001000110101;
+
+ann_weights[7700] = 21'b100000000000101100000;
+
+ann_weights[7701] = 21'b100000000000010111101;
+
+ann_weights[7702] = 21'b100000000000010011101;
+
+ann_weights[7703] = 21'b100000000001000001011;
+
+ann_weights[7704] = 21'b100000000001001010001;
+
+ann_weights[7705] = 21'b100000000000111101001;
+
+ann_weights[7706] = 21'b100000000000001000010;
+
+ann_weights[7707] = 21'b000000000000100100100;
+
+ann_weights[7708] = 21'b100000000000111101110;
+
+ann_weights[7709] = 21'b100000000000001010101;
+
+ann_weights[7710] = 21'b100000000000011101100;
+
+ann_weights[7711] = 21'b100000000000010001111;
+
+ann_weights[7712] = 21'b100000000000011010000;
+
+ann_weights[7713] = 21'b100000000001001001011;
+
+ann_weights[7714] = 21'b100000000000100110000;
+
+ann_weights[7715] = 21'b100000000000111110100;
+
+ann_weights[7716] = 21'b100000000000000111011;
+
+ann_weights[7717] = 21'b000000000000011110111;
+
+ann_weights[7718] = 21'b100000000000101100000;
+
+ann_weights[7719] = 21'b100000000000001000110;
+
+ann_weights[7720] = 21'b100000000000011000001;
+
+ann_weights[7721] = 21'b100000000000000111111;
+
+ann_weights[7722] = 21'b100000000000010110011;
+
+ann_weights[7723] = 21'b100000000001000111100;
+
+ann_weights[7724] = 21'b100000000000111011111;
+
+ann_weights[7725] = 21'b100000000001001111001;
+
+ann_weights[7726] = 21'b100000000000010001101;
+
+ann_weights[7727] = 21'b000000000000101000001;
+
+ann_weights[7728] = 21'b100000000000101100011;
+
+ann_weights[7729] = 21'b100000000000100101011;
+
+ann_weights[7730] = 21'b100000000000001100001;
+
+ann_weights[7731] = 21'b100000000000011111001;
+
+ann_weights[7732] = 21'b100000000000100110000;
+
+ann_weights[7733] = 21'b100000000001000101010;
+
+ann_weights[7734] = 21'b100000000000111001010;
+
+ann_weights[7735] = 21'b100000000000110011010;
+
+ann_weights[7736] = 21'b000000000000000001101;
+
+ann_weights[7737] = 21'b000000000001000101011;
+
+ann_weights[7738] = 21'b100000000000101101110;
+
+ann_weights[7739] = 21'b100000000000110101110;
+
+ann_weights[7740] = 21'b100000000000010010111;
+
+ann_weights[7741] = 21'b100000000000010100100;
+
+ann_weights[7742] = 21'b100000000000100101010;
+
+ann_weights[7743] = 21'b100000000000110110110;
+
+ann_weights[7744] = 21'b100000000000110001110;
+
+ann_weights[7745] = 21'b100000000000011111110;
+
+ann_weights[7746] = 21'b100000000000011011011;
+
+ann_weights[7747] = 21'b000000000000101001001;
+
+ann_weights[7748] = 21'b100000000000101010101;
+
+ann_weights[7749] = 21'b100000000000011001011;
+
+ann_weights[7750] = 21'b100000000000011011111;
+
+ann_weights[7751] = 21'b100000000000011110101;
+
+ann_weights[7752] = 21'b100000000000010101110;
+
+ann_weights[7753] = 21'b100000000000110000110;
+
+ann_weights[7754] = 21'b100000000000101010010;
+
+ann_weights[7755] = 21'b100000000000110101000;
+
+ann_weights[7756] = 21'b100000000000001101110;
+
+ann_weights[7757] = 21'b000000000000101000110;
+
+ann_weights[7758] = 21'b100000000000101111110;
+
+ann_weights[7759] = 21'b100000000000010101101;
+
+ann_weights[7760] = 21'b100000000000001100101;
+
+ann_weights[7761] = 21'b100000000000000100010;
+
+ann_weights[7762] = 21'b100000000000100000100;
+
+ann_weights[7763] = 21'b100000000000100101111;
+
+ann_weights[7764] = 21'b100000000000110011000;
+
+ann_weights[7765] = 21'b100000000000010001110;
+
+ann_weights[7766] = 21'b000000000000000010111;
+
+ann_weights[7767] = 21'b000000000000001001110;
+
+ann_weights[7768] = 21'b100000000000010110101;
+
+ann_weights[7769] = 21'b100000000000000000010;
+
+ann_weights[7770] = 21'b100000000000011010100;
+
+ann_weights[7771] = 21'b100000000000001000111;
+
+ann_weights[7772] = 21'b100000000000011001001;
+
+ann_weights[7773] = 21'b100000000000110000001;
+
+ann_weights[7774] = 21'b100000000000011110110;
+
+ann_weights[7775] = 21'b100000000000011100011;
+
+ann_weights[7776] = 21'b100000000000010000110;
+
+ann_weights[7777] = 21'b000000000000011110110;
+
+ann_weights[7778] = 21'b100000000000101101001;
+
+ann_weights[7779] = 21'b100000000000001011111;
+
+ann_weights[7780] = 21'b100000000000001011000;
+
+ann_weights[7781] = 21'b100000000000000100110;
+
+ann_weights[7782] = 21'b100000000000010100101;
+
+ann_weights[7783] = 21'b100000000000011010110;
+
+ann_weights[7784] = 21'b100000000000010110111;
+
+ann_weights[7785] = 21'b100000000000010111000;
+
+ann_weights[7786] = 21'b100000000000000101010;
+
+ann_weights[7787] = 21'b000000000000011100110;
+
+ann_weights[7788] = 21'b100000000000011101110;
+
+ann_weights[7789] = 21'b100000000000001011110;
+
+ann_weights[7790] = 21'b100000000000011101100;
+
+ann_weights[7791] = 21'b000000000000000110010;
+
+ann_weights[7792] = 21'b100000000000010100000;
+
+ann_weights[7793] = 21'b100000000000001100000;
+
+ann_weights[7794] = 21'b100000000000010011001;
+
+ann_weights[7795] = 21'b100000000000011010000;
+
+ann_weights[7796] = 21'b100000000000001000011;
+
+ann_weights[7797] = 21'b000000000000100101100;
+
+ann_weights[7798] = 21'b100000000000010001001;
+
+ann_weights[7799] = 21'b100000000000101010001;
+
+ann_weights[7800] = 21'b100000000000000111010;
+
+ann_weights[7801] = 21'b000000000000000011111;
+
+ann_weights[7802] = 21'b000000000000000011001;
+
+ann_weights[7803] = 21'b100000000000000001000;
+
+ann_weights[7804] = 21'b000000000000001001110;
+
+ann_weights[7805] = 21'b000000000000000110011;
+
+ann_weights[7806] = 21'b000000000000000000001;
+
+ann_weights[7807] = 21'b000000000000001010010;
+
+ann_weights[7808] = 21'b100000000000000100010;
+
+ann_weights[7809] = 21'b000000000000000101111;
+
+ann_weights[7810] = 21'b100000000000000111000;
+
+ann_weights[7811] = 21'b000000000000000011011;
+
+ann_weights[7812] = 21'b000000000000000111000;
+
+ann_weights[7813] = 21'b000000000000001000110;
+
+ann_weights[7814] = 21'b100000000000000011110;
+
+ann_weights[7815] = 21'b100000000000000000001;
+
+ann_weights[7816] = 21'b000000000000000000110;
+
+ann_weights[7817] = 21'b000000000000000101100;
+
+ann_weights[7818] = 21'b100000000000001010001;
+
+ann_weights[7819] = 21'b000000000000000101101;
+
+ann_weights[7820] = 21'b100000000000000011010;
+
+ann_weights[7821] = 21'b100000000000001000101;
+
+ann_weights[7822] = 21'b100000000000000000100;
+
+ann_weights[7823] = 21'b100000000000000101001;
+
+ann_weights[7824] = 21'b000000000000000000111;
+
+ann_weights[7825] = 21'b000000000000000000011;
+
+ann_weights[7826] = 21'b000000000000001000110;
+
+ann_weights[7827] = 21'b100000000000000100101;
+
+ann_weights[7828] = 21'b100000000000001001100;
+
+ann_weights[7829] = 21'b100000000000001000111;
+
+ann_weights[7830] = 21'b100000000000001000001;
+
+ann_weights[7831] = 21'b100000000000000101111;
+
+ann_weights[7832] = 21'b000000000000000101100;
+
+ann_weights[7833] = 21'b100000000000000101001;
+
+ann_weights[7834] = 21'b100000000000001000001;
+
+ann_weights[7835] = 21'b000000000000000000000;
+
+ann_weights[7836] = 21'b000000000000001010011;
+
+ann_weights[7837] = 21'b100000000000000101011;
+
+ann_weights[7838] = 21'b100000000000001000000;
+
+ann_weights[7839] = 21'b100000000000001000101;
 
  end
  
@@ -7896,90 +15749,224 @@ ann_weights[7839] = 1048645 ;
  integer n1,n2,n3,n4,n5,n6,n7,n8,n9,n10;
  integer a1,a2,a3,a4,a5,a6,a7,a8,a9,a10;
  
- always @* begin
+ always @(negedge w_en) begin
         n1 = 0;
         for (integer k = 0; k < 784; k = k + 1) begin
-            n1 = n1 + img[k] * ann_weights[k*10][19:0]*(-1)**ann_weights[k*10][20];
+				 if (ann_weights[k*10][20] == 0)begin
+					n1 = n1 + img[k] * ann_weights[k*10][19:0];
+				 end
+				 else begin
+					n1 = n1 + img[k] * ann_weights[k*10][19:0]*(-1);
+				 end
         end
-        a1 = n1 + ann_bias[0][19:0]*(-1)**ann_bias[0][20];;
+		  
+		  if (ann_bias[0][20] == 0) begin
+        a1 = n1 + ann_bias[0][19:0];
+		  end
+		  else begin
+			 a1 = n1 + ann_bias[0][19:0]*(-1);
+		  end
     end
     
-  always @* begin
+ always @(negedge w_en) begin
         n2 = 0;
         for (integer k = 0; k < 784; k = k + 1) begin
-            n2 = n2 + img[k] * ann_weights[(k*10)+1][19:0]*(-1)**ann_weights[(k*10)+1][20];
+				 if (ann_weights[(k*10)+1][20] == 0)begin
+					n2 = n2 + img[k] * ann_weights[(k*10)+1][19:0];
+				 end
+				 else begin
+					n2 = n2 + img[k] * ann_weights[(k*10)+1][19:0]*(-1);
+				 end
         end
-        a2 = n2 + ann_bias[1][19:0]*(-1)**ann_bias[1][20];
+		  
+		  if (ann_bias[1][20] == 0) begin
+        a2 = n2 + ann_bias[1][19:0];
+		  end
+		  else begin
+			 a2 = n2 + ann_bias[1][19:0]*(-1);
+		  end
     end
     
-  always @* begin
+ always @(negedge w_en) begin
         n3 = 0;
         for (integer k = 0; k < 784; k = k + 1) begin
-            n3 = n3 + img[k] * ann_weights[(k*10)+2][19:0]*(-1)**ann_weights[(k*10)+2][20];
+				 if (ann_weights[(k*10)+2][20] == 0)begin
+					n3 = n3 + img[k] * ann_weights[(k*10)+2][19:0];
+				 end
+				 else begin
+					n3 = n3 + img[k] * ann_weights[(k*10)+2][19:0]*(-1);
+				 end
         end
-        a3 = n3 + ann_bias[2][19:0]*(-1)**ann_bias[2][20];
+		  
+		  if (ann_bias[2][20] == 0) begin
+        a3 = n3 + ann_bias[2][19:0];
+		  end
+		  else begin
+			 a3 = n3 + ann_bias[2][19:0]*(-1);
+		  end
     end
     
-    always @* begin
+ always @(negedge w_en) begin
         n4 = 0;
         for (integer k = 0; k < 784; k = k + 1) begin
-            n4 = n4 + img[k] * ann_weights[(k*10)+3][19:0]*(-1)**ann_weights[(k*10)+3][20];
+				 if (ann_weights[(k*10)+3][20] == 0)begin
+					n4 = n4 + img[k] * ann_weights[(k*10)+3][19:0];
+				 end
+				 else begin
+					n4 = n4 + img[k] * ann_weights[(k*10)+3][19:0]*(-1);
+				 end
         end
-        a4 = n4 + ann_bias[3][19:0]*(-1)**ann_bias[3][20];
+		  
+		  if (ann_bias[3][20] == 0) begin
+        a4 = n4 + ann_bias[3][19:0];
+		  end
+		  else begin
+			 a4 = n4 + ann_bias[3][19:0]*(-1);
+		  end
     end
     
-      always @* begin
+ always @(negedge w_en) begin
         n5 = 0;
         for (integer k = 0; k < 784; k = k + 1) begin
-            n5 = n5 + img[k] * ann_weights[(k*10)+4][19:0]*(-1)**ann_weights[(k*10)+4][20];
+				 if (ann_weights[(k*10)+4][20] == 0)begin
+					n5 = n5 + img[k] * ann_weights[(k*10)+4][19:0];
+				 end
+				 else begin
+					n5 = n5 + img[k] * ann_weights[(k*10)+4][19:0]*(-1);
+				 end
         end
-        a5 = n5 + ann_bias[4][19:0]*(-1)**ann_bias[4][20];
+		  
+		  if (ann_bias[4][20] == 0) begin
+        a5 = n5 + ann_bias[4][19:0];
+		  end
+		  else begin
+			 a5 = n5 + ann_bias[4][19:0]*(-1);
+		  end
     end
 
-  always @* begin
+ always @(negedge w_en) begin
         n6 = 0;
         for (integer k = 0; k < 784; k = k + 1) begin
-            n6 = n6 + img[k] * ann_weights[(k*10)+5][19:0]*(-1)**ann_weights[(k*10)+5][20];
+				 if (ann_weights[(k*10)+5][20] == 0)begin
+					n6 = n6 + img[k] * ann_weights[(k*10)+5][19:0];
+				 end
+				 else begin
+					n6 = n6 + img[k] * ann_weights[(k*10)+5][19:0]*(-1);
+				 end
         end
-        a6 = n6 + ann_bias[5][19:0]*(-1)**ann_bias[5][20];
+		  
+		  if (ann_bias[5][20] == 0) begin
+        a6 = n6 + ann_bias[5][19:0];
+		  end
+		  else begin
+			 a6 = n6 + ann_bias[5][19:0]*(-1);
+		  end
     end
  
-  always @* begin
+ always @(negedge w_en) begin
         n7 = 0;
         for (integer k = 0; k < 784; k = k + 1) begin
-            n7 = n7 + img[k] * ann_weights[(k*10)+6][19:0]*(-1)**ann_weights[(k*10)+6][20];
+				 if (ann_weights[(k*10)+6][20] == 0)begin
+					n7 = n7 + img[k] * ann_weights[(k*10)+6][19:0];
+				 end
+				 else begin
+					n7 = n7 + img[k] * ann_weights[(k*10)+6][19:0]*(-1);
+				 end
         end
-        a7 = n7 + ann_bias[6][19:0]*(-1)**ann_bias[6][20];
+		  
+		  if (ann_bias[6][20] == 0) begin
+        a7 = n7 + ann_bias[6][19:0];
+		  end
+		  else begin
+			 a7 = n7 + ann_bias[6][19:0]*(-1);
+		  end
     end
     
-  always @* begin
+ always @(negedge w_en) begin
         n8 = 0;
         for (integer k = 0; k < 784; k = k + 1) begin
-            n8 = n8 + img[k] * ann_weights[(k*10)+7][19:0]*(-1)**ann_weights[(k*10)+7][20];
+				 if (ann_weights[(k*10)+7][20] == 0)begin
+					n8 = n8 + img[k] * ann_weights[(k*10)+7][19:0];
+				 end
+				 else begin
+					n8 = n8 + img[k] * ann_weights[(k*10)+7][19:0]*(-1);
+				 end
         end
-        a8 = n8 + ann_bias[7][19:0]*(-1)**ann_bias[7][20];
+		  
+		  if (ann_bias[7][20] == 0) begin
+        a8 = n8 + ann_bias[7][19:0];
+		  end
+		  else begin
+			 a8 = n8 + ann_bias[7][19:0]*(-1);
+		  end
     end
     
-  always @* begin
+ always @(negedge w_en) begin
         n9 = 0;
         for (integer k = 0; k < 784; k = k + 1) begin
-        //  sign_bit = input_1[10] ^ input_2[10];
-            n9 = n9 + img[k] * ann_weights[(k*10)+8][19:0]*(-1)**ann_weights[(k*10)+8][20];
+				 if (ann_weights[(k*10)+8][20] == 0)begin
+					n9 = n9 + img[k] * ann_weights[(k*10)+8][19:0];
+				 end
+				 else begin
+					n9 = n9 + img[k] * ann_weights[(k*10)+8][19:0]*(-1);
+				 end
         end
-        a9 = n9 + ann_bias[8][19:0]*(-1)**ann_bias[8][20];
+		  
+		  if (ann_bias[8][20] == 0) begin
+        a9 = n9 + ann_bias[8][19:0];
+		  end
+		  else begin
+			 a9 = n9 + ann_bias[8][19:0]*(-1);
+		  end
     end
     
-  always @* begin
+ always @(negedge w_en) begin
         n10 = 0;
         for (integer k = 0; k < 784; k = k + 1) begin
-            n10 = n10 + img[k] * ann_weights[(k*10)+9][19:0]*(-1)**ann_weights[(k*10)+9][20];;
+				 if (ann_weights[(k*10)+9][20] == 0)begin
+					n10 = n10 + img[k] * ann_weights[(k*10)+9][19:0];
+				 end
+				 else begin
+					n10 = n10 + img[k] * ann_weights[(k*10)+9][19:0]*(-1);
+				 end
         end
-        a10 = n10 + ann_bias[9][19:0]*(-1)**ann_bias[9][20];
-    end   
+		  
+		  if (ann_bias[9][20] == 0) begin
+        a10 = n10 + ann_bias[9][19:0];
+		  end
+		  else begin
+			 a10 = n10 + ann_bias[9][19:0]*(-1);
+		  end
+    end
     
-    initial begin 
-    #10;
+    
+    integer largest;
+    always @(negedge w_en) begin
      $display("a1=%0d, a2=%0d, a3=%0d, a4=%0d, a5=%0d, a6=%0d, a7=%0d, a8=%0d, a9=%0d, a10=%0d", a1, a2, a3, a4, a5, a6, a7, a8, a9, a10);
+    largest = a1;
+    if (a2 > largest) largest = a2;
+    if (a3 > largest) largest = a3;
+    if (a4 > largest) largest = a4;
+    if (a5 > largest) largest = a5;
+    if (a6 > largest) largest = a6;
+    if (a7 > largest) largest = a7;
+    if (a8 > largest) largest = a8;
+    if (a9 > largest) largest = a9;
+    if (a10 > largest) largest = a10;  
+    #10;
+    if(largest == a1) out[0] = 1; 
+    if(largest == a2) out[1] = 1; 
+    if(largest == a3) out[2] = 1; 
+    if(largest == a4) out[3] = 1; 
+    if(largest == a5) out[4] = 1; 
+    if(largest == a6) out[5] = 1; 
+    if(largest == a7) out[6] = 1; 
+    if(largest == a8) out[7] = 1; 
+    if(largest == a9) out[8] = 1; 
+    if(largest == a10) out[9] = 1;    
     end 
-
+    
+  
+     
+  
 endmodule
