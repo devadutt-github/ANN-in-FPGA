@@ -1,1 +1,2 @@
-This project objective is to implement an Artificial Neural Network on FPGA
+*ANN-in-FPGA*
+This project objective is to implement an Artificial Neural Network in FPGA
